@@ -1,0 +1,36 @@
+{% extends '@tidy_feedback/base.html.twig' %}
+{#{% trans_default_domain 'TidyFeedback' %}#}
+{% set translation_context = {context: 'TidyFeedback'} %}
+
+{% block content %}
+    <h1>Feedback</h1>
+
+    <dl>
+        <dt>{{ 'Created at'|trans }}</dt>
+        <dd>{{ item.createdAt|date(constant('\\DateTimeImmutable::ATOM')) }}</dd>
+
+        <dt>{{ 'Created by'|trans }}</dt>
+        <dd>{{ item.createdBy|default('–') }}</dd>
+
+        <dt>{{ 'Subject'|trans }}</dt>
+        <dd>{{ item.subject }}</dd>
+
+        <dt>{{ 'Status'|trans }}</dt>
+        <dd>{{ item.status.value }}</dd>
+
+        <dt>{{ 'Category'|trans }}</dt>
+        <dd>{{ item.category|default('–') }}</dd>
+
+        <dt>{{ 'Data'|trans }}</dt>
+        <dd>
+            <pre><code>{{ item.data|filter((_, key) => key not in ['raw', 'svg'])|json_encode(constant('JSON_PRETTY_PRINT') b-or constant('JSON_UNESCAPED_SLASHES')) }}</code></pre>
+        </dd>
+
+      {% set image_url = path('tidy_feedback_show_image', {id: item.id}) %}
+      <dt>{{ 'Image' }}</dt>
+      <dd>
+        <img src="{{ image_url }}"/>
+        <a href="{{ image_url }}">{{ 'Show image'|trans }}</a>
+      </dd>
+    </dl>
+{% endblock %}

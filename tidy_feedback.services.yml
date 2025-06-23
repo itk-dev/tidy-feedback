@@ -1,0 +1,11 @@
+services:
+  _defaults:
+    autowire: true
+
+  Drupal\tidy_feedback\EventSubscriber\TidyFeedbackSubscriber:
+    tags:
+      - { name: event_subscriber }
+
+  Drupal\tidy_feedback\TidyFeedbackHelper:
+
+  Drupal\tidy_feedback\ItemRepository:

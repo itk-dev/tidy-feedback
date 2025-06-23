@@ -1,0 +1,38 @@
+{% extends '@tidy_feedback/base.html.twig' %}
+{#{% trans_default_domain 'TidyFeedback' %}#}
+{% set translation_context = {context: 'TidyFeedback'} %}
+
+{% block content %}
+    <h1>Feedback</h1>
+
+    {% if items %}
+        <table class="table">
+            <thead>
+            <tr>
+                <th>{{ 'Created at'|trans }}</th>
+                <th>{{ 'Created by'|trans }}</th>
+                <th>{{ 'Subject'|trans }}</th>
+                <th>{{ 'Status'|trans }}</th>
+                <th>{{ 'Category'|trans }}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for item in items %}
+                <tr>
+                    <td>{{ item.createdAt|date(constant('\\DateTimeImmutable::ATOM')) }}</td>
+                    <td>{{ item.createdBy|default('–') }}</td>
+                    <td>
+                        <a href="{{ path('tidy_feedback_show', {id: item.id}) }}">
+                            {{ item.subject }}
+                        </a>
+                    </td>
+                    <td>{{ item.status.value }}</td>
+                    <td>{{ item.category|default('–') }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="alert alert-warning">{{ 'Not feedback yet' }}</div>
+    {% endif %}
+{% endblock %}

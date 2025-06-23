@@ -1,0 +1,33 @@
+{#{% trans_default_domain 'TidyFeedback' %}#}
+{# https://github.com/zumerlab/snapdom?tab=readme-ov-file#feature #}
+{% set translation_context = {context: 'TidyFeedback'} %}
+{% set config = {
+  messages: {
+    'Extend your selection …': 'Extend your selection …'|trans([], translation_context),
+    'Fill in the feedback form': 'Fill in the feedback form'|trans([], translation_context),
+    'Click on an element or click and drag to mark a region …': 'Click on an element or click and drag to mark a region …'|trans([], translation_context),
+  },
+}
+%}
+<style data-capture="exclude">
+    @import {{ path('tidy_feedback_widget', {resource: 'styles'})|json_encode(constant('JSON_UNESCAPED_SLASHES'))|raw }};
+</style>
+<script data-capture="exclude" src="{{ path('tidy_feedback_widget', {resource: 'script'}) }}" data-tidy-feedback-config="{{ config|json_encode }} "></script>
+<div data-capture="exclude">
+  <div class="tidy-feedback-message" hidden></div>
+  <button hidden class="tidy-feedback-start">{{ 'Feedback'|trans([], translation_context) }}</button>
+
+  <form class="tidy-feedback-form" hidden action="{{ path('tidy_feedback_api_create') }}">
+    <label>{{ 'Subject'|trans([], translation_context) }}
+      <input name="subject" required placeholder="{{ 'Subject'|trans([], translation_context) }}"/>
+    </label>
+
+    <label>{{ 'What did you do?'|trans([], translation_context) }}
+      <textarea name="what_did_you_do" required placeholder="{{ 'What did you do?'|trans([], translation_context) }}"></textarea>
+    </label>
+
+    <button>{{ 'Submit feedback'|trans([], translation_context) }}</button>
+  </form>
+</div>
+
+

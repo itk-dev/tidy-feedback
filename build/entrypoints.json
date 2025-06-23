@@ -1,0 +1,12 @@
+{
+  "entrypoints": {
+    "feedback-widget": {
+      "css": [
+        "/build/feedback-widget.css"
+      ],
+      "js": [
+        "/build/feedback-widget.js"
+      ]
+    }
+  }
+}
