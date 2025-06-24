@@ -1,5 +1,8 @@
 # Tidy feedback
 
+> [!CAUTION]
+> The documentation is incomplete!
+
 ## Installation
 
 ``` shell
