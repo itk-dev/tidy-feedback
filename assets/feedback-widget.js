@@ -17,15 +17,6 @@ const config = (() => {
   return {};
 })();
 
-// const addData = (key, value) => {
-//     const el = document.querySelector(".tidy-feedback-form [name='data']");
-//     if (el) {
-//         const data = JSON.parse(el.value || "{}");
-//         data[key] = value;
-//         el.value = JSON.stringify(data);
-//     }
-// };
-
 const showMessage = (message) => {
   const el = document.querySelector(".tidy-feedback-message");
   if (el) {
@@ -34,6 +25,8 @@ const showMessage = (message) => {
   }
 };
 
+let start
+let cancel
 let region;
 let firstPoint;
 let lastPoint;
@@ -115,6 +108,11 @@ const selectRegion = () => {
     lastElement = lastPoint
       ? document.elementFromPoint(lastPoint.clientX, lastPoint.clientY)
       : null;
+
+    // Check if "Cancel" has been clicked
+    if (firstElement && lastElement && lastElement === cancel) {
+      return
+    }
 
     if (firstElement && (!lastElement || firstElement === lastElement)) {
       // Show first element as region
@@ -218,8 +216,8 @@ const selectRegion = () => {
 addEventListener("load", () => {
   form = document.querySelector(".tidy-feedback-form");
 
-  const start = document.querySelector(".tidy-feedback-start");
-  const cancel = document.querySelector(".tidy-feedback-cancel");
+  start = document.querySelector(".tidy-feedback-start");
+  cancel = document.querySelector(".tidy-feedback-cancel");
 
   if (start) {
     start.hidden = false;

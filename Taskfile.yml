@@ -22,14 +22,14 @@ tasks:
       - task: npm
         vars:
           TASK_ARGS: install
-      - task compose -- run --rm node node_modules/.bin/encore production --progress
+      - task compose -- run --tty --interactive --rm node node_modules/.bin/encore production --progress
     silent: true
 
   assets:watch:
     desc: Build assets and watch for changes
     cmds:
       - task: assets:build
-      - task compose -- run --rm --interactive --tty node node_modules/.bin/encore dev --watch
+      - task compose -- run --tty --interactive --rm --interactive --tty node node_modules/.bin/encore dev --watch
     silent: true
 
   npm:

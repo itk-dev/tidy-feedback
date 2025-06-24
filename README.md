@@ -61,6 +61,10 @@ After installation and configuration, open `/tidy-feedback` on your site and enj
 
 ## Development
 
+``` shell
+task
+```
+
 * composer psr-4 stuff
 * composer `"type"` stuff
 
