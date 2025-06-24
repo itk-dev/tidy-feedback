@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Drupal\tidy_feedback\EventSubscriber;
+namespace ItkDev\TidyFeedbackBundle\EventSubscriber;
 
-use Drupal\tidy_feedback\TidyFeedbackHelper;
+use ItkDev\TidyFeedback\TidyFeedbackHelper;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
@@ -25,10 +25,9 @@ final class TidyFeedbackSubscriber implements EventSubscriberInterface {
    */
   public function onKernelResponse(ResponseEvent $event): void {
     $response = $event->getResponse();
-    if (!$response->isSuccessful()) {
-      return;
-    }
-    if (!str_starts_with((string)$response->headers->get('content-type'), 'text/html')) {
+    if (false
+        || !$response->isSuccessful()
+        || !str_starts_with((string)$response->headers->get('content-type'), 'text/html')) {
       return;
     }
 

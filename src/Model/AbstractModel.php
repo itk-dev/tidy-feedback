@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\tidy_feedback\Model;
+namespace ItkDev\TidyFeedback\Model;
 
 use DateTimeZone;
 use Doctrine\DBAL\Types\Types;

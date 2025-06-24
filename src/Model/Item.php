@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\tidy_feedback\Model;
+namespace ItkDev\TidyFeedback\Model;
 
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;

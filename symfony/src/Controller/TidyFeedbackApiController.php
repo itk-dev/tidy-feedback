@@ -2,33 +2,30 @@
 
 declare(strict_types=1);
 
-namespace Drupal\tidy_feedback\Controller;
+namespace ItkDev\TidyFeedbackBundle\Controller;
 
 use Doctrine\Common\Collections\Order;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
-use Drupal\Core\Controller\ControllerBase;
-use Drupal\tidy_feedback\Model\Item;
-use Drupal\tidy_feedback\TidyFeedbackHelper;
+use ItkDev\TidyFeedback\Model\Item;
+use ItkDev\TidyFeedback\TidyFeedbackHelper;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
-/**
- * Returns responses for Tidy feedback routes.
- */
-final class TidyFeedbackApiController extends ControllerBase {
-  private EntityManagerInterface $entityManager;
-  private EntityRepository $itemRepository;
-
-  public function __construct(
-  private readonly TidyFeedbackHelper $helper,
-)
+class TidyFeedbackApiController extends AbstractController
 {
-  $this->entityManager = TidyFeedbackHelper::getEntityManager();
-  $this->itemRepository = $this->entityManager->getRepository(Item::class);
-}
+    private EntityManagerInterface $entityManager;
+    private EntityRepository $itemRepository;
+
+    public function __construct(
+    )
+    {
+        $this->entityManager = TidyFeedbackHelper::getEntityManager();
+        $this->itemRepository = $this->entityManager->getRepository(Item::class);
+    }
 
   public function index(): Response
   {

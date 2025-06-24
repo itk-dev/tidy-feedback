@@ -6,6 +6,4 @@ services:
     tags:
       - { name: event_subscriber }
 
-  Drupal\tidy_feedback\TidyFeedbackHelper:
-
-  Drupal\tidy_feedback\ItemRepository:
+  ItkDev\TidyFeedback\TidyFeedbackHelper:

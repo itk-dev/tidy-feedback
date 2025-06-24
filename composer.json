@@ -9,7 +9,8 @@
     },
     "autoload": {
         "psr-4": {
-            "ItkDev\\TidyFeedback\\": "src/"
+            "ItkDev\\TidyFeedback\\": "src/",
+            "ItkDev\\TidyFeedbackBundle\\": "symfony/src/"
         }
     }
 }

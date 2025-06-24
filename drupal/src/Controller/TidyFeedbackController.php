@@ -8,13 +8,9 @@ use Doctrine\Common\Collections\Order;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\tidy_feedback\Model\Item;
-use Drupal\tidy_feedback\TidyFeedbackHelper;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
+use ItkDev\TidyFeedback\Model\Item;
+use ItkDev\TidyFeedback\TidyFeedbackHelper;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
@@ -36,7 +32,7 @@ final class TidyFeedbackController extends ControllerBase {
   {
     $items = $this->itemRepository->findBy([], ['createdAt' => Order::Descending->value]);
 
-    return $this->render('index.html.twig', [
+    return $this->helper->renderResponse('index.html.twig', [
       'items' => $items,
     ]);
   }
@@ -48,7 +44,7 @@ final class TidyFeedbackController extends ControllerBase {
       throw new NotFoundHttpException();
     }
 
-    return $this->render('show.html.twig', [
+    return $this->helper->renderResponse('show.html.twig', [
       'item' => $item,
     ]);
   }
@@ -72,22 +68,7 @@ final class TidyFeedbackController extends ControllerBase {
   }
 
   public function widget(?string $resource = null): Response {
-    switch ($resource) {
-      case 'script':
-        return new BinaryFileResponse(__DIR__.'/../../build/feedback-widget.js', headers: ['content-type' => 'text/javascript']);
-      case 'styles':
-        return new BinaryFileResponse(__DIR__.'/../../build/feedback-widget.css', headers: ['content-type' => 'text/css']);
-    }
-
-    $widget = $this->helper->getWidget();
-
-    return new Response($widget);
+    return $this->helper->createWidgetResponse($resource);
   }
 
-  private function render(string $template, array $context = []): Response
-  {
-    $content = $this->helper->renderTemplate($template, $context);
-
-    return new Response($content);
-  }
 }
