@@ -25,8 +25,8 @@ const showMessage = (message) => {
   }
 };
 
-let start
-let cancel
+let start;
+let cancel;
 let region;
 let firstPoint;
 let lastPoint;
@@ -111,7 +111,7 @@ const selectRegion = () => {
 
     // Check if "Cancel" has been clicked
     if (firstElement && lastElement && lastElement === cancel) {
-      return
+      return;
     }
 
     if (firstElement && (!lastElement || firstElement === lastElement)) {
