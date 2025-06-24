@@ -11,15 +11,18 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\ORMSetup;
 use Doctrine\ORM\Tools\SchemaTool;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Event\ResponseEvent;
+use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 use Twig\TwigFilter;
 use Twig\TwigFunction;
 
-final class TidyFeedbackHelper
+final class TidyFeedbackHelper implements EventSubscriberInterface
 {
     public function __construct(
         private readonly UrlGeneratorInterface $urlGenerator,
@@ -115,5 +118,41 @@ final class TidyFeedbackHelper
         ];
 
         return $name ? ($config[$name] ?? null) : $config;
+    }
+
+    public static function getSubscribedEvents(): array
+    {
+        return [
+            KernelEvents::RESPONSE => ['onKernelResponse'],
+        ];
+    }
+
+    /**
+     * Kernel response event handler.
+     */
+    public function onKernelResponse(ResponseEvent $event): void
+    {
+        $response = $event->getResponse();
+        if (false
+          || !$response->isSuccessful()
+            // This does not work as expected in Drupal!
+            // || !str_starts_with((string)$response->headers->get('content-type'), 'text/html')
+        ) {
+            return;
+        }
+
+        try {
+            $widget = $this->getWidget();
+            if (empty($widget)) {
+                return;
+            }
+
+            if ($content = $response->getContent()) {
+                $content = preg_replace('~</body>~i', $widget.'$0', (string) $content);
+                $response->setContent($content);
+            }
+        } catch (\Throwable) {
+            // Ignore all errors!
+        }
     }
 }
