@@ -1,27 +1,18 @@
-tidy_feedback_api_index:
-  path: "/tidy-feedback/api"
+tidy_feedback_index:
+  path: "/tidy-feedback"
   defaults:
-    _title: "Tidy feedback API index"
-    _controller: '\Drupal\tidy_feedback\Controller\TidyFeedbackApiController::index'
+    _title: "Tidy feedback index"
+    _controller: '\Drupal\tidy_feedback\Controller\TidyFeedbackController::index'
   methods: [GET]
   requirements:
     _permission: "access content"
 
-tidy_feedback_api_create:
-  path: "/tidy-feedback/api"
+tidy_feedback_create:
+  path: "/tidy-feedback"
   defaults:
     _title: "Tidy feedback API"
-    _controller: '\Drupal\tidy_feedback\Controller\TidyFeedbackApiController::post'
+    _controller: '\Drupal\tidy_feedback\Controller\TidyFeedbackController::post'
   methods: [POST]
-  requirements:
-    _permission: "access content"
-
-tidy_feedback_api_read:
-  path: "/tidy-feedback/api/{id}"
-  defaults:
-    _title: "Tidy feedback"
-    _controller: '\Drupal\tidy_feedback\Controller\TidyFeedbackApiController::get'
-  methods: [GET]
   requirements:
     _permission: "access content"
 
@@ -37,15 +28,6 @@ tidy_feedback_widget:
   # Make sure that we hit this route before the show route (with item set to "widget")
   weight: 10
 
-tidy_feedback_index:
-  path: "/tidy-feedback"
-  defaults:
-    _title: "Tidy feedback index"
-    _controller: '\Drupal\tidy_feedback\Controller\TidyFeedbackController::index'
-  methods: [GET]
-  requirements:
-    _permission: "access content"
-
 tidy_feedback_show:
   path: "/tidy-feedback/{id}"
   defaults:
@@ -55,11 +37,11 @@ tidy_feedback_show:
   requirements:
     _permission: "access content"
 
-tidy_feedback_show_image:
+tidy_feedback_image:
   path: "/tidy-feedback/{id}/image"
   defaults:
     _title: "Tidy feedback show"
-    _controller: '\Drupal\tidy_feedback\Controller\TidyFeedbackController::showImage'
+    _controller: '\Drupal\tidy_feedback\Controller\TidyFeedbackController::image'
   methods: [GET]
   requirements:
     _permission: "access content"

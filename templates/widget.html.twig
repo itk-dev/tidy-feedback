@@ -15,7 +15,7 @@
   <button hidden class="tidy-feedback-start" data-tidy-feedback-action="start">{{ 'Feedback'|trans([], translation_context) }}</button>
   <button hidden class="tidy-feedback-cancel" data-tidy-feedback-action="cancel">{{ 'Cancel'|trans([], translation_context) }}</button>
 
-  <form hidden class="tidy-feedback-form" action="{{ path('tidy_feedback_api_create') }}">
+  <form hidden class="tidy-feedback-form" action="{{ path('tidy_feedback_create') }}">
     <label>{{ 'Subject'|trans([], translation_context) }}
       <input name="subject" required placeholder="{{ 'Subject'|trans([], translation_context) }}"/>
     </label>
