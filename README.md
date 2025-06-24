@@ -6,8 +6,12 @@
 ## Installation
 
 ``` shell
-composer require itk-dev/tidy_feedback
+composer config repositories.itk-dev/tidy_feedback vcs https://github.com/rimi-itk/tidy_feedback
+composer require itk-dev/tidy_feedback:dev-main
 ```
+
+> [!IMPORTANT]
+> You may have to add `--with-all-dependencies` to the `composer require` command to make everything fall into place.
 
 ### Drupal
 

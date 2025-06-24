@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace ItkDev\TidyFeedback\Controller;
 
-use Doctrine\Common\Collections\Order;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use ItkDev\TidyFeedback\Model\Item;
@@ -36,7 +35,7 @@ trait TidyFeedbackControllerTrait
 
     public function index(Request $request): Response
     {
-        $items = $this->itemRepository->findBy([], ['createdAt' => Order::Descending->value]);
+        $items = $this->itemRepository->findBy([], ['createdAt' => 'DESC']);
 
         return $this->createResponse(
             $request,
