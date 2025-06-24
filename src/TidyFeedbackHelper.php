@@ -19,106 +19,101 @@ use Twig\Loader\FilesystemLoader;
 use Twig\TwigFilter;
 use Twig\TwigFunction;
 
-final class TidyFeedbackHelper {
+final class TidyFeedbackHelper
+{
     public function __construct(
         private readonly UrlGeneratorInterface $urlGenerator,
-    )
-    {
+    ) {
     }
 
-    public function getWidget(): string {
-    return $this->renderTemplate('widget.html.twig');
-  }
+    public function getWidget(): string
+    {
+        return $this->renderTemplate('widget.html.twig');
+    }
 
-  private static Environment $twig;
+    private static Environment $twig;
 
-  public function renderResponse(string $path, array $context = []): Response
-  {
-    return new Response($this->renderTemplate($path, $context));
-  }
+    public function renderResponse(string $path, array $context = []): Response
+    {
+        return new Response($this->renderTemplate($path, $context));
+    }
 
-  public function renderTemplate(string $path, array $context = []): string
-  {
-      if (empty(self::$twig)) {
-          // https://twig.symfony.com/doc/3.x/api.html#basics
-          $loader = new FilesystemLoader(__DIR__ . '/../templates');
-          self::$twig = new Environment($loader, [
-              'cache' => '/tmp/twig_compilation_cache',
-          ]);
-          self::$twig->addFilter(new TwigFilter('trans', function(string $text) {
-              return $text;
-          }));
-          self::$twig->addFunction(new TwigFunction('path', function(string $name, array $parameters = []) {
-              return $this->urlGenerator->generate($name, $parameters);
-          }));
-      }
+    public function renderTemplate(string $path, array $context = []): string
+    {
+        if (empty(self::$twig)) {
+            // https://twig.symfony.com/doc/3.x/api.html#basics
+            $loader = new FilesystemLoader(__DIR__.'/../templates');
+            self::$twig = new Environment($loader, [
+                //              'cache' => '/tmp/twig_compilation_cache',
+            ]);
+            self::$twig->addFilter(new TwigFilter('trans', fn (string $text) => $text));
+            self::$twig->addFunction(new TwigFunction('path', fn (string $name, array $parameters = []) => $this->urlGenerator->generate($name, $parameters)));
+        }
 
-      $template = self::$twig->load($path);
+        $template = self::$twig->load($path);
 
-      return $template->render($context);
-  }
+        return $template->render($context);
+    }
 
     private static EntityManager $entityManager;
 
-  /**
-   * @see https://www.doctrine-project.org/projects/doctrine-orm/en/3.3/tutorials/getting-started.html#obtaining-the-entitymanager
-   */
-  public static function getEntityManager(): EntityManagerInterface
-  {
-    if (empty(self::$entityManager)) {
-      $config = ORMSetup::createAttributeMetadataConfiguration(
-        paths: [__DIR__ . '/Model'],
-      );
+    /**
+     * @see https://www.doctrine-project.org/projects/doctrine-orm/en/3.3/tutorials/getting-started.html#obtaining-the-entitymanager
+     */
+    public static function getEntityManager(): EntityManagerInterface
+    {
+        if (empty(self::$entityManager)) {
+            $config = ORMSetup::createAttributeMetadataConfiguration(
+                paths: [__DIR__.'/Model'],
+            );
 
-      $dsn = static::getConfig('database_url');
-      $connectionParams = (new DsnParser())->parse($dsn);
-      $connection = DriverManager::getConnection($connectionParams, $config);
+            $dsn = static::getConfig('database_url');
+            $connectionParams = (new DsnParser())->parse($dsn);
+            $connection = DriverManager::getConnection($connectionParams, $config);
 
-      self::$entityManager = new EntityManager($connection, $config);
+            self::$entityManager = new EntityManager($connection, $config);
+        }
+
+        return self::$entityManager;
     }
 
-    return self::$entityManager;
-  }
-
-  public function createWidgetResponse(?string $resource): Response
-  {
-    switch ($resource) {
-      case 'script':
-        return new BinaryFileResponse(__DIR__.'/../build/feedback-widget.js', headers: ['content-type' => 'text/javascript']);
-      case 'styles':
-        return new BinaryFileResponse(__DIR__.'/../build/feedback-widget.css', headers: ['content-type' => 'text/css']);
+    public function createWidgetResponse(?string $resource): Response
+    {
+        return match ($resource) {
+            'script' => new BinaryFileResponse(__DIR__.'/../build/feedback-widget.js', headers: ['content-type' => 'text/javascript']),
+            'styles' => new BinaryFileResponse(__DIR__.'/../build/feedback-widget.css', headers: ['content-type' => 'text/css']),
+            default => new Response($this->getWidget()),
+        };
     }
 
-    return new Response($this->getWidget());
+    public static function updateSchema(OutputInterface $output): bool
+    {
+        try {
+            $entityManager = TidyFeedbackHelper::getEntityManager();
+            $metadatas = $entityManager->getMetadataFactory()->getAllMetadata();
+            $schemaTool = new SchemaTool($entityManager);
+            $sql = $schemaTool->getUpdateSchemaSql($metadatas);
+            if (empty($sql)) {
+                $output->writeln('Schema already up to date');
+            }
+            $output->writeln($sql);
+            $schemaTool->updateSchema($metadatas);
 
-  }
+            return true;
+        } catch (\Exception $exception) {
+            $output->writeln($exception->getMessage());
+        }
 
-  public static function updateSchema(OutputInterface $output): bool {
-      try {
-          $entityManager = TidyFeedbackHelper::getEntityManager();
-          $metadatas = $entityManager->getMetadataFactory()->getAllMetadata();
-          $schemaTool = new SchemaTool($entityManager);
-          $sql = $schemaTool->getUpdateSchemaSql($metadatas);
-          if (empty($sql)) {
-            $output->writeln('Schema already up to date');
-          }
-        $output->writeln($sql);
-          $schemaTool->updateSchema($metadatas);
+        return false;
+    }
 
-          return true;
-      } catch (\Exception $exception) {
-          $output->writeln($exception->getMessage());
-      }
+    private static function getConfig(?string $name): mixed
+    {
+        $config = [
+            // https://www.doctrine-project.org/projects/doctrine-dbal/en/4.2/reference/configuration.html#connecting-using-a-url
+            'database_url' => getenv('TIDY_FEEDBACK_DATABASE_URL') ?: ($_ENV['TIDY_FEEDBACK_DATABASE_URL'] ?? null),
+        ];
 
-      return false;
-  }
-
-  private static function getConfig(?string $name): mixed {
-    $config = [
-      // https://www.doctrine-project.org/projects/doctrine-dbal/en/4.2/reference/configuration.html#connecting-using-a-url
-      'database_url' => getenv('TIDY_FEEDBACK_DATABASE_URL') ?: ($_ENV['TIDY_FEEDBACK_DATABASE_URL'] ?? null),
-    ];
-
-    return $name ? ($config[$name] ?? null) : $config;
-  }
+        return $name ? ($config[$name] ?? null) : $config;
+    }
 }

@@ -1,93 +1,103 @@
 .tidy-feedback-start {
-    position: fixed;
-    top: 0;
-    right: 0;
+  position: fixed;
+  top: 0;
+  right: 0;
 
-    padding: 1em;
-    color: red;
-    background: green;
+  padding: 1em;
+  color: red;
+  background: green;
   z-index: 9999;
+}
 
+.tidy-feedback-cancel {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+
+  padding: 1em;
+  color: red;
+  background: green;
+  z-index: 9999;
 }
 
 .tidy-feedback-form {
-    position: fixed;
-    width: 20em;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    background: #ddd;
-    padding: 1em;
-    z-index: 9999;
+  position: fixed;
+  width: 20em;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background: #ddd;
+  padding: 1em;
+  z-index: 9999;
 }
 
 .tidy-feedback-message {
-    position: fixed;
-    top: 0;
-    left: 0;
+  position: fixed;
+  top: 0;
+  left: 0;
 
-    color: green;
-    background: orange;
+  color: green;
+  background: orange;
   z-index: 99999;
 }
 
 .tidy-feedback-select-element {
-    .x {
-        position: absolute;
-        width: 1px;
-        height: 100%;
-        left: 0;
-        top: 0;
-        /*background-color: red;*/
-        border-left: dashed 1px blue;
+  .x {
+    position: absolute;
+    width: 1px;
+    height: 100%;
+    left: 0;
+    top: 0;
+    /*background-color: red;*/
+    border-left: dashed 1px blue;
 
-        transition: left 0.2s;
-    }
+    transition: left 0.2s;
+  }
 
-    .y {
-        position: absolute;
-        width: 100%;
-        height: 1px;
-        left: 0;
-        top: 0;
-        /*background-color: red;*/
-        border-top: dashed 1px blue;
+  .y {
+    position: absolute;
+    width: 100%;
+    height: 1px;
+    left: 0;
+    top: 0;
+    /*background-color: red;*/
+    border-top: dashed 1px blue;
 
-        transition: top 0.2s;
-    }
+    transition: top 0.2s;
+  }
 
-    * {
-        /*opacity: .75;*/
-        /*filter: brightness(1.75);*/
-    }
+  * {
+    /*opacity: .75;*/
+    /*filter: brightness(1.75);*/
+  }
 
-    .tidy-feedback-highlight {
-        /*opacity: 1;*/
-        outline: solid 5px red !important;
-    }
+  .tidy-feedback-highlight {
+    /*opacity: 1;*/
+    outline: solid 5px red !important;
+  }
 }
 
 .tidy-feedback-select-region {
-    .tidy-feedback-region {
-        outline: dashed 1px red;
-        position: absolute;
-    }
+  .tidy-feedback-region {
+    outline: dashed 1px red;
+    position: absolute;
+  }
 
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .tidy-feedback-select-region-drag {
-    .tidy-feedback-message-drag {
-        display: block;
-        outline: solid 1px blue;
-    }
+  .tidy-feedback-message-drag {
+    display: block;
+    outline: solid 1px blue;
+  }
 }
 
 .tidy-feedback-select-region-dragging {
-    cursor: crosshair;
+  cursor: crosshair;
 
-    .tidy-feedback-message-dragging {
-        display: block;
-        outline: solid 1px blue;
-    }
+  .tidy-feedback-message-dragging {
+    display: block;
+    outline: solid 1px blue;
+  }
 }

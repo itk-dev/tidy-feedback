@@ -13,13 +13,12 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class TidyFeedbackController extends AbstractController
 {
-    private EntityManagerInterface $entityManager;
-    private EntityRepository $itemRepository;
+    private readonly EntityManagerInterface $entityManager;
+    private readonly EntityRepository $itemRepository;
 
     public function __construct(
         private readonly TidyFeedbackHelper $helper,
-    )
-    {
+    ) {
         $this->entityManager = TidyFeedbackHelper::getEntityManager();
         $this->itemRepository = $this->entityManager->getRepository(Item::class);
     }
@@ -33,7 +32,8 @@ class TidyFeedbackController extends AbstractController
         ]);
     }
 
-    public function show(int $id): Response {
+    public function show(int $id): Response
+    {
         $item = $this->itemRepository->find($id);
 
         if (null === $item) {
@@ -45,7 +45,8 @@ class TidyFeedbackController extends AbstractController
         ]);
     }
 
-    public function showImage(int $id): Response {
+    public function showImage(int $id): Response
+    {
         $item = $this->itemRepository->find($id);
 
         if (null === $item) {
@@ -63,8 +64,8 @@ class TidyFeedbackController extends AbstractController
         );
     }
 
-  public function widget(?string $resource = null): Response {
-    return $this->helper->createWidgetResponse($resource);
-  }
-
+    public function widget(?string $resource = null): Response
+    {
+        return $this->helper->createWidgetResponse($resource);
+    }
 }

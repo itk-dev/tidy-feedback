@@ -1,6 +1,5 @@
 # Tidy feedback
 
-
 ## Installation
 
 ``` shell
@@ -25,6 +24,9 @@ tidy_feedback:
   prefix: /tidy-feedback
 ```
 
+> [!NOTE]
+> You can use any `prefix`, but for consistency with the Drupal version of Tidy feedback you should use `/tidy-feedback`.
+
 If [Symfony Flex](https://symfony.com/doc/current/setup/flex.html) hasn't already done so, you must enable the
 TidyFeedbackBundle bundle:
 
@@ -38,7 +40,9 @@ return [
 
 ## Configuration
 
-We need a [Doctrine database URL](https://www.doctrine-project.org/projects/doctrine-dbal/en/4.2/reference/configuration.html#connecting-using-a-url) in the environment variable `TIDY_FEEDBACK_DATABASE_URL`, e.g.
+We need a [Doctrine database
+URL](https://www.doctrine-project.org/projects/doctrine-dbal/en/4.2/reference/configuration.html#connecting-using-a-url)
+in the environment variable `TIDY_FEEDBACK_DATABASE_URL`, e.g.
 
 ``` dotenv
 # .env
@@ -53,7 +57,13 @@ As an alternative for Drupal you can set `TIDY_FEEDBACK_DATABASE_URL` in `settin
 putenv('TIDY_FEEDBACK_DATABASE_URL=pdo-sqlite:////app/tidy-feedback.sqlite');
 ```
 
+After installation and configuration, open `/tidy-feedback` on your site and enjoy!
+
 ## Development
 
 * composer psr-4 stuff
 * composer `"type"` stuff
+
+### Twig
+
+We use a watered-down instance of Twig with only `trans` and `path`.

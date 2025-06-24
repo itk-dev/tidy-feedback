@@ -1,9 +1,7 @@
 <?php
 
-
 use ItkDev\TidyFeedbackBundle\Controller\TidyFeedbackApiController;
 use ItkDev\TidyFeedbackBundle\Controller\TidyFeedbackController;
-
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
 

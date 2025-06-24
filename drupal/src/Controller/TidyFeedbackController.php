@@ -17,19 +17,20 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  * Returns responses for Tidy feedback routes.
  */
 final class TidyFeedbackController extends ControllerBase {
-  private EntityManagerInterface $entityManager;
-  private EntityRepository $itemRepository;
+  private readonly EntityManagerInterface $entityManager;
+  private readonly EntityRepository $itemRepository;
 
   public function __construct(
-  private readonly TidyFeedbackHelper $helper,
-)
-{
-  $this->entityManager = TidyFeedbackHelper::getEntityManager();
-  $this->itemRepository = $this->entityManager->getRepository(Item::class);
-}
+    private readonly TidyFeedbackHelper $helper,
+  ) {
+    $this->entityManager = TidyFeedbackHelper::getEntityManager();
+    $this->itemRepository = $this->entityManager->getRepository(Item::class);
+  }
 
-  public function index(): Response
-  {
+  /**
+   *
+   */
+  public function index(): Response {
     $items = $this->itemRepository->findBy([], ['createdAt' => Order::Descending->value]);
 
     return $this->helper->renderResponse('index.html.twig', [
@@ -37,10 +38,13 @@ final class TidyFeedbackController extends ControllerBase {
     ]);
   }
 
+  /**
+   *
+   */
   public function show(int $id): Response {
     $item = $this->itemRepository->find($id);
 
-    if (null === $item) {
+    if (NULL === $item) {
       throw new NotFoundHttpException();
     }
 
@@ -49,25 +53,31 @@ final class TidyFeedbackController extends ControllerBase {
     ]);
   }
 
+  /**
+   *
+   */
   public function showImage(int $id): Response {
     $item = $this->itemRepository->find($id);
 
-    if (null === $item) {
+    if (NULL === $item) {
       throw new NotFoundHttpException();
     }
 
-    $raw = $item->getData()['raw'] ?? null;
-    if (null === $raw) {
+    $raw = $item->getData()['raw'] ?? NULL;
+    if (NULL === $raw) {
       throw new NotFoundHttpException();
     }
 
     return new Response(
-      urldecode(preg_replace('/^[^,]+,/', '', $raw)),
-      headers: ['content-type: image/svg+xml'],
-    );
+          urldecode(preg_replace('/^[^,]+,/', '', $raw)),
+          headers: ['content-type: image/svg+xml'],
+      );
   }
 
-  public function widget(?string $resource = null): Response {
+  /**
+   *
+   */
+  public function widget(?string $resource = NULL): Response {
     return $this->helper->createWidgetResponse($resource);
   }
 

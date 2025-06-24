@@ -19,34 +19,41 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
  * Returns responses for Tidy feedback routes.
  */
 final class TidyFeedbackApiController extends ControllerBase {
-  private EntityManagerInterface $entityManager;
-  private EntityRepository $itemRepository;
+  private readonly EntityManagerInterface $entityManager;
+  private readonly EntityRepository $itemRepository;
 
   public function __construct(
-  private readonly TidyFeedbackHelper $helper,
-)
-{
-  $this->entityManager = TidyFeedbackHelper::getEntityManager();
-  $this->itemRepository = $this->entityManager->getRepository(Item::class);
-}
+    private readonly TidyFeedbackHelper $helper,
+  ) {
+    $this->entityManager = TidyFeedbackHelper::getEntityManager();
+    $this->itemRepository = $this->entityManager->getRepository(Item::class);
+  }
 
-  public function index(): Response
-  {
+  /**
+   *
+   */
+  public function index(): Response {
     $items = $this->itemRepository->findBy([], ['createdAt' => Order::Descending->value]);
 
     return new JsonResponse(['data' => $items]);
   }
 
+  /**
+   *
+   */
   public function get(int $id): Response {
     $item = $this->itemRepository->find($id);
 
-    if (null === $item) {
+    if (NULL === $item) {
       return new JsonResponse(['error' => 'Item not found'], status: Response::HTTP_NOT_FOUND);
     }
 
     return new JsonResponse(['data' => $item]);
   }
 
+  /**
+   *
+   */
   public function post(Request $request): Response {
     try {
       $data = $request->toArray();
@@ -65,7 +72,8 @@ final class TidyFeedbackApiController extends ControllerBase {
       $this->entityManager->flush();
 
       return new JsonResponse(['data' => $item], status: Response::HTTP_CREATED);
-    } catch (\Throwable $e) {
+    }
+    catch (\Throwable $e) {
       return new JsonResponse(['error' => $e->getMessage()], status: Response::HTTP_BAD_REQUEST);
     }
   }

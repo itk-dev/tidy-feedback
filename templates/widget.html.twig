@@ -11,10 +11,11 @@
 </style>
 <script data-capture="exclude" src="{{ path('tidy_feedback_widget', {resource: 'script'}) }}" data-tidy-feedback-config="{{ config|json_encode }} "></script>
 <div data-capture="exclude">
-  <div class="tidy-feedback-message" hidden></div>
-  <button hidden class="tidy-feedback-start">{{ 'Feedback'|trans([], translation_context) }}</button>
+  <div hidden class="tidy-feedback-message"></div>
+  <button hidden class="tidy-feedback-start" data-tidy-feedback-action="start">{{ 'Feedback'|trans([], translation_context) }}</button>
+  <button hidden class="tidy-feedback-cancel" data-tidy-feedback-action="cancel">{{ 'Cancel'|trans([], translation_context) }}</button>
 
-  <form class="tidy-feedback-form" hidden action="{{ path('tidy_feedback_api_create') }}">
+  <form hidden class="tidy-feedback-form" action="{{ path('tidy_feedback_api_create') }}">
     <label>{{ 'Subject'|trans([], translation_context) }}
       <input name="subject" required placeholder="{{ 'Subject'|trans([], translation_context) }}"/>
     </label>
@@ -26,5 +27,3 @@
     <button>{{ 'Submit feedback'|trans([], translation_context) }}</button>
   </form>
 </div>
-
-

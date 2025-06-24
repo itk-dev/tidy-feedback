@@ -12,12 +12,11 @@ use Symfony\Component\HttpKernel\KernelEvents;
 /**
  * @todo Add description for this subscriber.
  */
-final class TidyFeedbackSubscriber implements EventSubscriberInterface {
+final readonly class TidyFeedbackSubscriber implements EventSubscriberInterface {
 
   public function __construct(
-    private readonly TidyFeedbackHelper $helper,
-  )
-  {
+    private TidyFeedbackHelper $helper,
+  ) {
   }
 
   /**
@@ -25,11 +24,11 @@ final class TidyFeedbackSubscriber implements EventSubscriberInterface {
    */
   public function onKernelResponse(ResponseEvent $event): void {
     $response = $event->getResponse();
-    if (false
-      || !$response->isSuccessful()
-        // This does not work as expected in Drupal!
-//      || !str_starts_with((string)$response->headers->get('content-type'), 'text/html')
-    ) {
+    if (FALSE
+        || !$response->isSuccessful()
+          // This does not work as expected in Drupal!
+          //      || !str_starts_with((string)$response->headers->get('content-type'), 'text/html')
+      ) {
       return;
     }
 
@@ -40,10 +39,11 @@ final class TidyFeedbackSubscriber implements EventSubscriberInterface {
       }
 
       if ($content = $response->getContent()) {
-        $content = preg_replace('~</body>~i', $widget.'$0', (string) $content);
+        $content = preg_replace('~</body>~i', $widget . '$0', (string) $content);
         $response->setContent($content);
       }
-    } catch (\Throwable $t) {
+    }
+    catch (\Throwable $t) {
       throw $t;
       // Ignore all errors!
     }

@@ -1,5 +1,5 @@
-name: 'tidy_feedback'
+name: "tidy_feedback"
 type: module
-description: 'tidy_feedback'
+description: "tidy_feedback"
 package: Custom
 core_version_requirement: ^10 || ^11
