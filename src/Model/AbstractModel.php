@@ -32,6 +32,22 @@ abstract class AbstractModel implements \JsonSerializable
         return $this->id;
     }
 
+    /**
+     * @return \DateTimeInterface
+     */
+    public function getCreatedAt(): \DateTimeInterface
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getCreatedBy(): ?string
+    {
+        return $this->createdBy;
+    }
+
     // https://jsonapi.org/
     public function jsonSerialize(): array
     {
