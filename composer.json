@@ -10,11 +10,11 @@
         "twig/twig": "^3"
     },
     "require-dev": {
+        "drupal/coder": "^8.3",
         "ergebnis/composer-normalize": "^2.47",
         "friendsofphp/php-cs-fixer": "^3.75",
         "rector/rector": "^2.0",
-        "vincentlanglet/twig-cs-fixer": "^3.8",
-        "drupal/coder": "^8.3"
+        "vincentlanglet/twig-cs-fixer": "^3.8"
     },
     "autoload": {
         "psr-4": {
@@ -24,8 +24,8 @@
     },
     "config": {
         "allow-plugins": {
-            "ergebnis/composer-normalize": true,
-            "dealerdirect/phpcodesniffer-composer-installer": true
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "ergebnis/composer-normalize": true
         }
     }
 }

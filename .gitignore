@@ -1,4 +1,7 @@
-node_modules
-*.sqlite
+composer.lock
 vendor
+
+node_modules
+
+*.sqlite
 *.cache
