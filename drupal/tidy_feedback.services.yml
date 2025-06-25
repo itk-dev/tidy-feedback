@@ -1,7 +1,7 @@
 services:
-  _defaults:
-    autowire: true
+    _defaults:
+        autowire: true
 
-  ItkDev\TidyFeedback\TidyFeedbackHelper:
-    tags:
-      - { name: event_subscriber }
+    ItkDev\TidyFeedback\TidyFeedbackHelper:
+        tags:
+            - { name: event_subscriber }

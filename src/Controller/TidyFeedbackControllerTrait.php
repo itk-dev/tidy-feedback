@@ -47,9 +47,13 @@ trait TidyFeedbackControllerTrait
         );
     }
 
-    public function show(Request $request, int $id): Response
+    public function show(Request $request, string $id): Response
     {
-        $item = $this->itemRepository->find($id);
+        if ('test' === $id) {
+            return $this->helper->renderResponse($id.'.html.twig');
+        }
+
+        $item = $this->itemRepository->find((int) $id);
 
         if (null === $item) {
             return $this->createExceptionResponse($request, new NotFoundHttpException('Item not found'));
@@ -119,9 +123,9 @@ trait TidyFeedbackControllerTrait
         }
     }
 
-    public function widget(?string $resource = null): Response
+    public function asset(string $asset): Response
     {
-        return $this->helper->createWidgetResponse($resource);
+        return $this->helper->createAssetResponse($asset);
     }
 
     private function getFormat(Request $request): string

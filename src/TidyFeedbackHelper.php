@@ -15,6 +15,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Twig\Environment;
@@ -24,6 +25,8 @@ use Twig\TwigFunction;
 
 final class TidyFeedbackHelper implements EventSubscriberInterface
 {
+    private const string ASSET_PATH = __DIR__.'/../build';
+
     public function __construct(
         private readonly UrlGeneratorInterface $urlGenerator,
     ) {
@@ -47,7 +50,8 @@ final class TidyFeedbackHelper implements EventSubscriberInterface
             // https://twig.symfony.com/doc/3.x/api.html#basics
             $loader = new FilesystemLoader(__DIR__.'/../templates');
             self::$twig = new Environment($loader, [
-                //              'cache' => '/tmp/twig_compilation_cache',
+                // @todo
+                // 'cache' => '/tmp/twig_compilation_cache',
             ]);
             self::$twig->addFilter(new TwigFilter('trans', fn (string $text) => $text));
             self::$twig->addFunction(new TwigFunction('path', fn (string $name, array $parameters = []) => $this->urlGenerator->generate($name, $parameters)));
@@ -80,13 +84,21 @@ final class TidyFeedbackHelper implements EventSubscriberInterface
         return self::$entityManager;
     }
 
-    public function createWidgetResponse(?string $resource): Response
+    public function createAssetResponse(string $asset): Response
     {
-        return match ($resource) {
-            'script' => new BinaryFileResponse(__DIR__.'/../build/feedback-widget.js', headers: ['content-type' => 'text/javascript']),
-            'styles' => new BinaryFileResponse(__DIR__.'/../build/feedback-widget.css', headers: ['content-type' => 'text/css']),
-            default => new Response($this->getWidget()),
-        };
+        $filename = self::ASSET_PATH.'/'.$asset;
+
+        if (!is_readable($filename)) {
+            throw new NotFoundHttpException();
+        }
+
+        return new BinaryFileResponse($filename, headers: [
+            'content-type' => match (pathinfo($filename, PATHINFO_EXTENSION)) {
+                'css' => 'text/css',
+                'js' => 'text/javascript',
+                default => throw new NotFoundHttpException(),
+            },
+        ]);
     }
 
     public static function updateSchema(OutputInterface $output): bool
@@ -112,9 +124,12 @@ final class TidyFeedbackHelper implements EventSubscriberInterface
 
     private static function getConfig(?string $name): mixed
     {
+        $getEnv = static fn (string $name) => getenv($name) ?: ($_ENV[$name] ?? null);
+
         $config = [
             // https://www.doctrine-project.org/projects/doctrine-dbal/en/4.2/reference/configuration.html#connecting-using-a-url
-            'database_url' => getenv('TIDY_FEEDBACK_DATABASE_URL') ?: ($_ENV['TIDY_FEEDBACK_DATABASE_URL'] ?? null),
+            'database_url' => $getEnv('TIDY_FEEDBACK_DATABASE_URL'),
+            'debug' => (bool) $getEnv('TIDY_FEEDBACK_DEBUG'),
         ];
 
         return $name ? ($config[$name] ?? null) : $config;
@@ -151,7 +166,10 @@ final class TidyFeedbackHelper implements EventSubscriberInterface
                 $content = preg_replace('~</body>~i', $widget.'$0', (string) $content);
                 $response->setContent($content);
             }
-        } catch (\Throwable) {
+        } catch (\Throwable $throwable) {
+            if (static::getConfig('debug')) {
+                throw $throwable;
+            }
             // Ignore all errors!
         }
     }

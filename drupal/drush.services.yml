@@ -1,6 +1,6 @@
 services:
-  ItkDev\TidyFeedback\Command\DoctrineSchemaUpdateCommand:
-    # A Drush service MUST have a class element
-    class: ItkDev\TidyFeedback\Command\DoctrineSchemaUpdateCommand
-    tags:
-      - { name: console.command }
+    ItkDev\TidyFeedback\Command\DoctrineSchemaUpdateCommand:
+        # A Drush service MUST have a class element
+        class: ItkDev\TidyFeedback\Command\DoctrineSchemaUpdateCommand
+        tags:
+            - { name: console.command }

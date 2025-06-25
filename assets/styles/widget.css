@@ -1,0 +1,99 @@
+.tidy-feedback-start {
+    position: fixed;
+    top: 0;
+    right: 0;
+
+    padding: 1em;
+    color: red;
+    background: green;
+    z-index: 9999;
+}
+
+.tidy-feedback-cancel {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+
+    padding: 1em;
+    color: red;
+    background: green;
+    z-index: 9999;
+}
+
+.tidy-feedback-form {
+    position: fixed;
+    width: 20em;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background: #ddd;
+    padding: 1em;
+    z-index: 9999;
+}
+
+.tidy-feedback-message {
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    color: green;
+    background: orange;
+    z-index: 99999;
+}
+
+.tidy-feedback-select-region {
+    .tidy-feedback-region {
+        outline: dashed 1px red;
+        position: absolute;
+        cursor: move;
+
+        .handle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border: solid 1px red;
+            border-radius: 15px;
+            background: white;
+        }
+
+        .handle-nw {
+            cursor: nwse-resize;
+            left: -5px;
+            top: -5px;
+        }
+
+        .handle-ne {
+            cursor: nesw-resize;
+            right: -5px;
+            top: -5px;
+        }
+
+        .handle-sw {
+            cursor: nesw-resize;
+            left: -5px;
+            bottom: -5px;
+        }
+
+        .handle-se {
+            cursor: nwse-resize;
+            right: -5px;
+            bottom: -5px;
+        }
+    }
+}
+
+.tidy-feedback-select-region-drag {
+    .tidy-feedback-message-drag {
+        display: block;
+        outline: solid 1px blue;
+    }
+}
+
+.tidy-feedback-select-region-dragging {
+    cursor: crosshair;
+
+    .tidy-feedback-message-dragging {
+        display: block;
+        outline: solid 1px blue;
+    }
+}

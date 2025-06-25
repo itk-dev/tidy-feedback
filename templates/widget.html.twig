@@ -7,9 +7,9 @@
 }
 %}
 <style data-capture="exclude">
-    @import {{ path('tidy_feedback_widget', {resource: 'styles'})|json_encode(constant('JSON_UNESCAPED_SLASHES'))|raw }};
+    @import {{ path('tidy_feedback_asset', {asset: 'widget.css'})|json_encode(constant('JSON_UNESCAPED_SLASHES'))|raw }};
 </style>
-<script data-capture="exclude" src="{{ path('tidy_feedback_widget', {resource: 'script'}) }}" data-tidy-feedback-config="{{ config|json_encode }} "></script>
+<script data-capture="exclude" src="{{ path('tidy_feedback_asset', {asset: 'widget.js'}) }}" data-tidy-feedback-config="{{ config|json_encode }} "></script>
 <div data-capture="exclude">
   <div hidden class="tidy-feedback-message"></div>
   <button hidden class="tidy-feedback-start" data-tidy-feedback-action="start">{{ 'Feedback'|trans([], translation_context) }}</button>

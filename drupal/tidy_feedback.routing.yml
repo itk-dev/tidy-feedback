@@ -1,47 +1,45 @@
 tidy_feedback_index:
-  path: "/tidy-feedback"
-  defaults:
-    _title: "Tidy feedback index"
-    _controller: '\Drupal\tidy_feedback\Controller\TidyFeedbackController::index'
-  methods: [GET]
-  requirements:
-    _permission: "access content"
+    path: "/tidy-feedback"
+    defaults:
+        _title: "Tidy feedback index"
+        _controller: '\Drupal\tidy_feedback\Controller\TidyFeedbackController::index'
+    methods: [GET]
+    requirements:
+        _permission: "access content"
 
 tidy_feedback_create:
-  path: "/tidy-feedback"
-  defaults:
-    _title: "Tidy feedback API"
-    _controller: '\Drupal\tidy_feedback\Controller\TidyFeedbackController::post'
-  methods: [POST]
-  requirements:
-    _permission: "access content"
+    path: "/tidy-feedback"
+    defaults:
+        _title: "Tidy feedback API"
+        _controller: '\Drupal\tidy_feedback\Controller\TidyFeedbackController::post'
+    methods: [POST]
+    requirements:
+        _permission: "access content"
 
-tidy_feedback_widget:
-  path: "/tidy-feedback/widget/{resource}"
-  defaults:
-    _title: "Tidy feedback widget"
-    _controller: '\Drupal\tidy_feedback\Controller\TidyFeedbackController::widget'
-    resource: null
-  methods: [GET]
-  requirements:
-    _permission: "access content"
-  # Make sure that we hit this route before the show route (with item set to "widget")
-  weight: 10
+tidy_feedback_asset:
+    path: "/tidy-feedback/asset/{asset}"
+    defaults:
+        _title: "Tidy feedback asset"
+        _controller: '\Drupal\tidy_feedback\Controller\TidyFeedbackController::asset'
+        resource: null
+    methods: [GET]
+    requirements:
+        _permission: "access content"
 
 tidy_feedback_show:
-  path: "/tidy-feedback/{id}"
-  defaults:
-    _title: "Tidy feedback show"
-    _controller: '\Drupal\tidy_feedback\Controller\TidyFeedbackController::show'
-  methods: [GET]
-  requirements:
-    _permission: "access content"
+    path: "/tidy-feedback/{id}"
+    defaults:
+        _title: "Tidy feedback show"
+        _controller: '\Drupal\tidy_feedback\Controller\TidyFeedbackController::show'
+    methods: [GET]
+    requirements:
+        _permission: "access content"
 
 tidy_feedback_image:
-  path: "/tidy-feedback/{id}/image"
-  defaults:
-    _title: "Tidy feedback show"
-    _controller: '\Drupal\tidy_feedback\Controller\TidyFeedbackController::image'
-  methods: [GET]
-  requirements:
-    _permission: "access content"
+    path: "/tidy-feedback/{id}/image"
+    defaults:
+        _title: "Tidy feedback show"
+        _controller: '\Drupal\tidy_feedback\Controller\TidyFeedbackController::image'
+    methods: [GET]
+    requirements:
+        _permission: "access content"

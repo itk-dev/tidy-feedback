@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+
+{% block content %}
+    <h1>Test</h1>
+
+    <p>This is a <strong>tset</strong>!</p>
+
+    <style>
+        .tidy-feedback-region {
+            left: 100px;
+            top: 100px;
+
+            width: 20em;
+            height: 5em;
+
+            padding: 1em;
+        }
+    </style>
+
+    <div class="tidy-feedback-select-region">
+        <div class="tidy-feedback-region">
+            This is a fake region …
+            {% for s in ['nw', 'ne', 'sw', 'se'] %}
+                <div class="handle handle-{{ s }}"></div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

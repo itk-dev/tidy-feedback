@@ -1,11 +1,19 @@
 {
   "entrypoints": {
-    "feedback-widget": {
+    "app": {
       "css": [
-        "/build/feedback-widget.css"
+        "/build/app.css"
       ],
       "js": [
-        "/build/feedback-widget.js"
+        "/build/app.js"
+      ]
+    },
+    "widget": {
+      "css": [
+        "/build/widget.css"
+      ],
+      "js": [
+        "/build/widget.js"
       ]
     }
   }
