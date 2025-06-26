@@ -8,6 +8,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use ItkDev\TidyFeedback\Model\Item;
 use ItkDev\TidyFeedback\TidyFeedbackHelper;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -82,9 +83,17 @@ trait TidyFeedbackControllerTrait
             throw new NotFoundHttpException();
         }
 
-        return new Response(
-            urldecode(preg_replace('/^[^,]+,/', '', $raw)),
-            headers: ['content-type: image/svg+xml'],
+        $content = urldecode(preg_replace('/^[^,]+,/', '', $raw));
+
+        // Send as binary file to set the expected headers.
+        $temp = new \SplTempFileObject();
+        $temp->fwrite($content);
+
+        return new BinaryFileResponse(
+            $temp,
+            headers: [
+                'content-type' => 'image/svg+xml',
+            ]
         );
     }
 
