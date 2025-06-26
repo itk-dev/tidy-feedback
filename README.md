@@ -1,5 +1,8 @@
 # Tidy feedback
 
+This is a [Drupal module](https://www.drupal.org/docs/user_guide/en/understanding-modules.html) *and* a [Symfony
+bundle](https://symfony.com/doc/current/bundles.html) to collection user feedback.
+
 > [!CAUTION]
 > The documentation is incomplete!
 
@@ -78,9 +81,39 @@ All feedback items can be found on `/tidy-feedback`.
 task
 ```
 
-* composer psr-4 stuff
-* composer `"type"` stuff
+### composer.json
+
+In order to make this behave as both a Drupal module and a Synfony bundle, we use some tricks in
+[`composer.json`](./composer.json):
+
+``` javascript annotate
+{
+    // We use "type": "drupal-module" to make Drupal move the module into the
+    // proper location (web/modules/contrib).
+    // Symfony recommend using "type": "drupal-module" (cf. https://symfony.com/doc/current/bundles/best_practices.html#installation),
+    // but Symfony and Flex don't seem to really care about this.
+    "type": "drupal-module",
+    "require": {
+        // In order to not pull much of Symfony into a Drupal project or (worse)
+        // much of Drupal into a Symfony project, we require only the bare
+        // minimum to make this module/bundle work.
+        "doctrine/dbal": "^3 || ^4",
+        "doctrine/orm": "^2.8 || ^3",
+        "symfony/cache": "^6 || ^7",
+        "twig/twig": "^3"
+    },
+    "autoload": {
+        "psr-4": {
+            // The Symfony bundle namespace.
+            "ItkDev\\TidyFeedbackBundle\\": "symfony/src/",
+            // The shared code namespace.
+            "ItkDev\\TidyFeedback\\": "src/"
+        }
+    },
+    // …
+}
+```
 
 ### Twig
 
-We use a watered-down instance of Twig with only `trans` and `path`.
+We use a watered-down instance of Twig with only a `trans` filter and a `path` function.
