@@ -45,6 +45,10 @@ return [
 ];
 ```
 
+``` shell
+bin/console tidy-feedback:doctrine:schema-update
+```
+
 ## Configuration
 
 We need a [Doctrine database
