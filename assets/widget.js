@@ -1,6 +1,6 @@
 // NOTE! THIS FILE IS A MESS AND NEEDS A CLEAN-UP!
 
-import "./styles/widget.css";
+import "./styles/widget.scss";
 
 import { snapdom } from "@zumer/snapdom";
 import unique from "@cypress/unique-selector";

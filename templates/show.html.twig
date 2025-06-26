@@ -1,7 +1,7 @@
 {% extends 'base.html.twig' %}
 
 {% block content %}
-    <h1>Feedback</h1>
+    <h1>{{ 'Feedback item'|trans }}</h1>
 
     <dl>
         <dt>{{ 'Created at'|trans }}</dt>
@@ -24,11 +24,11 @@
             <pre><code>{{ item.data|filter((_, key) => key not in ['raw', 'svg'])|json_encode(constant('JSON_PRETTY_PRINT') b-or constant('JSON_UNESCAPED_SLASHES')) }}</code></pre>
         </dd>
 
-      {% set image_url = path('tidy_feedback_image', {id: item.id}) %}
-      <dt>{{ 'Image' }}</dt>
-      <dd>
-        <img src="{{ image_url }}"/>
-        <a href="{{ image_url }}">{{ 'Show image'|trans }}</a>
-      </dd>
+        {% set image_url = path('tidy_feedback_image', {id: item.id}) %}
+        <dt>{{ 'Image' }}</dt>
+        <dd>
+            <img src="{{ image_url }}" alt="{{ image_url }}"/>
+            <a href="{{ image_url }}">{{ 'Show image'|trans }}</a>
+        </dd>
     </dl>
 {% endblock %}

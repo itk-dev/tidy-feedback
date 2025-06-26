@@ -1,29 +1,35 @@
 {% set config = {
-  messages: {
-    'Extend your selection …': 'Extend your selection …'|trans([], translation_context),
-    'Fill in the feedback form': 'Fill in the feedback form'|trans([], translation_context),
-    'Click on an element or click and drag to mark a region …': 'Click on an element or click and drag to mark a region …'|trans([], translation_context),
-  },
-}
-%}
-<style data-capture="exclude">
+    messages: {
+        'Extend your selection …': 'Extend your selection …'|trans,
+        'Fill in the feedback form': 'Fill in the feedback form'|trans,
+        'Click on an element or click and drag to mark a region …': 'Click on an element or click and drag to mark a region …'|trans,
+    },
+} %}
+{# Cf. https://github.com/zumerlab/snapdom/blob/main/README.md#features #}
+{% set capture_exclude_attributes = 'data-capture="exclude"' %}
+<style {{ capture_exclude_attributes|raw }}>
     @import {{ path('tidy_feedback_asset', {asset: 'widget.css'})|json_encode(constant('JSON_UNESCAPED_SLASHES'))|raw }};
 </style>
-<script data-capture="exclude" src="{{ path('tidy_feedback_asset', {asset: 'widget.js'}) }}" data-tidy-feedback-config="{{ config|json_encode }} "></script>
-<div data-capture="exclude">
-  <div hidden class="tidy-feedback-message"></div>
-  <button hidden class="tidy-feedback-start" data-tidy-feedback-action="start">{{ 'Feedback'|trans([], translation_context) }}</button>
-  <button hidden class="tidy-feedback-cancel" data-tidy-feedback-action="cancel">{{ 'Cancel'|trans([], translation_context) }}</button>
+<script {{ capture_exclude_attributes|raw }} src="{{ path('tidy_feedback_asset', {asset: 'widget.js'}) }}"
+                                             data-tidy-feedback-config="{{ config|json_encode }} "></script>
+<div {{ capture_exclude_attributes|raw }}>
+    <div {{ capture_exclude_attributes|raw }} hidden class="tidy-feedback-message"></div>
+    <button {{ capture_exclude_attributes|raw }} hidden class="tidy-feedback-start"
+                                                 data-tidy-feedback-action="start">{{ 'Feedback'|trans }}</button>
+    <button {{ capture_exclude_attributes|raw }} hidden class="tidy-feedback-cancel"
+                                                 data-tidy-feedback-action="cancel">{{ 'Cancel'|trans }}</button>
 
-  <form hidden class="tidy-feedback-form" action="{{ path('tidy_feedback_create') }}">
-    <label>{{ 'Subject'|trans([], translation_context) }}
-      <input name="subject" required placeholder="{{ 'Subject'|trans([], translation_context) }}"/>
-    </label>
+    <form {{ capture_exclude_attributes|raw }} hidden class="tidy-feedback-form"
+                                               action="{{ path('tidy_feedback_create') }}">
+        {# "subject" is required and all other inputs with be stored in the data blob on the feedback item. #}
+        <label>{{ 'Subject'|trans }}
+            <input name="subject" required placeholder="{{ 'Subject'|trans }}"/>
+        </label>
 
-    <label>{{ 'What did you do?'|trans([], translation_context) }}
-      <textarea name="what_did_you_do" required placeholder="{{ 'What did you do?'|trans([], translation_context) }}"></textarea>
-    </label>
+        <label>{{ 'What did you do?'|trans }}
+            <textarea name="what_did_you_do" required placeholder="{{ 'What did you do?'|trans }}"></textarea>
+        </label>
 
-    <button>{{ 'Submit feedback'|trans([], translation_context) }}</button>
-  </form>
+        <button>{{ 'Submit feedback'|trans }}</button>
+    </form>
 </div>
