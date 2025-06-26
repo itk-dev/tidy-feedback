@@ -13,9 +13,9 @@ return function (RoutingConfigurator $routes): void {
         ->controller([TidyFeedbackController::class, 'post'])
         ->methods([Request::METHOD_POST]);
 
-    $routes->add('tidy_feedback_widget', '/widget/{resource}')
+    $routes->add('tidy_feedback_asset', '/asset/{asset}')
         ->defaults(['resource' => null])
-        ->controller([TidyFeedbackController::class, 'widget'])
+        ->controller([TidyFeedbackController::class, 'asset'])
         ->methods([Request::METHOD_GET]);
 
     $routes->add('tidy_feedback_show', '/{id}')
