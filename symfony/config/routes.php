@@ -22,7 +22,7 @@ return function (RoutingConfigurator $routes): void {
         ->controller([TidyFeedbackController::class, 'show'])
         ->methods([Request::METHOD_GET]);
 
-    $routes->add('tidy_feedback_show_image', '/{id}/image')
+    $routes->add('tidy_feedback_image', '/{id}/image')
         ->controller([TidyFeedbackController::class, 'image'])
         ->methods([Request::METHOD_GET]);
 };
