@@ -7,6 +7,7 @@ namespace ItkDev\TidyFeedback\Controller;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use ItkDev\TidyFeedback\Model\Item;
+use ItkDev\TidyFeedback\Model\ItemStatus;
 use ItkDev\TidyFeedback\TidyFeedbackHelper;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -36,6 +37,8 @@ trait TidyFeedbackControllerTrait
 
     public function index(Request $request): Response
     {
+        $this->helper->authorize($request);
+
         $items = $this->itemRepository->findBy([], ['createdAt' => 'DESC']);
 
         return $this->createResponse(
@@ -50,6 +53,8 @@ trait TidyFeedbackControllerTrait
 
     public function show(Request $request, string $id): Response
     {
+        $this->helper->authorize($request);
+
         if ('test' === $id) {
             return $this->helper->renderResponse($id.'.html.twig');
         }
@@ -70,8 +75,10 @@ trait TidyFeedbackControllerTrait
         );
     }
 
-    public function image(int $id): Response
+    public function image(Request $request, int $id): Response
     {
+        $this->helper->authorize($request);
+
         $item = $this->itemRepository->find($id);
 
         if (null === $item) {
@@ -111,6 +118,8 @@ trait TidyFeedbackControllerTrait
 
             $item = (new Item())
                 ->setSubject($data['subject'])
+                ->setCreatedBy($data['created_by'] ?? null)
+                ->setStatus(ItemStatus::NEW)
                 ->setData($data);
             $this->entityManager->persist($item);
             $this->entityManager->flush();

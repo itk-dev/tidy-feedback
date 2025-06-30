@@ -1,35 +1,50 @@
-{% set config = {
-    messages: {
-        'Extend your selection …': 'Extend your selection …'|trans,
-        'Fill in the feedback form': 'Fill in the feedback form'|trans,
-        'Click on an element or click and drag to mark a region …': 'Click on an element or click and drag to mark a region …'|trans,
-    },
-} %}
+{% import './partials/forms.html.twig' as forms %}
+
 {# Cf. https://github.com/zumerlab/snapdom/blob/main/README.md#features #}
 {% set capture_exclude_attributes = 'data-capture="exclude"' %}
-<style {{ capture_exclude_attributes|raw }}>
-    @import {{ path('tidy_feedback_asset', {asset: 'widget.css'})|json_encode(constant('JSON_UNESCAPED_SLASHES'))|raw }};
-</style>
-<script {{ capture_exclude_attributes|raw }} src="{{ path('tidy_feedback_asset', {asset: 'widget.js'}) }}"
-                                             data-tidy-feedback-config="{{ config|json_encode }} "></script>
-<div {{ capture_exclude_attributes|raw }}>
-    <div {{ capture_exclude_attributes|raw }} hidden class="tidy-feedback-message"></div>
-    <button {{ capture_exclude_attributes|raw }} hidden class="tidy-feedback-start"
-                                                 data-tidy-feedback-action="start">{{ 'Feedback'|trans }}</button>
-    <button {{ capture_exclude_attributes|raw }} hidden class="tidy-feedback-cancel"
-                                                 data-tidy-feedback-action="cancel">{{ 'Cancel'|trans }}</button>
 
-    <form {{ capture_exclude_attributes|raw }} hidden class="tidy-feedback-form"
-                                               action="{{ path('tidy_feedback_create') }}">
-        {# "subject" is required and all other inputs with be stored in the data blob on the feedback item. #}
-        <label>{{ 'Subject'|trans }}
-            <input name="subject" required placeholder="{{ 'Subject'|trans }}"/>
-        </label>
+<div id="tidy-feedback" {{ capture_exclude_attributes|raw }}>
+    <template shadowrootmode="open">
+        {% set config = {
+            messages: {
+                'Extend your selection …': 'Extend your selection …'|trans,
+                'Fill in the feedback form': 'Fill in the feedback form'|trans,
+                'Click on an element or click and drag to mark a region …': 'Click on an element or click and drag to mark a region …'|trans,
+            },
+        } %}
+        <style {{ capture_exclude_attributes|raw }}>
+            @import {{ path('tidy_feedback_asset', {asset: 'widget.css'})|json_encode(constant('JSON_UNESCAPED_SLASHES'))|raw }};
+        </style>
+        <script {{ capture_exclude_attributes|raw }} src="{{ path('tidy_feedback_asset', {asset: 'widget.js'}) }}"
+                                                     data-tidy-feedback-config="{{ config|json_encode }} "></script>
+        <div {{ capture_exclude_attributes|raw }}>
+            <div {{ capture_exclude_attributes|raw }} hidden class="tidy-feedback-message"></div>
+            <button {{ capture_exclude_attributes|raw }} hidden type="button" class="btn btn-primary tidy-feedback-start"
+                                                         data-tidy-feedback-action="start">{{ 'Feedback'|trans }}</button>
 
-        <label>{{ 'What did you do?'|trans }}
-            <textarea name="what_did_you_do" required placeholder="{{ 'What did you do?'|trans }}"></textarea>
-        </label>
+            <form {{ capture_exclude_attributes|raw }} hidden class="tidy-feedback-form"
+                                                       action="{{ path('tidy_feedback_create') }}" method="post">
 
-        <button>{{ 'Submit feedback'|trans }}</button>
-    </form>
+                {# "subject" is required and all other inputs with be stored in the data blob on the feedback item. #}
+                {{ forms.input('subject', 'Subject'|trans, {placeholder: 'Subject'|trans}) }}
+
+                {{ forms.input('created_by', 'Your email address'|trans, {
+                    type: 'email',
+                    placeholder: 'Your email address'|trans,
+                    value: app.user.email|default(''),
+                    readonly: app.user.email is defined,
+                }) }}
+
+                {{ forms.textarea('description', 'Description'|trans, {placeholder: 'Description'|trans}) }}
+                {{ forms.textarea('what_did_you_do', 'What did you do?'|trans, {
+                    placeholder: 'What did you do?'|trans,
+                    required: false,
+                }) }}
+
+                <button class="btn btn-primary">{{ 'Submit feedback'|trans }}</button>
+
+                <button type="button" class="btn btn-secondary" data-tidy-feedback-action="cancel">{{ 'Cancel'|trans }}</button>
+            </form>
+        </div>
+    </template>
 </div>

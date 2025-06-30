@@ -13,9 +13,11 @@ use Doctrine\ORM\Tools\SchemaTool;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Twig\Environment;
@@ -34,7 +36,14 @@ final class TidyFeedbackHelper implements EventSubscriberInterface
 
     public function getWidget(): string
     {
-        return $this->renderTemplate('widget.html.twig');
+        $app = [
+            // @todo Get user and pass it to widget template.
+            'user' => null,
+        ];
+
+        return $this->renderTemplate('widget.html.twig', [
+            'app' => $app,
+        ]);
     }
 
     private static Environment $twig;
@@ -132,6 +141,13 @@ final class TidyFeedbackHelper implements EventSubscriberInterface
             'debug' => (bool) $getEnv('TIDY_FEEDBACK_DEBUG'),
         ];
 
+        if ($users = $getEnv('TIDY_FEEDBACK_USERS')) {
+            try {
+                $config['users'] = json_decode($users, true, flags: JSON_THROW_ON_ERROR);
+            } catch (\Throwable) {
+            }
+        }
+
         return $name ? ($config[$name] ?? null) : $config;
     }
 
@@ -171,6 +187,19 @@ final class TidyFeedbackHelper implements EventSubscriberInterface
                 throw $throwable;
             }
             // Ignore all errors!
+        }
+    }
+
+    public function authorize(Request $request): void
+    {
+        $users = self::getConfig('users');
+        if (empty($users)) {
+            return;
+        }
+
+        [$user, $password] = [$request->getUser(), $request->getPassword()];
+        if (empty($user) || empty($password) || $password !== ($users[$user] ?? null)) {
+            throw new UnauthorizedHttpException('Basic realm="Tidy feedback"');
         }
     }
 }

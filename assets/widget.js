@@ -5,8 +5,17 @@ import "./styles/widget.scss";
 import { snapdom } from "@zumer/snapdom";
 import unique from "@cypress/unique-selector";
 
+const root = document.querySelector("#tidy-feedback").shadowRoot;
+const widget = root;
+
+const getHostElement = (selector) => root.querySelector(selector);
+
+const getElement = (selector) => widget.querySelector(selector);
+const getActionElement = (action) =>
+    getElement(`[data-tidy-feedback-action="${action}"]`);
+
 const config = (() => {
-    const el = document.querySelector("[data-tidy-feedback-config]");
+    const el = root.querySelector("[data-tidy-feedback-config]");
     if (el) {
         try {
             return JSON.parse(el.dataset.tidyFeedbackConfig);
@@ -18,7 +27,7 @@ const config = (() => {
 })();
 
 const showMessage = (message) => {
-    const el = document.querySelector(".tidy-feedback-message");
+    const el = root.querySelector(".tidy-feedback-message");
     if (el) {
         el.innerHTML = config.messages[message] ?? message;
         el.hidden = !message;
@@ -35,20 +44,27 @@ let lastElement;
 let form;
 
 const selectRegion = () => {
-    document.body.classList.add("tidy-feedback-select-region-drag");
+    root.body.classList.add("tidy-feedback-select-region-drag");
 
     if (!region) {
-        region = document.createElement("div");
+        region = root.createElement("div");
         region.classList.add("tidy-feedback-region");
+        region.dataset.capture = "exclude"[("nw", "ne", "sw", "se")].forEach(
+            (s) => {
+                const handle = root.createElement("div");
+                handle.classList.add("handle", "handle-" + s);
+                region.appendChild(handle);
+            },
+        );
 
-        ["nw", "ne", "sw", "se"].forEach((s) => {
-            const handle = document.createElement("div");
-            handle.classList.add("handle", "handle-" + s);
-            region.appendChild(handle);
-        });
-
-        document.body.appendChild(region);
+        root.body.appendChild(region);
     }
+
+    region.hidden = false;
+    region.style.left = `10px`;
+    region.style.top = `10px`;
+    region.style.width = `10px`;
+    region.style.height = `10px`;
 
     const showRegion = (p0, p1) => {
         p0 = p0 || firstPoint;
@@ -76,8 +92,8 @@ const selectRegion = () => {
     };
 
     const mousedownHandler = (event) => {
-        document.body.classList.add("tidy-feedback-select-region");
-        document.body.classList.add("tidy-feedback-select-region-dragging");
+        root.body.classList.add("tidy-feedback-select-region");
+        root.body.classList.add("tidy-feedback-select-region-dragging");
 
         showMessage("Extend your selection …");
 
@@ -96,8 +112,8 @@ const selectRegion = () => {
     };
 
     const mouseupHandler = async (event) => {
-        // document.body.classList.remove('tidy-feedback-select-region')
-        document.body.classList.remove("tidy-feedback-select-region-dragging");
+        // root.body.classList.remove('tidy-feedback-select-region')
+        root.body.classList.remove("tidy-feedback-select-region-dragging");
 
         removeEventListener("mousemove", mousemoveHandler);
         removeEventListener("mouseup", mouseupHandler);
@@ -110,10 +126,10 @@ const selectRegion = () => {
         // * first and last point too close
 
         firstElement = firstPoint
-            ? document.elementFromPoint(firstPoint.clientX, firstPoint.clientY)
+            ? root.elementFromPoint(firstPoint.clientX, firstPoint.clientY)
             : null;
         lastElement = lastPoint
-            ? document.elementFromPoint(lastPoint.clientX, lastPoint.clientY)
+            ? root.elementFromPoint(lastPoint.clientX, lastPoint.clientY)
             : null;
 
         // Check if "Cancel" has been clicked
@@ -137,111 +153,120 @@ const selectRegion = () => {
             );
         }
 
-        const data = {};
-
-        try {
-            const el = document.body;
-            const result = await snapdom(el, { scale: 1 });
-
-            data.raw = result.toRaw();
-
-            // const img = await result.toPng();
-            // document.body.appendChild(img);
-
-            // const blob = await result.toBlob(el);
-            // blob.text().then((svg) => data.svg = svg)
-        } catch (error) {
-            showMessage("Error taking screen shot");
-        }
-
-        if (form) {
-            form.addEventListener("submit", (event) => {
-                event.preventDefault();
-                console.log(`POSTing to ${form.action} …`);
-
-                const formData = new FormData(form);
-                // https://stackoverflow.com/a/46774073
-                formData.forEach((value, key) => (data[key] = value));
-
-                data.context = {
-                    url: document.location.href,
-                    referrer: document.referrer,
-                    document: document.documentElement.outerHTML,
-                    first_element: firstElement?.outerHTML,
-                    first_element_selector: firstElement
-                        ? unique(firstElement)
-                        : null,
-                    last_element: firstElement?.outerHTML,
-                    last_element_selector: firstElement
-                        ? unique(firstElement)
-                        : null,
-                    navigator: {
-                        userAgent: navigator.userAgent,
-                    },
-                    window: {
-                        innerWidth: window.innerWidth,
-                        innerHeight: window.innerHeight,
-                    },
-                };
-
-                // const response = fetch(form.action, {
-                //   method: 'POST',
-                //   body: formData
-                // });
-
-                console.log(data);
-                fetch(form.action, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(data),
-                })
-                    .then((response) => {
-                        console.log({ response });
-                        if (201 === response.status) {
-                            region.hidden = true;
-                            form.hidden = true;
-                            form.reset();
-                            showMessage("Feedback created");
-                        } else {
-                            response
-                                .json()
-                                .then((data) =>
-                                    showMessage(
-                                        "Error creating feedback: " +
-                                            JSON.stringify(data),
-                                    ),
-                                );
-                        }
-                    })
-                    .catch((reason) => alert(reason));
-            });
-            form.hidden = false;
-            showMessage("Fill in the feedback form");
-        }
+        showForm();
     };
 
     addEventListener("mousedown", mousedownHandler);
 };
 
-addEventListener("load", () => {
-    form = document.querySelector(".tidy-feedback-form");
+const showForm = async () => {
+    form.hidden = false;
 
-    start = document.querySelector(".tidy-feedback-start");
-    cancel = document.querySelector(".tidy-feedback-cancel");
+    const data = {};
+
+    try {
+        const el = root.body;
+        const result = await snapdom(el, { scale: 1 });
+
+        data.raw = result.toRaw();
+
+        // const img = await result.toPng();
+        // root.body.appendChild(img);
+
+        // const blob = await result.toBlob(el);
+        // blob.text().then((svg) => data.svg = svg)
+    } catch (error) {
+        showMessage("Error taking screen shot");
+    }
+
+    form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        console.log(`POSTing to ${form.action} …`);
+
+        const formData = new FormData(form);
+        // https://stackoverflow.com/a/46774073
+        formData.forEach((value, key) => (data[key] = value));
+
+        data.context = {
+            url: document.location.href,
+            referrer: document.referrer,
+            document: document.documentElement.outerHTML,
+            first_element: firstElement?.outerHTML,
+            first_element_selector: firstElement ? unique(firstElement) : null,
+            last_element: firstElement?.outerHTML,
+            last_element_selector: firstElement ? unique(firstElement) : null,
+            navigator: {
+                userAgent: navigator.userAgent,
+            },
+            window: {
+                innerWidth: window.innerWidth,
+                innerHeight: window.innerHeight,
+            },
+        };
+
+        // const response = fetch(form.action, {
+        //   method: 'POST',
+        //   body: formData
+        // });
+
+        console.log(data);
+        fetch(form.action, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+        })
+            .then((response) => {
+                console.log({ response });
+                if (201 === response.status) {
+                    if (region) {
+                        region.hidden = true;
+                    }
+                    form.hidden = true;
+                    form.reset();
+                    showMessage("Feedback created");
+                } else {
+                    response
+                        .json()
+                        .then((data) =>
+                            showMessage(
+                                "Error creating feedback: " +
+                                    JSON.stringify(data),
+                            ),
+                        );
+                }
+            })
+            .catch((reason) => alert(reason));
+    });
+};
+
+addEventListener("load", () => {
+    form = getElement(".tidy-feedback-form");
+    start = getActionElement("start");
+    cancel = getActionElement("cancel");
+    region = getElement(".tidy-feedback-region");
+
+    if (region) {
+        const s = getElement("[data-tidy-feedback-action='select-region']");
+        if (s) {
+            s.addEventListener("click", selectRegion);
+        }
+    }
 
     if (start) {
         start.hidden = false;
         start.addEventListener("click", (event) => {
             start.hidden = true;
-            if (cancel) {
-                cancel.hidden = false;
-            }
-            showMessage(
-                "Click on an element or click and drag to mark a region …",
-            );
-            selectRegion();
+            showForm();
+
+            // if (cancel) {
+            //     cancel.hidden = false;
+            // }
+            // showMessage(
+            //     "Click on an element or click and drag to mark a region …",
+            // );
+            // selectRegion();
         });
     }
 
@@ -249,11 +274,6 @@ addEventListener("load", () => {
         cancel.addEventListener("click", (event) => {
             showMessage("");
             // TODO Confirm if form not empty.
-            cancel.hidden = true;
-            if (region) {
-                region.parentNode.removeChild(region);
-                region = null;
-            }
             if (form) {
                 form.reset();
                 form.hidden = true;

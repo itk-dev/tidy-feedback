@@ -48,6 +48,16 @@ abstract class AbstractModel implements \JsonSerializable
         return $this->createdBy;
     }
 
+    /**
+     * @param string|null $createdBy
+     */
+    public function setCreatedBy(?string $createdBy): static
+    {
+        $this->createdBy = $createdBy;
+
+        return $this;
+    }
+
     // https://jsonapi.org/
     public function jsonSerialize(): array
     {

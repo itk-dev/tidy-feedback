@@ -70,6 +70,8 @@ As an alternative for Drupal you can set `TIDY_FEEDBACK_DATABASE_URL` in `settin
 putenv('TIDY_FEEDBACK_DATABASE_URL=pdo-sqlite:////app/tidy-feedback.sqlite');
 ```
 
+`TIDY_FEEDBACK_USERS='{"admin": "password"}'`
+
 After installation and configuration, open `/tidy-feedback/test` on your site and enjoy!
 
 All feedback items can be found on `/tidy-feedback`.
