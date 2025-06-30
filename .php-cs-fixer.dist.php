@@ -19,9 +19,6 @@ $config->setFinder($finder);
 
 $config->setRules([
   '@Symfony' => true,
-  'phpdoc_align' => false,
-  // Don't remove @param that define collection and array generics (yes they should have complete comments, but).
-  'no_superfluous_phpdoc_tags' => false,
 ]);
 
 return $config;
