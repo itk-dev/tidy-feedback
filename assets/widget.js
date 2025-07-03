@@ -45,19 +45,19 @@ let form;
 
 const selectRegion = () => {
     if (region) {
-        region.hidden = false;
-        makeResizableDiv(region);
+        region.parentNode.hidden = false;
         // @todo move region into view.
         region.style.left = "100px";
         region.style.top = "100px";
         region.style.width = "200px";
         region.style.height = "100px";
+        makeResizableDiv(region);
     }
 };
 
 const hideRegion = () => {
     if (region) {
-        region.hidden = true;
+        region.parentNode.hidden = true;
     }
 };
 
@@ -104,7 +104,7 @@ addEventListener("load", () => {
     form = getElement(".tidy-feedback-form");
     start = getActionElement("start");
     cancel = getActionElement("cancel");
-    region = getDocumentElement("#tidy-feedback-region > div");
+    region = getDocumentElement("#tidy-feedback-region > .resizable");
 
     if (form) {
         form.addEventListener("submit", async (event) => {
@@ -208,5 +208,12 @@ addEventListener("load", () => {
             // TODO Confirm if form not empty.
             hideForm(true);
         });
+    }
+
+    const params = new URLSearchParams(document.location.search);
+    switch (params.get("tidy-feedback-show")) {
+        case "form":
+            showForm();
+            break;
     }
 });

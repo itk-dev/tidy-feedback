@@ -25,7 +25,7 @@
             <form {{ capture_exclude_attributes|raw }} hidden class="tidy-feedback-form"
                                                        action="{{ path('tidy_feedback_create') }}" method="post">
 
-                {# <button type="button" class="btn btn-secondary" data-tidy-feedback-action="select-region">{{ 'Select region'|trans }}</button>#}
+                {# <button type="button" class="btn btn-secondary" data-tidy-feedback-action="select-region">{{ 'Select region'|trans }}</button> #}
 
                 {# "subject" is required and all other inputs with be stored in the data blob on the feedback item. #}
                 {{ forms.input('subject', 'Subject'|trans, {placeholder: 'Subject'|trans}) }}
@@ -38,7 +38,7 @@
                 }) }}
 
                 {{ forms.textarea('description', 'Description'|trans, {
-                    placeholder: 'Description'|trans
+                    placeholder: 'Description'|trans,
                 }) }}
                 {{ forms.textarea('what_did_you_do', 'What did you do?'|trans, {
                     placeholder: 'What did you do?'|trans,
@@ -53,14 +53,20 @@
     </template>
 </div>
 
-{# https://medium.com/the-z/making-a-resizable-div-in-js-is-not-easy-as-you-think-bda19a1bc53d#}
+{# https://medium.com/the-z/making-a-resizable-div-in-js-is-not-easy-as-you-think-bda19a1bc53d #}
 {# IMPORTANT: This element MUST be outside the tidy feedback element! #}
-<div id="tidy-feedback-region">
+<div id="tidy-feedback-region" hidden>
     <style {{ capture_exclude_attributes|raw }}>
         @import {{ path('tidy_feedback_asset', {asset: 'widget-region.css'})|json_encode(constant('JSON_UNESCAPED_SLASHES'))|raw }};
     </style>
 
-    <div class="resizable" hidden>
+    <div class="overlays">
+        {% for position in ['top', 'left', 'right', 'bottom'] %}
+            <div class="{{ position }}">{{ position }}</div>
+        {% endfor %}
+    </div>
+
+    <div class="resizable">
         <div class="resizers">
             <div class="resizer top-left"></div>
             <div class="resizer top-right"></div>

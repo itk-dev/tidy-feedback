@@ -8,6 +8,37 @@ export function makeResizableDiv(element) {
     let original_y = 0;
     let original_mouse_x = 0;
     let original_mouse_y = 0;
+
+    const top = element.parentNode.querySelector(".overlays .top");
+    const left = element.parentNode.querySelector(".overlays .left");
+    const right = element.parentNode.querySelector(".overlays .right");
+    const bottom = element.parentNode.querySelector(".overlays .bottom");
+
+    const updateOverlay = () => {
+        if (top) {
+            top.style.height = element.style.top;
+        }
+        if (left) {
+            left.style.top = element.style.top;
+            left.style.height = element.style.height;
+            left.style.width = element.style.left;
+        }
+        if (right) {
+            right.style.top = element.style.top;
+            right.style.height = element.style.height;
+            right.style.left =
+                parseInt(element.style.left, 10) +
+                parseInt(element.style.width, 10) +
+                "px";
+        }
+        if (bottom) {
+            bottom.style.top =
+                parseInt(element.style.top, 10) +
+                parseInt(element.style.height, 10) +
+                "px";
+        }
+    };
+
     for (let i = 0; i < resizers.length; i++) {
         const currentResizer = resizers[i];
         currentResizer.addEventListener("mousedown", function (e) {
@@ -76,10 +107,14 @@ export function makeResizableDiv(element) {
                         original_y + (e.pageY - original_mouse_y) + "px";
                 }
             }
+
+            updateOverlay();
         }
 
         function stopResize() {
             window.removeEventListener("mousemove", resize);
         }
     }
+
+    updateOverlay();
 }
