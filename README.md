@@ -9,8 +9,7 @@ bundle](https://symfony.com/doc/current/bundles.html) to collection user feedbac
 ## Installation
 
 ``` shell
-composer config repositories.itk-dev/tidy_feedback vcs https://github.com/rimi-itk/tidy_feedback
-composer require itk-dev/tidy_feedback:dev-main
+composer require itk-dev/tidy-feedback:dev-main
 ```
 
 > [!IMPORTANT]
