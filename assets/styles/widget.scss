@@ -5,6 +5,9 @@
     top: 0;
     right: 0;
 
+    transform: rotate(-90deg);
+    transform-origin: right bottom;
+
     z-index: 9999;
 }
 

@@ -22,6 +22,7 @@ Encore
      */
     .addEntry('app', './assets/app.js')
     .addEntry('widget', './assets/widget.js')
+    .addEntry('widget-region', './assets/widget-region.js')
 
     // will require an extra script tag for runtime.js
     // but, you probably want this, unless you're building a single-page app

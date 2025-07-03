@@ -2,5 +2,7 @@
   "build/app.css": "/build/app.css",
   "build/app.js": "/build/app.js",
   "build/widget.css": "/build/widget.css",
-  "build/widget.js": "/build/widget.js"
+  "build/widget.js": "/build/widget.js",
+  "build/widget-region.js": "/build/widget-region.js",
+  "build/widget-region.css": "/build/widget-region.css"
 }

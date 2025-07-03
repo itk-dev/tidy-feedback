@@ -15,6 +15,14 @@
       "js": [
         "/build/widget.js"
       ]
+    },
+    "widget-region": {
+      "css": [
+        "/build/widget-region.css"
+      ],
+      "js": [
+        "/build/widget-region.js"
+      ]
     }
   }
 }
