@@ -1,0 +1,19 @@
+#!/usr/bin/env sh
+
+cd /var/www/html || exit
+
+# https://symfony.com/doc/current/translation.html#installation
+composer require symfony/translation symfony/twig-bundle
+
+for dir in templates translations; do
+    rm -fr "$dir" || true
+    ln -sf "/app/$dir" .
+done
+
+for locale in en da; do
+    if [ "$locale" = "en" ]; then
+        bin/console translation:extract --dump-messages --sort=asc --clean --force --format=yaml "$locale" --prefix=''
+    else
+        bin/console translation:extract --dump-messages --sort=asc --clean --force --format=yaml "$locale"
+    fi
+done
