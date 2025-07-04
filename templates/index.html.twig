@@ -24,8 +24,8 @@
                             {{ item.subject }}
                         </a>
                     </td>
-                    <td>{{ item.status.value }}</td>
-                    <td>{{ item.category|default('–') }}</td>
+                    <td>{{ item.status.value|default('–') }}</td>
+                    <td>{{ item.category.value|default('–') }}</td>
                 </tr>
             {% endfor %}
             </tbody>

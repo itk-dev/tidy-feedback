@@ -24,28 +24,26 @@ abstract class AbstractModel implements \JsonSerializable
     #[Column(type: Types::STRING, nullable: true)]
     protected ?string $createdBy = null;
 
-    /**
-     * @return string
-     */
     public function getId(): string
     {
         return $this->id;
     }
 
-    /**
-     * @return \DateTimeInterface
-     */
     public function getCreatedAt(): \DateTimeInterface
     {
         return $this->createdAt;
     }
 
-    /**
-     * @return string|null
-     */
     public function getCreatedBy(): ?string
     {
         return $this->createdBy;
+    }
+
+    public function setCreatedBy(?string $createdBy): static
+    {
+        $this->createdBy = $createdBy;
+
+        return $this;
     }
 
     // https://jsonapi.org/

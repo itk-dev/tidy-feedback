@@ -1,0 +1,43 @@
+{% macro input(name, label, attributes = {}) %}
+    {% set id = name %}
+    {% set required = attributes.required is defined ? attributes.required : true %}
+    {% set attributes = attributes|filter((_, k) => k != 'required') %}
+    <div class="form-row mb-3 {{ required ? 'required' }}">
+        <label for="{{ id }}" class="form-label">{{ label }}</label>
+        <input id="{{ id }}" class="form-control"
+               name="{{ name }}" {{ required ? 'required' }}
+        {% for name, value in attributes %}
+            {% if value is same as(true) %}
+                {# Set boolean attribute #}
+                {{ name }}
+            {% elseif value is same as(false) %}
+                {# Skip unset boolean attribute #}
+            {% else %}
+                {{ name }}="{{ value }}"
+            {% endif %}
+        {% endfor %}
+        />
+    </div>
+{% endmacro %}
+
+{% macro textarea(name, label, attributes = {}) %}
+    {% set id = name %}
+    {% set required = attributes.required is defined ? attributes.required : true %}
+    {% set attributes = attributes|filter((_, k) => k != 'required') %}
+    <div class="form-row mb-3 {{ required ? 'required' }}">
+        <label for="{{ id }}" class="form-label">{{ label }}</label>
+        <textarea id="{{ id }}" class="form-control"
+                  name="{{ name }}" {{ required ? 'required' }}
+        {% for name, value in attributes %}
+            {% if value is same as(true) %}
+                {# Set boolean attribute #}
+                {{ name }}
+            {% elseif value is same as(false) %}
+                {# Skip unset boolean attribute #}
+            {% else %}
+                {{ name }}="{{ value }}"
+            {% endif %}
+        {% endfor %}
+        ></textarea>
+    </div>
+{% endmacro %}

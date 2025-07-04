@@ -14,6 +14,12 @@ class Item extends AbstractModel
     #[Column(type: Types::STRING)]
     private string $subject;
 
+    #[Column(type: Types::STRING, nullable: true)]
+    private ?string $status = null;
+
+    #[Column(type: Types::STRING, nullable: true)]
+    private ?string $category = null;
+
     #[Column(type: Types::JSON)]
     private array $data = [];
 
@@ -25,6 +31,30 @@ class Item extends AbstractModel
     public function setSubject(string $subject): static
     {
         $this->subject = $subject;
+
+        return $this;
+    }
+
+    public function getStatus(): ?ItemStatus
+    {
+        return $this->status ? ItemStatus::from($this->status) : null;
+    }
+
+    public function setStatus(ItemStatus $status): static
+    {
+        $this->status = $status->value;
+
+        return $this;
+    }
+
+    public function getCategory(): ?ItemCategory
+    {
+        return $this->category ? ItemCategory::from($this->category) : null;
+    }
+
+    public function setCategory(ItemCategory $category): static
+    {
+        $this->category = $category->value;
 
         return $this;
     }

@@ -8,19 +8,15 @@
   "line-length": {
     "line_length": 120,
     "code_blocks": false,
-    "tables": false,
+    "tables": false
   },
   // https://github.com/DavidAnson/markdownlint/blob/main/doc/md024.md
   "no-duplicate-heading": {
-    "siblings_only": true,
+    "siblings_only": true
   },
   // https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/organizing-information-with-collapsed-sections#creating-a-collapsed-section
   // https://github.com/DavidAnson/markdownlint/blob/main/doc/md033.md
   "no-inline-html": {
-    "allowed_elements": ["details", "summary"],
-  },
-  // Disable MD025 for frontmatter titles: https://github.com/DavidAnson/markdownlint/issues/199
-  "MD025": {
-    "front_matter_title": "",
-  },
+    "allowed_elements": ["details", "summary"]
+  }
 }
