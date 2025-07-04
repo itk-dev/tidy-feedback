@@ -7,4 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-3](https://github.com/itk-dev/tidy-feedback/pull/3)
+  Added translations
+
 [Unreleased]: https://github.com/itk-dev/tidy_feedback
