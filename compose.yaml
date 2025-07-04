@@ -41,3 +41,14 @@ services:
             - .:/app
         profiles:
             - dev
+
+    symfony:
+        # https://hub.docker.com/r/shinsenter/symfony
+        image: shinsenter/symfony:latest
+        # command: sh -c "
+        # composer require symfony/translation
+        # "
+        volumes:
+            - ./:/app
+        profiles:
+            - dev

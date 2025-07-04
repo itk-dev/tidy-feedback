@@ -1,0 +1,54 @@
+name: Project
+
+on:
+    pull_request:
+    push:
+        branches:
+            - main
+            - develop
+
+jobs:
+    check-assets:
+        name: Check that assets are up to date
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: arduino/setup-task@v2
+              with:
+                  repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Build assets
+              run: task assets:build
+
+            - name: Check for changes in built assets
+              run: git diff --diff-filter=ACMRT --exit-code build
+
+    check-translations:
+        name: Check that translations are up to date
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: arduino/setup-task@v2
+              with:
+                  repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Extract translations
+              run: task translations:extract
+
+            - name: Check for changes in built assets
+              run: git diff --diff-filter=ACMRT --exit-code translations
+
+    check-shell-scripts:
+        name: Check shell scripts
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: arduino/setup-task@v2
+              with:
+                  repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Build assets
+              run: task coding-standards:shell:check

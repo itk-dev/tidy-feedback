@@ -22,15 +22,20 @@ tasks:
             - task: npm
               vars:
                   TASK_ARGS: install
-            - task compose -- run --tty --interactive --rm node node_modules/.bin/encore production --progress
+            - task compose -- run --interactive --rm node node_modules/.bin/encore production --progress
         silent: true
 
     assets:watch:
         desc: Build assets and watch for changes
         cmds:
             - task: assets:build
-            - task compose -- run --tty --interactive --rm node node_modules/.bin/encore dev --watch
+            - task compose -- run --interactive --rm node node_modules/.bin/encore dev --watch
         silent: true
+
+    translations:extract:
+        cmds:
+            - task compose -- run --rm symfony /app/task/scripts/translations-extract
+            - task: coding-standards:yaml:apply
 
     npm:
         cmds:
@@ -109,6 +114,16 @@ tasks:
             - task compose -- run --rm phpfpm vendor/bin/php-cs-fixer check
             - task compose -- run --rm phpfpm vendor/bin/phpcs
         silent: true
+
+    coding-standards:shell:check:
+        desc: "Check coding standards for shell scripts"
+        cmds:
+            # https://github.com/koalaman/shellcheck?tab=readme-ov-file#installing
+            - docker run --rm --volume "$PWD:"/mnt koalaman/shellcheck:stable {{.GLOB}}
+        vars:
+            # We use a block scalar (https://yaml-multiline.info/#block-scalars) here to make escaping (a little) easier.
+            GLOB: >-
+                {{.CLI_ARGS | default "task/scripts/*"}}
 
     coding-standards:twig:apply:
         desc: "Apply coding standards for Twig"
