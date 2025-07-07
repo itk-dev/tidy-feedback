@@ -24,7 +24,8 @@ drush tidy-feedback:doctrine:schema-update
 
 ### Symfony
 
-Create `config/routes/tidy_feedback.yaml`:
+Create `config/routes/tidy_feedback.yaml` (or copy
+[`resources/config/routes/tidy_feedback.yaml`](resources/config/routes/tidy_feedback.yaml)):
 
 ``` yaml
 #config/routes/tidy_feedback.yaml
@@ -34,7 +35,8 @@ tidy_feedback:
 ```
 
 > [!NOTE]
-> You can use any `prefix`, but for consistency with the Drupal version of Tidy feedback you should use `/tidy-feedback`.
+> You can use any path as `prefix`, but for consistency with the Drupal version of Tidy feedback you should use
+> `/tidy-feedback`.
 
 If [Symfony Flex](https://symfony.com/doc/current/setup/flex.html) hasn't already done so, you must enable the
 TidyFeedbackBundle bundle:
@@ -60,14 +62,14 @@ in the environment variable `TIDY_FEEDBACK_DATABASE_URL`, e.g.
 ``` dotenv
 # .env
 # See https://www.doctrine-project.org/projects/doctrine-dbal/en/4.2/reference/configuration.html#connecting-using-a-url for details.
-TIDY_FEEDBACK_DATABASE_URL="pdo-sqlite:////app/tidy-feedback.sqlite"
+TIDY_FEEDBACK_DATABASE_URL=pdo-sqlite://localhost//app/tidy-feedback.sqlite
 ```
 
 As an alternative for Drupal you can set `TIDY_FEEDBACK_DATABASE_URL` in `settings.local.php`:
 
 ``` php
 # web/sites/default/settings.local.php
-putenv('TIDY_FEEDBACK_DATABASE_URL=pdo-sqlite:////app/tidy-feedback.sqlite');
+putenv('TIDY_FEEDBACK_DATABASE_URL=pdo-sqlite://localhost//app/tidy-feedback.sqlite');
 ```
 
 `TIDY_FEEDBACK_USERS='{"admin": "password"}'`
@@ -118,3 +120,17 @@ In order to make this behave as both a Drupal module and a Synfony bundle, we us
 ### Twig
 
 We use a watered-down instance of Twig with only a `trans` filter and a `path` function.
+
+### Development app
+
+For development, you can start a Symfony app with Tidy feedback installed:
+
+``` shell
+task app:start
+```
+
+Run `task app:stop` to stop the app.
+
+> [!TIP]
+> Use `tidy-feedback-show=form` in the query string, e.g. `/tidy-feedback/test?tidy-feedback-show=form`, to
+> automatically show the feedback form when loading a page.

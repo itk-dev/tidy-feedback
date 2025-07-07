@@ -91,7 +91,7 @@ final class TidyFeedbackHelper implements EventSubscriberInterface
         }
 
         // @todo Get the locale from some context …
-        $locale = static::getConfig('default_locale');
+        $locale = self::getConfig('default_locale');
         $fallbackLocale = 'en';
 
         return self::$translations[$locale][$text] ?? self::$translations[$fallbackLocale][$text] ?? $text;
@@ -105,11 +105,13 @@ final class TidyFeedbackHelper implements EventSubscriberInterface
     public static function getEntityManager(): EntityManagerInterface
     {
         if (empty(self::$entityManager)) {
-            $config = ORMSetup::createAttributeMetadataConfiguration(
+            $config = ORMSetup::createAttributeMetadataConfig(
                 paths: [__DIR__.'/Model'],
+                isDevMode: (bool) ($_ENV['TIDY_FEEDBACK_DEV_MODE'] ?? false),
             );
+            $config->enableNativeLazyObjects(true);
 
-            $dsn = static::getConfig('database_url');
+            $dsn = self::getConfig('database_url');
             $connectionParams = (new DsnParser())->parse($dsn);
             $connection = DriverManager::getConnection($connectionParams, $config);
 
@@ -127,13 +129,22 @@ final class TidyFeedbackHelper implements EventSubscriberInterface
             throw new NotFoundHttpException();
         }
 
-        return new BinaryFileResponse($filename, headers: [
+        $response = new BinaryFileResponse($filename, headers: [
             'content-type' => match (pathinfo($filename, PATHINFO_EXTENSION)) {
                 'css' => 'text/css',
                 'js' => 'text/javascript',
                 default => throw new NotFoundHttpException(),
             },
-        ]);
+        ],
+            autoEtag: true, autoLastModified: true
+        );
+
+        if (self::getConfig('debug')) {
+            // setExpires(null) does not seem to work as advertised, so we use a date in the far past.
+            $response->setExpires(new \DateTimeImmutable('2001-01-01'));
+        }
+
+        return $response;
     }
 
     public static function updateSchema(OutputInterface $output): bool
@@ -214,7 +225,7 @@ final class TidyFeedbackHelper implements EventSubscriberInterface
                 $response->setContent($content);
             }
         } catch (\Throwable $throwable) {
-            if (static::getConfig('debug')) {
+            if (self::getConfig('debug')) {
                 throw $throwable;
             }
             // Ignore all errors!

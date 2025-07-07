@@ -5,6 +5,7 @@ dotenv: [".env.local", ".env"]
 
 vars:
     DOCKER_COMPOSE: '{{.TASK_DOCKER_COMPOSE | default "docker compose"}}'
+    APP_DOCKER_COMPOSE: docker compose --profile app
 
 tasks:
     compose:
@@ -157,3 +158,35 @@ tasks:
         cmds:
             - task --list-all
         silent: true
+
+    app:start:
+        desc: Start Symfony app with Tity feedback installed
+        cmds:
+            - |
+                echo ------------------------------------------------------------------------------------------------
+                echo For reasons yet unknown, you may have to run this command 2 or 3 times to make everything work …
+                echo ------------------------------------------------------------------------------------------------
+
+            - task app:compose -- pull
+            - task app:compose -- up --detach --remove-orphans --wait
+
+            - task app:compose -- exec symfony composer config repositories.tidy-feedback path /app
+            # https://github.com/itk-dev/tidy-feedback?tab=readme-ov-file#installation
+            - task app:compose -- exec symfony composer require itk-dev/tidy-feedback:dev-main
+
+            # https://github.com/itk-dev/tidy-feedback?tab=readme-ov-file#symfony
+            - task app:compose -- exec symfony cp /app/resources/config/routes/tidy_feedback.yaml config/routes/
+            - task app:compose -- exec symfony bin/console cache:clear
+
+            - task app:compose -- exec symfony bin/console tidy-feedback:doctrine:schema-update
+            - open "http://$(task app:compose -- port symfony 80)/tidy-feedback/test?tidy-feedback-show=form"
+        silent: true
+
+    app:stop:
+        desc: Stop Symfony app
+        cmds:
+            - task app:compose -- down --remove-orphans
+
+    app:compose:
+        cmds:
+            - "{{.APP_DOCKER_COMPOSE}} {{.CLI_ARGS}}"
