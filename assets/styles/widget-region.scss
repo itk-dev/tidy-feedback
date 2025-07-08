@@ -1,6 +1,10 @@
+@import "./variables.scss";
 /* https://medium.com/the-z/making-a-resizable-div-in-js-is-not-easy-as-you-think-bda19a1bc53d */
 
 #tidy-feedback-region {
+    position: absolute;
+    z-index: var(--z-index-region);
+
     .resizable {
         //background: white;
         //width: 100px;
@@ -12,40 +16,42 @@
         .resizers {
             width: 100%;
             height: 100%;
-            border: 3px solid #4286f4;
+            border: 2px dashed var(--color-primary);
             box-sizing: border-box;
+            cursor: move;
         }
 
         .resizer {
-            width: 10px;
-            height: 10px;
+            --resizer-offset: -4px;
+            width: 12px;
+            height: 12px;
             border-radius: 50%; /*magic to turn square into circle*/
             background: white;
-            border: 3px solid #4286f4;
+            border: 2px solid var(--color-primary);
             position: absolute;
         }
 
         .resizer.top-left {
-            left: -5px;
-            top: -5px;
+            left: var(--resizer-offset);
+            top: var(--resizer-offset);
             cursor: nwse-resize; /*resizer cursor*/
         }
 
         .resizer.top-right {
-            right: -5px;
-            top: -5px;
+            right: var(--resizer-offset);
+            top: var(--resizer-offset);
             cursor: nesw-resize;
         }
 
         .resizer.bottom-left {
-            left: -5px;
-            bottom: -5px;
+            left: var(--resizer-offset);
+            bottom: var(--resizer-offset);
             cursor: nesw-resize;
         }
 
         .resizer.bottom-right {
-            right: -5px;
-            bottom: -5px;
+            right: var(--resizer-offset);
+            bottom: var(--resizer-offset);
             cursor: nwse-resize;
         }
     }
@@ -53,8 +59,9 @@
     .overlays {
         > div {
             position: fixed;
-            background: #000;
-            opacity: 0.25;
+            background: var(--color-primary);
+            opacity: 0.1;
+            color: transparent;
         }
 
         .top {

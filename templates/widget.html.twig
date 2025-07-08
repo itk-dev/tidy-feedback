@@ -17,14 +17,21 @@
         </style>
         <script {{ capture_exclude_attributes|raw }} src="{{ path('tidy_feedback_asset', {asset: 'widget.js'}) }}"
                                                      data-tidy-feedback-config="{{ config|json_encode }} "></script>
-        <div {{ capture_exclude_attributes|raw }}>
+        <div class="tidy-feedback" {{ capture_exclude_attributes|raw }}>
             <div {{ capture_exclude_attributes|raw }} hidden class="tidy-feedback-message"></div>
-            <button {{ capture_exclude_attributes|raw }} hidden type="button" class="btn btn-primary tidy-feedback-start"
+            <button {{ capture_exclude_attributes|raw }} hidden type="button" class="tidy-feedback-start"
                                                          data-tidy-feedback-action="start">{{ 'Feedback'|trans }}</button>
 
             <form {{ capture_exclude_attributes|raw }} hidden class="tidy-feedback-form"
                                                        action="{{ path('tidy_feedback_create') }}" method="post">
 
+            <div {{ capture_exclude_attributes|raw }} hidden class="tidy-feedback-draggable-handle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+                                                           <h1 class="tidy-feedback-form-title">{{ 'Your feedback'|trans }}</h1>
+                                                           <p class="tidy-feedback-form-lead">{{ 'Highlight the relevant part of the page and fill in the form to send us your feedback'|trans }}</p>
                 {# <button type="button" class="btn btn-secondary" data-tidy-feedback-action="select-region">{{ 'Select region'|trans }}</button> #}
 
                 {# "subject" is required and all other inputs with be stored in the data blob on the feedback item. #}
@@ -45,9 +52,9 @@
                     required: false,
                 }) }}
 
-                <button class="btn btn-primary">{{ 'Submit feedback'|trans }}</button>
+                <button type="submit" class="btn btn-primary">{{ 'Submit feedback'|trans }}</button>
 
-                <button type="button" class="btn btn-secondary" data-tidy-feedback-action="cancel">{{ 'Cancel'|trans }}</button>
+                <button type="cancel" class="btn btn-secondary" data-tidy-feedback-action="cancel">{{ 'Cancel'|trans }}</button>
             </form>
         </div>
     </template>

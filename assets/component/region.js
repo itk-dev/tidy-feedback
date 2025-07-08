@@ -1,4 +1,6 @@
 // https://medium.com/the-z/making-a-resizable-div-in-js-is-not-easy-as-you-think-bda19a1bc53d
+import { makeDraggable } from "./draggable.js";
+
 export function makeResizableDiv(element) {
     const resizers = element.querySelectorAll(".resizer");
     const minimum_size = 20;
@@ -43,6 +45,8 @@ export function makeResizableDiv(element) {
         const currentResizer = resizers[i];
         currentResizer.addEventListener("mousedown", function (e) {
             e.preventDefault();
+            e.stopPropagation(); // Prevent drag from triggering
+
             original_width = parseFloat(
                 getComputedStyle(element, null)
                     .getPropertyValue("width")
@@ -113,8 +117,14 @@ export function makeResizableDiv(element) {
 
         function stopResize() {
             window.removeEventListener("mousemove", resize);
+            window.removeEventListener("mouseup", stopResize);
         }
     }
+
+    // Add drag functionality using the draggable utility
+    makeDraggable(element, ".resizers", {
+        onDrag: updateOverlay, // Update overlays when dragging
+    });
 
     updateOverlay();
 }

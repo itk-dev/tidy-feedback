@@ -1,104 +1,115 @@
 @import "~bootstrap/scss/bootstrap";
+@import "./variables.scss";
+@import "./btn.scss";
 
 .tidy-feedback-start {
     position: fixed;
-    top: 0;
+    top: var(--position-top);
     right: 0;
-
     transform: rotate(-90deg);
     transform-origin: right bottom;
-
-    z-index: 9999;
-}
-
-.tidy-feedback-cancel {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-
-    padding: 1em;
-    color: red;
-    background: green;
-    z-index: 9999;
+    z-index: var(--z-index-form);
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+    border-bottom: 0;
 }
 
 .tidy-feedback-form {
     position: fixed;
-    width: 20em;
-    top: 0;
+    width: var(--width-base);
+    max-width: 100%;
+    top: var(--position-top);
     right: 0;
-    bottom: 0;
-    background: #ddd;
+    /* bottom: 0; */
     padding: 1em;
-    z-index: 9999;
+    z-index: var(--z-index-form);
+    background-color: white;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--color-border);
+    border-right: 0;
+    border-top-left-radius: var(--radius-base);
+    border-bottom-left-radius: var(--radius-base);
+    color: var(--color-text-dark);
+    overflow: hidden;
+    padding-top: 2em;
+}
+
+.tidy-feedback-draggable-handle {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 1em;
+    cursor: move;
+    background-color: var(--color-gray-100);
+    border: none;
+
+    border-top-left-radius: var(--radius-base);
+    border-top-right-radius: var(--radius-base);
+
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+
+    place-content: center;
+    place-items: center;
+
+    span {
+        width: 2em;
+        border-bottom: 1px solid var(--color-border);
+    }
+}
+
+.tidy-feedback-form-title {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-bottom: 1em;
+}
+
+.tidy-feedback-form-lead {
+    margin-bottom: 1em;
 }
 
 .tidy-feedback-message {
     position: fixed;
-    top: 0;
-    left: 0;
+    top: var(--spacer-sm);
+    left: 50%;
+    transform: translateX(-50%);
+    padding: var(--spacer-sm) var(--spacer-lg);
+    z-index: var(--z-index-messages);
+    background-color: white;
+    color: black;
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-base);
+    border-radius: var(--radius-base);
 
-    color: green;
-    background: orange;
-    z-index: 99999;
-}
-
-.tidy-feedback-region {
-    outline: dashed 1px red;
-    position: absolute;
-    cursor: move;
-
-    .handle {
-        position: absolute;
-        width: 10px;
-        height: 10px;
-        border: solid 1px red;
-        border-radius: 15px;
-        background: white;
+    &.warning {
+        background-color: var(--color-warning-900);
+        color: var(--color-warning-100);
+        border-color: var(--color-warning-700);
     }
 
-    .handle-nw {
-        cursor: nwse-resize;
-        left: -5px;
-        top: -5px;
+    &.success {
+        background-color: var(--color-success-900);
+        color: var(--color-success-100);
+        border-color: var(--color-success-700);
     }
 
-    .handle-ne {
-        cursor: nesw-resize;
-        right: -5px;
-        top: -5px;
-    }
-
-    .handle-sw {
-        cursor: nesw-resize;
-        left: -5px;
-        bottom: -5px;
-    }
-
-    .handle-se {
-        cursor: nwse-resize;
-        right: -5px;
-        bottom: -5px;
+    &.danger {
+        background-color: var(--color-danger-900);
+        color: var(--color-danger-100);
+        border-color: var(--color-danger-700);
     }
 }
 
-.tidy-feedback-select-region-drag {
-    .tidy-feedback-message-drag {
-        display: block;
-        outline: solid 1px blue;
-    }
+.form-label {
+    font-weight: bold;
+    font-size: var(--font-size-sm);
 }
 
-.tidy-feedback-select-region-dragging {
-    cursor: crosshair;
-
-    .tidy-feedback-message-dragging {
-        display: block;
-        outline: solid 1px blue;
-    }
-}
-
-.required label::after {
-    content: "*";
-    color: red;
+.form-row:not(.required) label::after {
+    margin-left: 10px;
+    content: "(optional)";
+    color: var(--color-gray-500);
+    font-weight: normal;
 }
