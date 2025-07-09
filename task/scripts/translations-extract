@@ -11,9 +11,9 @@ for dir in templates translations; do
 done
 
 for locale in en da; do
+    prefix="__"
     if [ "$locale" = "en" ]; then
-        bin/console translation:extract --dump-messages --sort=asc --clean --force --format=yaml "$locale" --prefix=''
-    else
-        bin/console translation:extract --dump-messages --sort=asc --clean --force --format=yaml "$locale"
+        prefix=""
     fi
+    bin/console translation:extract --dump-messages --sort=asc --clean --force --format=yaml "$locale" --clean --prefix="$prefix"
 done

@@ -134,3 +134,9 @@ Run `task app:stop` to stop the app.
 > [!TIP]
 > Use `tidy-feedback-show=form` in the query string, e.g. `/tidy-feedback/test?tidy-feedback-show=form`, to
 > automatically show the feedback form when loading a page.
+>
+> Add default form values in `tidy-feedback`, e.g.
+>
+> ``` plain
+> /tidy-feedback/test?tidy-feedback[subject]=test&tidy-feedback[email]=test@example.com&tidy-feedback[description]=My%20feedback
+> ```

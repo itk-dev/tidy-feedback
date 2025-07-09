@@ -35,15 +35,17 @@ final class TidyFeedbackHelper implements EventSubscriberInterface
     ) {
     }
 
-    public function getWidget(): string
+    public function getWidget(Request $request): string
     {
         $app = [
             // @todo Get user and pass it to widget template.
             'user' => null,
+            'request' => $request,
         ];
 
         return $this->renderTemplate('widget.html.twig', [
             'app' => $app,
+            'default_values' => (array) ($request->query->all()['tidy-feedback'] ?? null),
         ]);
     }
 
@@ -75,7 +77,7 @@ final class TidyFeedbackHelper implements EventSubscriberInterface
 
     private static array $translations;
 
-    private function trans(string $text, array $context = []): string
+    private function getTranslations(): array
     {
         if (!isset(self::$translations)) {
             self::$translations = [];
@@ -90,11 +92,18 @@ final class TidyFeedbackHelper implements EventSubscriberInterface
             }
         }
 
+        return self::$translations;
+    }
+
+    private function trans(string $text, array $context = []): string
+    {
+        $translations = $this->getTranslations();
+
         // @todo Get the locale from some context …
         $locale = self::getConfig('default_locale');
         $fallbackLocale = 'en';
 
-        return self::$translations[$locale][$text] ?? self::$translations[$fallbackLocale][$text] ?? $text;
+        return $translations[$locale][$text] ?? $translations[$fallbackLocale][$text] ?? $text;
     }
 
     private static EntityManager $entityManager;
@@ -179,7 +188,7 @@ final class TidyFeedbackHelper implements EventSubscriberInterface
                 // https://www.doctrine-project.org/projects/doctrine-dbal/en/4.2/reference/configuration.html#connecting-using-a-url
                 'database_url' => $getEnv('TIDY_FEEDBACK_DATABASE_URL'),
                 'debug' => (bool) $getEnv('TIDY_FEEDBACK_DEBUG'),
-                'default_locale' => $getEnv('TIDY_FEEDBACK_DEFAULT_LOCALE') ?? 'en',
+                'default_locale' => $getEnv('TIDY_FEEDBACK_DEFAULT_LOCALE') ?? 'da',
             ];
 
             if ($users = $getEnv('TIDY_FEEDBACK_USERS')) {
@@ -215,7 +224,7 @@ final class TidyFeedbackHelper implements EventSubscriberInterface
         }
 
         try {
-            $widget = $this->getWidget();
+            $widget = $this->getWidget($event->getRequest());
             if (empty($widget)) {
                 return;
             }
