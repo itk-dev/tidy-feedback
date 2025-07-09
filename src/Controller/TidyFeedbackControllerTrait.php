@@ -85,12 +85,21 @@ trait TidyFeedbackControllerTrait
             throw new NotFoundHttpException();
         }
 
-        $raw = $item->getData()['raw'] ?? null;
-        if (null === $raw) {
+        $data = $item->getData();
+        $image = (string) ($data['image'] ?? $data['raw'] ?? null);
+        // https://developer.mozilla.org/en-US/docs/Web/URI/Reference/Schemes/data
+        if (!preg_match('~^data:(?P<mediaType>image/.+?)(?P<base64>;base64)?,(?P<content>.+)$~', $image, $matches)) {
             throw new NotFoundHttpException();
         }
+        $contentType = $matches['mediaType'];
 
-        $content = urldecode(preg_replace('/^[^,]+,/', '', $raw));
+        $content = $matches['content'];
+        if (!empty($matches['base64'])) {
+            $content = base64_decode($content);
+        }
+        if (str_contains($contentType, 'svg')) {
+            $content = urldecode($content);
+        }
 
         // Send as binary file to set the expected headers.
         $temp = new \SplTempFileObject();
@@ -99,7 +108,7 @@ trait TidyFeedbackControllerTrait
         return new BinaryFileResponse(
             $temp,
             headers: [
-                'content-type' => 'image/svg+xml',
+                'content-type' => $contentType,
             ]
         );
     }

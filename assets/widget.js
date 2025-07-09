@@ -47,7 +47,6 @@ const showMessage = (message, type = "default") => {
 let start;
 let cancel;
 let region;
-let firstElement;
 let form;
 let dragCleanup;
 
@@ -113,22 +112,6 @@ const showForm = async () => {
     }
 
     makeFormDraggable();
-
-    //
-    // try {
-    //     const el = root.body;
-    //     const result = await snapdom(el, { scale: 1 });
-    //
-    //     data.raw = result.toRaw();
-    //
-    //     // const img = await result.toPng();
-    //     // root.body.appendChild(img);
-    //
-    //     // const blob = await result.toBlob(el);
-    //     // blob.text().then((svg) => data.svg = svg)
-    // } catch (error) {
-    //     showMessage("Error taking screen shot");
-    // }
 };
 
 const hideForm = (reset) => {
@@ -164,16 +147,27 @@ addEventListener("load", () => {
         form.addEventListener("submit", async (event) => {
             event.preventDefault();
 
+            showMessage("Taking screenshot …");
+
             try {
                 const el = document.body;
                 const result = await snapdom(el, { scale: 1 });
 
-                data.raw = result.toRaw();
+                let image = result.toRaw();
+                // Check if some other image formats generate smaller payload
+                for (const method of ["toWebp", "toPng", "toJpg"]) {
+                    const img = await result[method]();
+                    if (img.src.length < image.length) {
+                        image = img.src;
+                    }
+                }
+
+                data.image = image;
             } catch (error) {
-                showMessage("Error taking screen shot", "danger");
+                showMessage("Error taking screenshot", "danger");
             }
 
-            console.log(`POSTing to ${form.action} …`);
+            showMessage("Sending feedback …");
 
             const formData = new FormData(form);
             // https://stackoverflow.com/a/46774073
@@ -183,14 +177,6 @@ addEventListener("load", () => {
                 url: document.location.href,
                 referrer: document.referrer,
                 document: document.documentElement.outerHTML,
-                first_element: firstElement?.outerHTML,
-                first_element_selector: firstElement
-                    ? unique(firstElement)
-                    : null,
-                last_element: firstElement?.outerHTML,
-                last_element_selector: firstElement
-                    ? unique(firstElement)
-                    : null,
                 navigator: {
                     userAgent: navigator.userAgent,
                 },
@@ -198,14 +184,14 @@ addEventListener("load", () => {
                     innerWidth: window.innerWidth,
                     innerHeight: window.innerHeight,
                 },
+                region: {
+                    left: region.style.left,
+                    top: region.style.top,
+                    width: region.style.width,
+                    height: region.style.height,
+                },
             };
 
-            // const response = fetch(form.action, {
-            //   method: 'POST',
-            //   body: formData
-            // });
-
-            console.log({ data });
             fetch(form.action, {
                 method: "POST",
                 headers: {
@@ -246,14 +232,6 @@ addEventListener("load", () => {
         start.hidden = false;
         start.addEventListener("click", (event) => {
             showForm();
-
-            // if (cancel) {
-            //     cancel.hidden = false;
-            // }
-            // showMessage(
-            //     "Click on an element or click and drag to mark a region …",
-            // );
-            // selectRegion();
         });
     }
 

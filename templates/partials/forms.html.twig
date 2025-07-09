@@ -23,7 +23,8 @@
 {% macro textarea(name, label, attributes = {}) %}
     {% set id = name %}
     {% set required = attributes.required is defined ? attributes.required : true %}
-    {% set attributes = attributes|filter((_, k) => k != 'required') %}
+    {% set value = attributes.value is defined ? attributes.value : '' %}
+    {% set attributes = attributes|filter((_, k) => k not in ['required', 'value']) %}
     <div class="form-row mb-3 {{ required ? 'required' }}">
         <label for="{{ id }}" class="form-label">{{ label }}</label>
         <textarea id="{{ id }}" class="form-control"
@@ -38,6 +39,6 @@
                 {{ name }}="{{ value }}"
             {% endif %}
         {% endfor %}
-        ></textarea>
+        >{{ value }}</textarea>
     </div>
 {% endmacro %}
