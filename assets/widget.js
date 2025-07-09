@@ -2,6 +2,7 @@
 
 import "./styles/widget.scss";
 import { makeResizableDiv } from "./component/region";
+import { makeDraggable } from "./component/draggable.js";
 
 import { snapdom } from "@zumer/snapdom";
 import unique from "@cypress/unique-selector";
@@ -29,9 +30,15 @@ const config = (() => {
 
 const data = {};
 
-const showMessage = (message) => {
+const showMessage = (message, type = "default") => {
     const el = root.querySelector(".tidy-feedback-message");
     if (el) {
+        el.classList.remove("success", "warning", "danger", "default");
+
+        if (type) {
+            el.classList.add(type);
+        }
+
         el.innerHTML = config.messages[message] ?? message;
         el.hidden = !message;
     }
@@ -42,15 +49,16 @@ let cancel;
 let region;
 let firstElement;
 let form;
+let dragCleanup;
 
 const selectRegion = () => {
     if (region) {
         region.parentNode.hidden = false;
         // @todo move region into view.
-        region.style.left = "100px";
-        region.style.top = "100px";
-        region.style.width = "200px";
-        region.style.height = "100px";
+        region.style.left = "300px";
+        region.style.top = "300px";
+        region.style.width = "300px";
+        region.style.height = "200px";
         makeResizableDiv(region);
     }
 };
@@ -58,6 +66,40 @@ const selectRegion = () => {
 const hideRegion = () => {
     if (region) {
         region.parentNode.hidden = true;
+    }
+};
+
+const makeFormDraggable = () => {
+    if (dragCleanup) {
+        return;
+    }
+
+    const tidyFeedbackDiv = getElement(".tidy-feedback-form");
+    const dragHandle = getElement(".tidy-feedback-draggable-handle");
+
+    if (tidyFeedbackDiv && dragHandle) {
+        dragHandle.hidden = false;
+
+        dragCleanup = makeDraggable(tidyFeedbackDiv, dragHandle, {
+            constrainToViewport: true,
+            onDragStart: (e, element) => {
+                console.log("Started dragging feedback form");
+            },
+            onDragEnd: (e, element) => {
+                console.log("Finished dragging feedback form");
+            },
+        });
+    }
+};
+
+const hideFormDragHandle = () => {
+    const tidyFeedbackDiv = getDocumentElement("#tidy-feedback");
+    const dragHandle = tidyFeedbackDiv?.querySelector(
+        ".tidy-feedback-draggable-handle",
+    );
+
+    if (dragHandle) {
+        dragHandle.hidden = true;
     }
 };
 
@@ -69,6 +111,8 @@ const showForm = async () => {
     if (start) {
         start.hidden = true;
     }
+
+    makeFormDraggable();
 
     //
     // try {
@@ -89,6 +133,7 @@ const showForm = async () => {
 
 const hideForm = (reset) => {
     hideRegion();
+    hideFormDragHandle();
     if (form) {
         form.hidden = true;
         if (reset) {
@@ -97,6 +142,15 @@ const hideForm = (reset) => {
     }
     if (start) {
         start.hidden = false;
+    }
+
+    // Hide the drag handle when form is hidden
+    const tidyFeedbackDiv = document.getElementById("tidy-feedback");
+    const dragHandle = tidyFeedbackDiv?.querySelector(
+        ".tidy-feedback-draggable-handle",
+    );
+    if (dragHandle) {
+        dragHandle.hidden = true;
     }
 };
 
@@ -116,7 +170,7 @@ addEventListener("load", () => {
 
                 data.raw = result.toRaw();
             } catch (error) {
-                showMessage("Error taking screen shot");
+                showMessage("Error taking screen shot", "danger");
             }
 
             console.log(`POSTing to ${form.action} …`);
@@ -166,7 +220,7 @@ addEventListener("load", () => {
                             region.hidden = true;
                         }
                         hideForm(true);
-                        showMessage("Feedback created");
+                        showMessage("Feedback created", "success");
                     } else {
                         response
                             .json()
@@ -174,6 +228,7 @@ addEventListener("load", () => {
                                 showMessage(
                                     "Error creating feedback: " +
                                         JSON.stringify(data),
+                                    "danger",
                                 ),
                             );
                     }
