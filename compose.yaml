@@ -41,3 +41,27 @@ services:
             - .:/app
         profiles:
             - dev
+
+    symfony:
+        # https://hub.docker.com/r/shinsenter/symfony
+        image: shinsenter/symfony:latest
+        # For some reason it takes a while before composer.json appear in the project root
+        # @todo Investigate why
+        healthcheck:
+            test: ["CMD", "test", "-f", "composer.json"]
+            interval: 2s
+            timeout: 60s
+            retries: 20
+        volumes:
+            - ./:/app
+        profiles:
+            - dev
+            - app
+        ports:
+            - "80"
+        environment:
+            APP_ENV: dev
+            # Needed to run without requiring a cache
+            TIDY_FEEDBACK_DEV_MODE: true
+            TIDY_FEEDBACK_DEBUG: true
+            TIDY_FEEDBACK_DATABASE_URL: pdo-sqlite://localhost//app/app-tidy-feedback.sqlite

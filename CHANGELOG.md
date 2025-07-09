@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- [PR-3](https://github.com/itk-dev/tidy-feedback/pull/3)
+  Added translations and standalone app
 - [PR-5](https://github.com/itk-dev/tidy-feedback/pull/5)
   Add styling. Make region and form draggable
 

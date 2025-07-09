@@ -20,6 +20,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Yaml\Yaml;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 use Twig\TwigFilter;
@@ -62,13 +63,38 @@ final class TidyFeedbackHelper implements EventSubscriberInterface
                 // @todo
                 // 'cache' => '/tmp/twig_compilation_cache',
             ]);
-            self::$twig->addFilter(new TwigFilter('trans', fn (string $text) => $text));
+
+            self::$twig->addFilter(new TwigFilter('trans', $this->trans(...)));
             self::$twig->addFunction(new TwigFunction('path', fn (string $name, array $parameters = []) => $this->urlGenerator->generate($name, $parameters)));
         }
 
         $template = self::$twig->load($path);
 
         return $template->render($context);
+    }
+
+    private static array $translations;
+
+    private function trans(string $text, array $context = []): string
+    {
+        if (!isset(self::$translations)) {
+            self::$translations = [];
+            foreach (glob(__DIR__.'/../translations/*.yaml') as $file) {
+                if (preg_match('/\.(?P<locale>[^.]+)\.yaml$/', $file, $matches)) {
+                    $locale = $matches['locale'];
+                    try {
+                        self::$translations[$locale] = Yaml::parseFile($file);
+                    } catch (\Exception) {
+                    }
+                }
+            }
+        }
+
+        // @todo Get the locale from some context …
+        $locale = self::getConfig('default_locale');
+        $fallbackLocale = 'en';
+
+        return self::$translations[$locale][$text] ?? self::$translations[$fallbackLocale][$text] ?? $text;
     }
 
     private static EntityManager $entityManager;
@@ -79,11 +105,13 @@ final class TidyFeedbackHelper implements EventSubscriberInterface
     public static function getEntityManager(): EntityManagerInterface
     {
         if (empty(self::$entityManager)) {
-            $config = ORMSetup::createAttributeMetadataConfiguration(
+            $config = ORMSetup::createAttributeMetadataConfig(
                 paths: [__DIR__.'/Model'],
+                isDevMode: (bool) ($_ENV['TIDY_FEEDBACK_DEV_MODE'] ?? false),
             );
+            $config->enableNativeLazyObjects(true);
 
-            $dsn = static::getConfig('database_url');
+            $dsn = self::getConfig('database_url');
             $connectionParams = (new DsnParser())->parse($dsn);
             $connection = DriverManager::getConnection($connectionParams, $config);
 
@@ -101,13 +129,22 @@ final class TidyFeedbackHelper implements EventSubscriberInterface
             throw new NotFoundHttpException();
         }
 
-        return new BinaryFileResponse($filename, headers: [
+        $response = new BinaryFileResponse($filename, headers: [
             'content-type' => match (pathinfo($filename, PATHINFO_EXTENSION)) {
                 'css' => 'text/css',
                 'js' => 'text/javascript',
                 default => throw new NotFoundHttpException(),
             },
-        ]);
+        ],
+            autoEtag: true, autoLastModified: true
+        );
+
+        if (self::getConfig('debug')) {
+            // setExpires(null) does not seem to work as advertised, so we use a date in the far past.
+            $response->setExpires(new \DateTimeImmutable('2001-01-01'));
+        }
+
+        return $response;
     }
 
     public static function updateSchema(OutputInterface $output): bool
@@ -131,24 +168,29 @@ final class TidyFeedbackHelper implements EventSubscriberInterface
         return false;
     }
 
+    private static array $config;
+
     private static function getConfig(?string $name): mixed
     {
-        $getEnv = static fn (string $name) => getenv($name) ?: ($_ENV[$name] ?? null);
+        if (!isset(self::$config)) {
+            $getEnv = static fn (string $name) => getenv($name) ?: ($_ENV[$name] ?? null);
 
-        $config = [
-            // https://www.doctrine-project.org/projects/doctrine-dbal/en/4.2/reference/configuration.html#connecting-using-a-url
-            'database_url' => $getEnv('TIDY_FEEDBACK_DATABASE_URL'),
-            'debug' => (bool) $getEnv('TIDY_FEEDBACK_DEBUG'),
-        ];
+            self::$config = [
+                // https://www.doctrine-project.org/projects/doctrine-dbal/en/4.2/reference/configuration.html#connecting-using-a-url
+                'database_url' => $getEnv('TIDY_FEEDBACK_DATABASE_URL'),
+                'debug' => (bool) $getEnv('TIDY_FEEDBACK_DEBUG'),
+                'default_locale' => $getEnv('TIDY_FEEDBACK_DEFAULT_LOCALE') ?? 'en',
+            ];
 
-        if ($users = $getEnv('TIDY_FEEDBACK_USERS')) {
-            try {
-                $config['users'] = json_decode($users, true, flags: JSON_THROW_ON_ERROR);
-            } catch (\Throwable) {
+            if ($users = $getEnv('TIDY_FEEDBACK_USERS')) {
+                try {
+                    $config['users'] = json_decode($users, true, flags: JSON_THROW_ON_ERROR);
+                } catch (\Throwable) {
+                }
             }
         }
 
-        return $name ? ($config[$name] ?? null) : $config;
+        return $name ? (self::$config[$name] ?? null) : self::$config;
     }
 
     public static function getSubscribedEvents(): array
@@ -183,7 +225,7 @@ final class TidyFeedbackHelper implements EventSubscriberInterface
                 $response->setContent($content);
             }
         } catch (\Throwable $throwable) {
-            if (static::getConfig('debug')) {
+            if (self::getConfig('debug')) {
                 throw $throwable;
             }
             // Ignore all errors!
