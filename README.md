@@ -140,3 +140,16 @@ Run `task app:stop` to stop the app.
 > ``` plain
 > /tidy-feedback/test?tidy-feedback[subject]=test&tidy-feedback[email]=test@example.com&tidy-feedback[description]=My%20feedback
 > ```
+
+## Testing
+
+``` shell
+task test:playwright
+```
+
+Alternatively, run without docker:
+
+``` shell name=test-native
+task app:start
+PLAYWRIGHT_BASE_URL="http://$(task app:compose -- port symfony 80)" npx playwright test --ui
+```

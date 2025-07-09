@@ -67,13 +67,13 @@ tasks:
     coding-standards:assets:apply:
         desc: "Apply coding standards for assets"
         cmds:
-            - task compose -- run --rm prettier 'assets/' --write
+            - task compose -- run --rm prettier '**/*.{css,scss,js,ts}' --write
 
     coding-standards:assets:check:
         desc: "Apply and check coding standards for assets"
         cmds:
             - task: coding-standards:assets:apply
-            - task compose -- run --rm prettier 'assets/' --check
+            - task compose -- run --rm prettier '**/*.{css,scss,js,ts}' --check
 
     coding-standards:composer:apply:
         desc: "Apply coding standards for Composer"
@@ -190,3 +190,30 @@ tasks:
     app:compose:
         cmds:
             - "{{.APP_DOCKER_COMPOSE}} {{.CLI_ARGS}}"
+
+    test:playwright:
+        cmds:
+            # This takes a while to start, but hopefully it'll be ready when needed if started first …
+            # @see https://gist.github.com/cschiewek/246a244ba23da8b9f0e7b11a68bf3285#file-x11_docker_mac-md
+            # Install XQuartz: brew install xquartz
+            - xhost + 127.0.0.1 &
+
+            - task: app:start
+            - task: test:compose
+              vars:
+                  TASK_ARGS: pull
+            - task: test:compose
+              vars:
+                  TASK_ARGS: up --detach
+            - task: test:compose
+              vars:
+                  TASK_ARGS: run --rm playwright npx playwright install
+            # - task: test:compose
+            #   vars:
+            #       TASK_ARGS: run --rm playwright npx playwright test
+
+            - docker compose run --rm --env DISPLAY=host.docker.internal:0 playwright npx playwright test --ui
+
+    test:compose:
+        cmds:
+            - docker compose --profile test {{.TASK_ARGS}} {{.CLI_ARGS}}
