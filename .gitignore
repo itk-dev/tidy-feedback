@@ -5,3 +5,9 @@ node_modules
 
 *.sqlite
 *.cache
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/

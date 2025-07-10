@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- [PR-8](https://github.com/itk-dev/tidy-feedback/pull/8)
+  Added Playwright test
 - [PR-7](https://github.com/itk-dev/tidy-feedback/pull/7)
   Cleaned up. Improved image handling.
 - [PR-3](https://github.com/itk-dev/tidy-feedback/pull/3)
