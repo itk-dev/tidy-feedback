@@ -9,7 +9,7 @@ bundle](https://symfony.com/doc/current/bundles.html) to collection user feedbac
 ## Installation
 
 ``` shell
-composer require itk-dev/tidy-feedback:dev-main
+composer require itk-dev/tidy-feedback
 ```
 
 > [!IMPORTANT]
@@ -19,7 +19,6 @@ composer require itk-dev/tidy-feedback:dev-main
 
 ``` shell
 drush pm:install tidy_feedback
-drush tidy-feedback:doctrine:schema-update
 ```
 
 ### Symfony
@@ -49,10 +48,6 @@ return [
 ];
 ```
 
-``` shell
-bin/console tidy-feedback:doctrine:schema-update
-```
-
 ## Configuration
 
 We need a [Doctrine database
@@ -72,7 +67,22 @@ As an alternative for Drupal you can set `TIDY_FEEDBACK_DATABASE_URL` in `settin
 putenv('TIDY_FEEDBACK_DATABASE_URL=pdo-sqlite://localhost//app/tidy-feedback.sqlite');
 ```
 
-`TIDY_FEEDBACK_USERS='{"admin": "password"}'`
+<!-- `TIDY_FEEDBACK_USERS='{"admin": "password"}'` -->
+
+## Create Tidy feedback database
+
+In a Drupal project, run
+
+``` shell
+drush tidy-feedback:doctrine:schema-update
+
+```
+
+In Symfony projects, run
+
+``` shell
+bin/console tidy-feedback:doctrine:schema-update
+```
 
 After installation and configuration, open `/tidy-feedback/test` on your site and enjoy!
 
