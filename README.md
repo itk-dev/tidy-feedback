@@ -67,7 +67,7 @@ As an alternative for Drupal you can set `TIDY_FEEDBACK_DATABASE_URL` in `settin
 putenv('TIDY_FEEDBACK_DATABASE_URL=pdo-sqlite://localhost//app/tidy-feedback.sqlite');
 ```
 
-<!-- `TIDY_FEEDBACK_USERS='{"admin": "password"}'` -->
+See [All configuration options](#all-configuration-options) for details and more options.
 
 ## Create Tidy feedback database
 
@@ -87,6 +87,22 @@ bin/console tidy-feedback:doctrine:schema-update
 After installation and configuration, open `/tidy-feedback/test` on your site and enjoy!
 
 All feedback items can be found on `/tidy-feedback`.
+
+## All configuration options
+
+Only `TIDY_FEEDBACK_DATABASE_URL` is required.
+
+| Name                          | Default value         | Example                                            |
+|-------------------------------|-----------------------|----------------------------------------------------|
+| TIDY_FEEDBACK_DATABASE_URL    |                       | `pdo-sqlite://localhost//app/tidy-feedback.sqlite` |
+| TIDY_FEEDBACK_DEBUG           | `false`               |                                                    |
+| TIDY_FEEDBACK_DEFAULT_LOCALE  | `da`                  |                                                    |
+| TIDY_FEEDBACK_DEV_MODE        | `false`               |                                                    |
+| TIDY_FEEDBACK_DISABLE         | `false`               |                                                    |
+| TIDY_FEEDBACK_DISABLE_PATTERN | `@^/tidy-feedback/$@` | `@^$@` (enable on all pages)                       |
+| TIDY_FEEDBACK_USERS           | `{}`                  | `{"admin": "password"}`                            |
+
+[^1] A boolean option must be set to `true`, e.g. `TIDY_FEEDBACK_DISABLE=true`, to be true. Otherwise it's false.
 
 ## Development
 
