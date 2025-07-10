@@ -6,6 +6,7 @@ namespace ItkDev\TidyFeedback;
 
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Tools\DsnParser;
+use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\ORMSetup;
@@ -114,12 +115,18 @@ final class TidyFeedbackHelper implements EventSubscriberInterface
     public static function getEntityManager(): EntityManagerInterface
     {
         if (empty(self::$entityManager)) {
-            $config = ORMSetup::createAttributeMetadataConfig(
+            $createAttributeMetadataConfigurationFunction = method_exists(ORMSetup::class, 'createAttributeMetadataConfig')
+                ? 'createAttributeMetadataConfig'
+                // ORMSetup::createAttributeMetadataConfiguration has been deprecated.
+                : 'createAttributeMetadataConfiguration';
+            /** @var Configuration $config */
+            $config = ORMSetup::{$createAttributeMetadataConfigurationFunction}(
                 paths: [__DIR__.'/Model'],
                 isDevMode: (bool) ($_ENV['TIDY_FEEDBACK_DEV_MODE'] ?? false),
             );
-            $config->enableNativeLazyObjects(true);
-
+            if (method_exists($config, 'enableNativeLazyObjects')) {
+                $config->enableNativeLazyObjects(true);
+            }
             $dsn = self::getConfig('database_url');
             $connectionParams = (new DsnParser())->parse($dsn);
             $connection = DriverManager::getConnection($connectionParams, $config);
