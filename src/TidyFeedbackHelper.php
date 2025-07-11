@@ -206,7 +206,7 @@ final class TidyFeedbackHelper implements EventSubscriberInterface
                 self::CONFIG_DEFAULT_LOCALE => $getEnv('TIDY_FEEDBACK_DEFAULT_LOCALE') ?? 'da',
                 self::CONFIG_DEV_MODE => 'true' === $getEnv('TIDY_FEEDBACK_DEV_MODE'),
                 self::CONFIG_DISABLE => 'true' === $getEnv('TIDY_FEEDBACK_DISABLE'),
-                self::CONFIG_DISABLE_PATTERN => $getEnv('TIDY_FEEDBACK_DISABLE_PATTERN') ?? '@^/tidy-feedback/$@',
+                self::CONFIG_DISABLE_PATTERN => $getEnv('TIDY_FEEDBACK_DISABLE_PATTERN') ?? '@^/tidy-feedback$@',
                 self::CONFIG_USERS => [],
             ];
 

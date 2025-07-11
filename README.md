@@ -92,15 +92,15 @@ All feedback items can be found on `/tidy-feedback`.
 
 Only `TIDY_FEEDBACK_DATABASE_URL` is required.
 
-| Name                            | Default value         | Example                                            |
-|---------------------------------|-----------------------|----------------------------------------------------|
-| `TIDY_FEEDBACK_DATABASE_URL`    |                       | `pdo-sqlite://localhost//app/tidy-feedback.sqlite` |
-| `TIDY_FEEDBACK_DEBUG`           | `false`               |                                                    |
-| `TIDY_FEEDBACK_DEFAULT_LOCALE`  | `da`                  |                                                    |
-| `TIDY_FEEDBACK_DEV_MODE`        | `false`               |                                                    |
-| `TIDY_FEEDBACK_DISABLE`         | `false`               |                                                    |
-| `TIDY_FEEDBACK_DISABLE_PATTERN` | `@^/tidy-feedback/$@` | `@^$@` (don't disable on all pages)                |
-| `TIDY_FEEDBACK_USERS`           | `{}`                  | `{"admin": "password"}`                            |
+| Name                            | Default value        | Example                                            |
+|---------------------------------|----------------------|----------------------------------------------------|
+| `TIDY_FEEDBACK_DATABASE_URL`    |                      | `pdo-sqlite://localhost//app/tidy-feedback.sqlite` |
+| `TIDY_FEEDBACK_DEBUG`           | `false`              |                                                    |
+| `TIDY_FEEDBACK_DEFAULT_LOCALE`  | `da`                 |                                                    |
+| `TIDY_FEEDBACK_DEV_MODE`        | `false`              |                                                    |
+| `TIDY_FEEDBACK_DISABLE`         | `false`              |                                                    |
+| `TIDY_FEEDBACK_DISABLE_PATTERN` | `@^/tidy-feedback$@` | `@^$@` (don't disable on all pages)                |
+| `TIDY_FEEDBACK_USERS`           | `{}`                 | `{"admin": "password"}`                            |
 
 Boolean options must be set to `true`, e.g. `TIDY_FEEDBACK_DISABLE=true`, to be true. Otherwise they're false.
 
