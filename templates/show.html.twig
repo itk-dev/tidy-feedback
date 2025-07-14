@@ -1,7 +1,7 @@
 {% extends 'base.html.twig' %}
 
 {% block nav %}
-    {% include 'partials/header.html.twig' with {'title': 'Feedback'|trans } %}
+    {{ include('partials/header.html.twig', {title: 'Feedback'|trans}) }}
 {% endblock %}
 
 {% block content %}
