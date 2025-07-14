@@ -177,6 +177,7 @@ const url = new URL(document.location);
 url.searchParams.set('tidy-feedback-show', 'form');
 url.searchParams.set('tidy-feedback[subject]', 'My feedback '+new Date().toISOString());
 url.searchParams.set('tidy-feedback[email]', 'test@example.com');
+url.searchParams.set('tidy-feedback[created_by]', 'test@example.com');
 url.searchParams.set('tidy-feedback[description]', 'This is cool!');
 document.location = url
 ```

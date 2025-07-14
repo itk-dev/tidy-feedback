@@ -3,6 +3,12 @@ version: "3"
 # https://taskfile.dev/usage/#env-files
 dotenv: [".env.local", ".env"]
 
+includes:
+    widget:
+        # https://taskfile.dev/usage/#directory-of-included-taskfile
+        taskfile: ./widget
+        dir: ./widget
+
 vars:
     DOCKER_COMPOSE: '{{.TASK_DOCKER_COMPOSE | default "docker compose"}}'
     APP_DOCKER_COMPOSE: docker compose --profile app
@@ -24,6 +30,10 @@ tasks:
               vars:
                   TASK_ARGS: install
             - task compose -- run --interactive --rm node node_modules/.bin/encore production --progress
+
+            # Build widget and copy result
+            - task: widget:build
+            - rsync -azv widget/static/dist/standalone build/
         silent: true
 
     assets:watch:
