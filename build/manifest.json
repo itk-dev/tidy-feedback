@@ -7,9 +7,8 @@
   "build/widget-region.js": "/build/widget-region.js",
   "build/icons/tidy-feedback-logo.png": "/build/icons/tidy-feedback-logo.png",
   "build/icons/favicon.ico": "/build/icons/favicon.ico",
-  "build/icons/favicon.svg": "/build/icons/favicon.svg",
-  "build/icons/favicon.png": "/build/icons/favicon.png",
   "build/icons/tidy-feedback-logo.svg": "/build/icons/tidy-feedback-logo.svg",
+  "build/icons/favicon.png": "/build/icons/favicon.png",
   "build/icons/favicon-32x32.png": "/build/icons/favicon-32x32.png",
   "build/icons/favicon-16x16.png": "/build/icons/favicon-16x16.png"
 }
