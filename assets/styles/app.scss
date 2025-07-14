@@ -1,7 +1,7 @@
 @import "~bootstrap/scss/bootstrap";
 @import "./variables.scss";
+@import "./syntax-highlight.scss";
 
-body {
-    background: #eee;
-    color: #007;
+.logo {
+    height: 38px;
 }

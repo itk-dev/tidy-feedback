@@ -157,6 +157,8 @@ final class TidyFeedbackHelper implements EventSubscriberInterface
             'content-type' => match (pathinfo($filename, PATHINFO_EXTENSION)) {
                 'css' => 'text/css',
                 'js' => 'text/javascript',
+                'svg' => 'image/svg+xml',
+                'png' => 'image/png',
                 default => throw new NotFoundHttpException(),
             },
         ],
