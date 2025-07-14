@@ -1,8 +1,10 @@
 {% extends 'base.html.twig' %}
 
-{% block content %}
-    <h1>{{ 'Feedback items'|trans }}</h1>
+{% block nav %}
+    {% include 'partials/header.html.twig' with {'title': 'Feedback'|trans } %}
+{% endblock %}
 
+{% block content %}
     {% if items %}
         <table class="table">
             <thead>

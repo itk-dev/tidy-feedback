@@ -1,10 +1,11 @@
 {% extends 'base.html.twig' %}
 
+{% block nav %}
+    {% include 'partials/header.html.twig' with {'title': 'Feedback'|trans } %}
+{% endblock %}
+
 {% block content %}
     <div class="row">
-        <div class="col-md-12 border-bottom py-3 mb-3">
-            <h1 class="m-0">{{ 'Feedback item'|trans }}</h1>
-        </div>
         <div class="col-md-6">
             <dl>
                 <dt>{{ 'Subject'|trans }}</dt>
