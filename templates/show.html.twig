@@ -7,11 +7,6 @@
 {% block content %}
     <div class="row">
         <div class="col-md-6">
-            <dl>
-                <dt>{{ 'Subject'|trans }}</dt>
-                <dd>{{ item.subject }}</dd>
-            </dl>
-
             {% set tableData = [
                 {
                     key: 'Subject'|trans,
