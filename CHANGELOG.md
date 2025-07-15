@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.0] - 2025-07-10
+
+- [PR-16](https://github.com/itk-dev/tidy-feedback/pull/16)
+  Fix duplicated subject
+- [PR-13](https://github.com/itk-dev/tidy-feedback/pull/13)
+  Styling feedback details page
+- [PR-12](https://github.com/itk-dev/tidy-feedback/pull/12)
+  Cleaned up and improved
+- [PR-11](https://github.com/itk-dev/tidy-feedback/pull/11)
+  10: Changed TIDY_FEEDBACK_DISABLE_PATTERN default value
 - [PR-7](https://github.com/itk-dev/tidy-feedback/pull/7)
   Cleaned up. Improved image handling.
 - [PR-3](https://github.com/itk-dev/tidy-feedback/pull/3)
@@ -14,4 +24,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [PR-5](https://github.com/itk-dev/tidy-feedback/pull/5)
   Add styling. Make region and form draggable
 
-[Unreleased]: https://github.com/itk-dev/tidy_feedback
+[Unreleased]: https://github.com/itk-dev/tidy_feedback/compare/1.0.0...HEAD
+[1.0.0]: https://github.com/itk-dev/tidy_feedback/releases/tag/1.0.0
