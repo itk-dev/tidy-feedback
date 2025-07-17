@@ -164,11 +164,6 @@ tasks:
         cmds:
             - task compose -- run --rm phpfpm vendor/bin/phpstan
 
-    default:
-        cmds:
-            - task --list-all
-        silent: true
-
     app:start:
         desc: Start Symfony app with Tity feedback installed
         cmds:
@@ -205,3 +200,8 @@ tasks:
     app:compose:
         cmds:
             - "{{.APP_DOCKER_COMPOSE}} {{.CLI_ARGS}}"
+
+    default:
+        cmds:
+            - task --list-all
+        silent: true

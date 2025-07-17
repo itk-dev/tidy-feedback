@@ -23,6 +23,7 @@ tasks:
 
   dev:
     desc: "Open widget dev site and start Vite dev server"
+    deps: [install]
     cmds:
       - |
         echo "Opening dev site. Please wait a while for the Vite dev server to start"
@@ -49,3 +50,8 @@ tasks:
     desc: "Run npm command. Example: task npm -- install"
     cmds:
       - docker compose run --rm node npm {{.CLI_ARGS}}
+
+  default:
+    cmds:
+      - task --list-all
+    silent: true
