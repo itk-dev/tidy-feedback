@@ -16,7 +16,7 @@
 	let messageTimeout = null;
 	let message = $state('');
 	let messageType = $state('info');
-	const messageHideDelay = 3000;
+	const messageHideDelay = 0;
 
 	const config = (() => {
 		const el = document.querySelector('[data-tidy-feedback-config]');
@@ -42,7 +42,9 @@
 		}
 		message = msg;
 		messageType = type;
-		messageTimeout = setTimeout(() => (message = ''), messageHideDelay);
+		if (messageHideDelay > 0) {
+			messageTimeout = setTimeout(() => (message = ''), messageHideDelay);
+		}
 	};
 
 	const showForm = () => {
@@ -203,14 +205,25 @@
 
 <div data-capture="exclude">
 	{#if message}
-		<div class="tidy-feedback-message alert alert-{messageType} alert-dismissible" role="alert">
-			{message}
-			<button class="btn-close" onclick={() => (message = null)} aria-label="Close"></button>
+		<div class="tidy-feedback-message-wrapper container position-fixed top">
+			<row class="row">
+				<div class="col-md-6 offset-md-3 mt-3">
+					<div
+						class="tidy-feedback-message alert alert-{messageType} alert-dismissible"
+						role="alert"
+					>
+						{message}
+						<button class="btn-close" onclick={() => (message = null)} aria-label="Close"></button>
+					</div>
+				</div>
+			</row>
 		</div>
 	{/if}
 
 	{#if formHidden}
-		<button class="tidy-feedback-start" onclick={showForm}>{t('Send feedback')}</button>
+		<button class="btn btn-submit tidy-feedback-start" onclick={showForm}
+			>{t('Send feedback')}</button
+		>
 	{/if}
 
 	<div class="form-container tidy-feedback-form" bind:this={formContainer} hidden={formHidden}>
