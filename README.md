@@ -113,6 +113,8 @@ query string will *not* be included.
 task
 ```
 
+See [the widget documentation](docs/widget.md) for details on how the Tidy feedback widget is built.
+
 ### composer.json
 
 In order to make this behave as both a Drupal module and a Synfony bundle, we use some tricks in
