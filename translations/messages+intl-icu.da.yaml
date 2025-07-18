@@ -1,5 +1,7 @@
 Cancel: Annuller
+Cancelled: Annulleret
 Category: Kategori
+"Confirm cancellation": "Bekræft annullering"
 "Created at": Oprettet
 "Created by": "Oprettet af"
 Data: Data
@@ -8,13 +10,14 @@ Description: Beskrivelse
 Feedback: Feedback
 "Feedback created": "Feedback oprettet"
 "Feedback items": "Feedback indsendelser"
+"Highlight and fill": "Fremhæv og udfyld"
 "Highlight the relevant part of the page and fill in the form to send us your feedback": "Fremhæv den relevante del af siden og udfyld formularen for at sende din feedback"
 "Not feedback yet": "Ingen feedback endnu"
+"Send feedback": "Send feedback"
 "Sending feedback …": "Sender feedback …"
 "Show image": "Vis billede"
 Status: Status
 Subject: Emne
-"Submit feedback": "Send feedback"
 "Taking screenshot …": "Tager skærmbillede …"
 "Tidy feedback": "Tidy feedback"
 "Tidy feedback test": "Tidy feedback-test"

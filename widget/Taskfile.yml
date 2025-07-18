@@ -1,0 +1,57 @@
+# https://taskfile.dev
+
+version: '3'
+
+vars:
+  APP_PORT: 3000
+  BASE_PATH: tidy_feedback
+  WIDGET_URL: 'http://localhost:{{.APP_PORT}}/{{.BASE_PATH}}'
+
+tasks:
+  build:
+    desc: Build widget for production
+    deps: [install]
+    cmds:
+      - docker compose run --rm node npm install
+      - docker compose run --rm node npx standalone build --all --production
+
+  build:dev:
+    desc: Build widget for develoment
+    deps: [install]
+    cmds:
+      - docker compose run --rm node npx standalone build --all
+
+  dev:
+    desc: "Open widget dev site and start Vite dev server"
+    deps: [install]
+    cmds:
+      # https://stackoverflow.com/a/73821896
+      # - docker compose run --env ORIGIN=http://localhost:3000 --rm --publish '{{.APP_PORT}}:{{.APP_PORT}}' node npm run dev -- --port {{.APP_PORT}} --host
+      - docker compose run --name tidy-feedback-widget --rm --publish '{{.APP_PORT}}:{{.APP_PORT}}' node npm run dev -- --port {{.APP_PORT}} --host
+
+  open:
+    desc: "Open widget dev site"
+    cmds:
+      - open "{{.WIDGET_URL}}"
+
+  install:
+    cmds:
+      - COMPOSE_PROFILES='*' docker compose pull
+      - task npm -- install
+    internal: true
+
+  lint:
+    desc: "Apply and check widget coding standards"
+    cmds:
+      - task npm -- run format
+      - task npm -- run lint
+
+  npm:
+    desc: "Run npm command. Example: task npm -- install"
+    cmds:
+      - docker compose run --rm node npm {{.CLI_ARGS}}
+
+  default:
+    cmds:
+      - task --list-all
+    silent: true

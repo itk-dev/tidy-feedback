@@ -113,6 +113,8 @@ query string will *not* be included.
 task
 ```
 
+See [the widget documentation](docs/widget.md) for details on how the Tidy feedback widget is built.
+
 ### composer.json
 
 In order to make this behave as both a Drupal module and a Synfony bundle, we use some tricks in
@@ -175,8 +177,9 @@ For easy testing, you can use [Bookmarklet Creator](https://mrcoles.com/bookmark
 ``` javascript
 const url = new URL(document.location);
 url.searchParams.set('tidy-feedback-show', 'form');
-url.searchParams.set('tidy-feedback[subject]', 'My feedback '+new Date().toISOString());
+url.searchParams.set('tidy-feedback[subject]', 'respond with 201 My feedback '+new Date().toISOString());
 url.searchParams.set('tidy-feedback[email]', 'test@example.com');
+url.searchParams.set('tidy-feedback[created_by]', 'test@example.com');
 url.searchParams.set('tidy-feedback[description]', 'This is cool!');
 document.location = url
 ```

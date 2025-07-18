@@ -3,90 +3,50 @@
 {# Cf. https://github.com/zumerlab/snapdom/blob/main/README.md#features #}
 {% set capture_exclude_attributes = 'data-capture="exclude"' %}
 
-<div id="tidy-feedback" {{ capture_exclude_attributes|raw }}>
-    <template shadowrootmode="open">
-        {# Translate all messages used in showMessage in the widget here. #}
-        {% set messages = {
-            'Taking screenshot …': 'Taking screenshot …'|trans,
-            'Error taking screenshot': 'Error taking screenshot'|trans,
-            'Sending feedback …': 'Sending feedback …'|trans,
-            'Feedback created': 'Feedback created'|trans,
-        } %}
-        {% set config = {
-            messages: messages,
-        } %}
-        <style {{ capture_exclude_attributes|raw }}>
-            @import {{ path('tidy_feedback_asset', {asset: 'widget.css'})|json_encode(constant('JSON_UNESCAPED_SLASHES'))|raw }};
-        </style>
-        <script {{ capture_exclude_attributes|raw }} src="{{ path('tidy_feedback_asset', {asset: 'widget.js'}) }}"
-                                                     data-tidy-feedback-config="{{ config|json_encode }} "></script>
-        <div class="tidy-feedback" {{ capture_exclude_attributes|raw }}>
-            <div {{ capture_exclude_attributes|raw }} hidden class="tidy-feedback-message"></div>
-            <button {{ capture_exclude_attributes|raw }} hidden type="button" class="tidy-feedback-start"
-                                                         data-tidy-feedback-action="start">{{ 'Feedback'|trans }}</button>
+{# Translate all messages used in showMessage in the widget here. #}
+{% set messages = {
+    'Confirm cancellation': 'Confirm cancellation'|trans,
+    'Error taking screenshot': 'Error taking screenshot'|trans,
+    'Feedback created': 'Feedback created'|trans,
+    'Highlight and fill': 'Highlight and fill'|trans,
+    'Send feedback': 'Send feedback'|trans,
+    'Sending feedback …': 'Sending feedback …'|trans,
+    'Taking screenshot …': 'Taking screenshot …'|trans,
+    Cancel: 'Cancel'|trans,
+    Cancelled: 'Cancelled'|trans,
+    Feedback: 'Feedback'|trans,
+    } %}
+{% set config = {
+    messages: messages,
+    } %}
 
-            <form {{ capture_exclude_attributes|raw }} hidden class="tidy-feedback-form"
-                                                       action="{{ path('tidy_feedback_create') }}" method="post">
+<template id="tidy_feedback_form" data-tidy-feedback-config="{{ config|json_encode }}">
+    <form class="tidy-feedback-form-elements" action="{{ path('tidy_feedback_create') }}" method="post">
+        <h1 class="tidy-feedback-form-title">{{ 'Your feedback'|trans }}</h1>
+        <p class="tidy-feedback-form-lead">{{ 'Highlight the relevant part of the page and fill in the form to send us your feedback'|trans }}</p>
 
-                <div {{ capture_exclude_attributes|raw }} hidden class="tidy-feedback-draggable-handle">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
-                <h1 class="tidy-feedback-form-title">{{ 'Your feedback'|trans }}</h1>
-                <p class="tidy-feedback-form-lead">{{ 'Highlight the relevant part of the page and fill in the form to send us your feedback'|trans }}</p>
-                {# <button type="button" class="btn btn-secondary" data-tidy-feedback-action="select-region">{{ 'Select region'|trans }}</button> #}
+        {# "subject" is required and all other inputs with be stored in the data blob on the feedback item. #}
+        {{ forms.input('subject', 'Subject'|trans, {
+            placeholder: 'Subject'|trans,
+            value: default_values['subject']|default(''),
+            }) }}
 
-                {# "subject" is required and all other inputs with be stored in the data blob on the feedback item. #}
-                {{ forms.input('subject', 'Subject'|trans, {
-                    placeholder: 'Subject'|trans,
-                    value: default_values['subject']|default(''),
-                    }) }}
+        {{ forms.input('created_by', 'Your email address'|trans, {
+            type: 'email',
+            placeholder: 'Your email address'|trans,
+            value: default_values['email']|default(''),
+            readonly: default_values['email'] is defined,
+            }) }}
 
-                {{ forms.input('created_by', 'Your email address'|trans, {
-                    type: 'email',
-                    placeholder: 'Your email address'|trans,
-                    value: default_values['email']|default(''),
-                    readonly: default_values['email'] is defined,
-                }) }}
-
-                {{ forms.textarea('description', 'Description'|trans, {
-                    placeholder: 'Description'|trans,
-                    value: default_values['description']|default(''),
-                }) }}
-                {{ forms.textarea('what_did_you_do', 'What did you do?'|trans, {
-                    placeholder: 'What did you do?'|trans,
-                    required: false,
-                    value: default_values['what_did_you_do']|default(''),
-                }) }}
-
-                <button type="submit" class="btn btn-primary">{{ 'Submit feedback'|trans }}</button>
-
-                <button type="button" class="btn btn-cancel" data-tidy-feedback-action="cancel">{{ 'Cancel'|trans }}</button>
-            </form>
-        </div>
-    </template>
-</div>
-
-{# https://medium.com/the-z/making-a-resizable-div-in-js-is-not-easy-as-you-think-bda19a1bc53d #}
-{# IMPORTANT: This element MUST be outside the tidy feedback element! #}
-<div id="tidy-feedback-region" hidden>
-    <style {{ capture_exclude_attributes|raw }}>
-        @import {{ path('tidy_feedback_asset', {asset: 'widget-region.css'})|json_encode(constant('JSON_UNESCAPED_SLASHES'))|raw }};
-    </style>
-
-    <div class="overlays">
-        {% for position in ['top', 'left', 'right', 'bottom'] %}
-            <div class="{{ position }}">{{ position }}</div>
-        {% endfor %}
-    </div>
-
-    <div class="resizable">
-        <div class="resizers">
-            <div class="resizer top-left"></div>
-            <div class="resizer top-right"></div>
-            <div class="resizer bottom-left"></div>
-            <div class="resizer bottom-right"></div>
-        </div>
-    </div>
-</div>
+        {{ forms.textarea('description', 'Description'|trans, {
+            placeholder: 'Description'|trans,
+            value: default_values['description']|default(''),
+            }) }}
+        {{ forms.textarea('what_did_you_do', 'What did you do?'|trans, {
+            placeholder: 'What did you do?'|trans,
+            required: false,
+            value: default_values['what_did_you_do']|default(''),
+            }) }}
+    </form>
+</template>
+<script {{ capture_exclude_attributes|raw }} src="{{ path('tidy_feedback_asset', {asset: 'standalone/tidy_feedback.min.js'}) }}"></script>

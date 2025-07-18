@@ -1,0 +1,13 @@
+services:
+  node:
+    image: node:24
+    # https://github.com/nodejs/docker-node/blob/main/docs/BestPractices.md#handling-kernel-signals
+    # https://docs.docker.com/reference/compose-file/services/#init
+    init: true
+    working_dir: /app
+    volumes:
+      - .:/app
+    profiles:
+      - dev
+    ports:
+      - '3000:3000'
