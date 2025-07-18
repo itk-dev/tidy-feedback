@@ -21,6 +21,22 @@ task widget:dev
 
 to get started.
 
+## Configuration
+
+The widget reads configuration from the first element matching the CSS selector `[data-tidy-feedback-config]`. The
+configuration must be a JSON object, e.g.
+
+``` html
+<template data-tidy-feedback-config='{"messageHideDelay": 0}'></template>
+```
+
+### All widget configuration options
+
+| Name               | Default value | Description                                                                                                |
+|--------------------|---------------|------------------------------------------------------------------------------------------------------------|
+| `messageHideDelay` | `0`           | If greater than 0, automatically hide message after this number of milliseconds.}                          |
+| `messages`         | `{}`          | Translated messages keyed by original (untranslated) message, e.g. `{"Send feedback": "Indsend feedback"}` |
+
 ## Building for production
 
 When done with development, run
