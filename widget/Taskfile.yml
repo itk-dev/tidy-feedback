@@ -13,7 +13,7 @@ tasks:
     deps: [install]
     cmds:
       - docker compose run --rm node npm install
-      - docker compose run --rm node npx standalone build --all --production
+      - docker compose run --rm node npx standalone build --all
 
   build:dev:
     desc: Build widget for develoment
