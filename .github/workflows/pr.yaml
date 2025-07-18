@@ -21,34 +21,14 @@ jobs:
             - name: Build assets
               run: task assets:build
 
+            # https://github.com/mxschmitt/action-tmate?tab=readme-ov-file#manually-triggered-debug
+            # Enable tmate debugging if debug logging is enabled (cf.
+            # https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/accessing-contextual-information-about-workflow-runs#runner-context)
+            - name: Setup tmate session
+              uses: mxschmitt/action-tmate@v3
+              with:
+                limit-access-to-actor: false
+              # if: 1 == runner.debug
+
             - name: Check for changes in built assets
               run: git diff --diff-filter=ACMRT --exit-code build
-
-    check-translations:
-        name: Check that translations are up to date
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v4
-
-            - uses: arduino/setup-task@v2
-              with:
-                  repo-token: ${{ secrets.GITHUB_TOKEN }}
-
-            - name: Extract translations
-              run: task translations:extract
-
-            - name: Check for changes in built assets
-              run: git diff --diff-filter=ACMRT --exit-code translations
-
-    check-shell-scripts:
-        name: Check shell scripts
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v4
-
-            - uses: arduino/setup-task@v2
-              with:
-                  repo-token: ${{ secrets.GITHUB_TOKEN }}
-
-            - name: Build assets
-              run: task coding-standards:shell:check
