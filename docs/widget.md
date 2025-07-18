@@ -21,6 +21,43 @@ task widget:dev
 
 to get started.
 
+## Development
+
+A simple API endpoint for reponding to `POST` requests from the feedback form is defined in
+[tidy_feedback/+server.js](../widget/src/routes/tidy_feedback/+server.js). _Nothing is saved when sending data to the
+endpoint – it is purely used to test getting a response from the API_. The default response has the status code [`201
+Created`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/201), but you can request another status
+code by adding “respond with «status code»“ to the subject, e.g. “respond with 400“ to get [`400 Bad
+Request`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/400).
+
+Examples:
+
+``` console
+$ curl http://localhost:3000/tidy_feedback --include --header 'content-type: application/json' \
+    --data '{"subject": "My feedback"}'
+HTTP/1.1 201 Created
+Vary: Origin
+content-length: 38
+content-type: application/json
+Date: Fri, 18 Jul 2025 09:28:01 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"subject":"My feedback","status":201}
+
+$ curl http://localhost:3000/tidy_feedback --include --header 'content-type: application/json' \
+    --data '{"subject": "respond with 400 My feedback"}'
+HTTP/1.1 400 Bad Request
+Vary: Origin
+content-length: 55
+content-type: application/json
+Date: Fri, 18 Jul 2025 09:28:22 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"subject":"respond with 400 My feedback","status":400}%
+```
+
 ## Configuration
 
 The widget reads configuration from the first element matching the CSS selector `[data-tidy-feedback-config]`. The

@@ -25,10 +25,9 @@ tasks:
     desc: "Open widget dev site and start Vite dev server"
     deps: [install]
     cmds:
-      - |
-        echo "Opening dev site. Please wait a while for the Vite dev server to start"
-        task open
-      - docker compose run --rm --publish '{{.APP_PORT}}:{{.APP_PORT}}' node npm run dev -- --port {{.APP_PORT}} --host
+      # https://stackoverflow.com/a/73821896
+      # - docker compose run --env ORIGIN=http://localhost:3000 --rm --publish '{{.APP_PORT}}:{{.APP_PORT}}' node npm run dev -- --port {{.APP_PORT}} --host
+      - docker compose run --name tidy-feedback-widget --rm --publish '{{.APP_PORT}}:{{.APP_PORT}}' node npm run dev -- --port {{.APP_PORT}} --host
 
   open:
     desc: "Open widget dev site"

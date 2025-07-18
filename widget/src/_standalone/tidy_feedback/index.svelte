@@ -135,9 +135,6 @@
 			})
 				.then((response) => {
 					if (201 === response.status) {
-						if (region) {
-							region.hidden = true;
-						}
 						hideForm(true);
 						showMessage(t('Feedback created'), 'success');
 					} else {
