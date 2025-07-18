@@ -16,7 +16,7 @@
 	});
 </script>
 
-<template id="tidy_feedback_form">
+<template id="tidy_feedback_form" data-tidy-feedback-config="{ JSON.stringify({"messageHideDelay": 0}) }">
 	<form class="x-tidy-feedback-form" action="/tidy-feedback/" method="post">
 		<h1 class="tidy-feedback-form-title">Din feedback</h1>
 		<p class="tidy-feedback-form-lead">

@@ -7,17 +7,6 @@
 	import { makeResizableDiv } from './component/region';
 	import { makeDraggable } from './component/draggable';
 
-	let formContainer;
-	let region;
-	let formHidden = $state(true);
-	let regionHidden = $state(true);
-	let form;
-
-	let messageTimeout = null;
-	let message = $state('');
-	let messageType = $state('info');
-	const messageHideDelay = 0;
-
 	const config = (() => {
 		const el = document.querySelector('[data-tidy-feedback-config]');
 		if (el) {
@@ -29,6 +18,17 @@
 		}
 		return {};
 	})();
+
+	let formContainer;
+	let region;
+	let formHidden = $state(true);
+	let regionHidden = $state(true);
+	let form;
+
+	let messageTimeout = null;
+	let message = $state('');
+	let messageType = $state('info');
+	const messageHideDelay = config.messageHideDelay ?? 0;
 
 	const t = (text) => config.messages?.[text] ?? text + ' (missing translation)';
 
