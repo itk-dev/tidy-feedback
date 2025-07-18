@@ -20,7 +20,6 @@
 
 	const config = (() => {
 		const el = document.querySelector('[data-tidy-feedback-config]');
-		console.log({ el });
 		if (el) {
 			try {
 				return JSON.parse(el.dataset.tidyFeedbackConfig);
@@ -33,10 +32,7 @@
 
 	const t = (text) => config.messages?.[text] ?? text + ' (missing translation)';
 
-	console.log({ config });
-
 	const showMessage = (msg, type = 'info') => {
-		console.log('showMessage', { msg, type });
 		if (messageTimeout) {
 			clearTimeout(messageTimeout);
 		}
@@ -64,14 +60,12 @@
 	const cancelForm = () => {
 		const isEmpty = (() => {
 			for (const el of form.elements) {
-				console.log('isEmpty', el, el.value);
 				if (el.value || el.checked) {
 					return false;
 				}
 			}
 			return true;
 		})();
-		console.log({ isEmpty });
 		if (!isEmpty && !confirm(t('Confirm cancellation'))) {
 			return;
 		}
@@ -83,7 +77,6 @@
 		// https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement#instance_methods
 		// @todo This does not actually validate the form elements!
 		const isValid = form.reportValidity();
-		console.log({ isValid });
 		if (isValid) {
 			const data = {};
 
@@ -133,8 +126,6 @@
 
 			showMessage('Sending feedback …');
 
-			console.log("POST'ing", data);
-
 			fetch(form.action, {
 				method: 'POST',
 				headers: {
@@ -165,7 +156,6 @@
 	$effect(() => {
 		// Notice: It's important not to clone the form element. If it's cloned form validation (via form.reportValidity) breaks.
 		form = document.getElementById('tidy_feedback_form').content?.firstElementChild;
-		console.log({ form });
 		if (form) {
 			const placeholder = formContainer.querySelector('.form-placeholder');
 			placeholder.parentNode.replaceChild(form, placeholder);
