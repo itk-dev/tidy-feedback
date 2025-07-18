@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.0.0] - 2025-07-10
 
+- [PR-17](https://github.com/itk-dev/tidy-feedback/pull/17)
+  Made widget configurable
 - [PR-14](https://github.com/itk-dev/tidy-feedback/pull/14)
   Migrated widget to Svelte
 - [PR-16](https://github.com/itk-dev/tidy-feedback/pull/16)
