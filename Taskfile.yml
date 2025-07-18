@@ -26,6 +26,7 @@ tasks:
     assets:build:
         desc: Build assets
         cmds:
+            - task compose -- pull
             - task: npm
               vars:
                   TASK_ARGS: install
