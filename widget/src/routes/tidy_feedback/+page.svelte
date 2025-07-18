@@ -16,8 +16,8 @@
 	});
 </script>
 
-<template id="tidy_feedback_form">
-	<form class="x-tidy-feedback-form" action="/tidy-feedback/" method="post">
+<template id="tidy_feedback_form" data-tidy-feedback-config="{ JSON.stringify({"messageHideDelay": 0}) }">
+	<form class="x-tidy-feedback-form" action="/tidy_feedback" method="post">
 		<h1 class="tidy-feedback-form-title">Din feedback</h1>
 		<p class="tidy-feedback-form-lead">
 			Fremhæv den relevante del af siden og udfyld formularen for at sende din feedback
@@ -73,4 +73,4 @@
 
 <div id="tidy_feedback"></div>
 
-<h1>This is a test</h1>
+<h1>This is a Tidy feedback test</h1>

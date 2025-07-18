@@ -14,5 +14,5 @@ insert_final_newline = false
 [package.json]
 indent_style = space
 
-[Taskfile.yml]
+[{Taskfile.yml,compose.yaml}]
 indent_style = space
