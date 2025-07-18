@@ -20,3 +20,15 @@ task widget:dev
 ```
 
 to get started.
+
+## Building for production
+
+When done with development, run
+
+``` shell
+task assets:build
+```
+
+to build the widget for production and copy the resulting Javascript file
+([tidy_feedback.min.js](../widget/static/dist/standalone/tidy_feedback.min.js)) to the [`build`
+folder](../build/standalone) (which is under git control).
