@@ -74,3 +74,10 @@
 <div id="tidy_feedback"></div>
 
 <h1>This is a Tidy feedback test</h1>
+
+<!-- Test with a really long page -->
+{#each { length: 99 }, i}
+  <section>
+    <header><h2>Section {i}</h2></header>
+  </section>
+{/each}
