@@ -20,6 +20,7 @@ use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Component\Mime\MimeTypes;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Yaml\Yaml;
 use Twig\Environment;
@@ -153,15 +154,17 @@ final class TidyFeedbackHelper implements EventSubscriberInterface
             throw new NotFoundHttpException();
         }
 
-        $response = new BinaryFileResponse($filename, headers: [
-            'content-type' => match (pathinfo($filename, PATHINFO_EXTENSION)) {
-                'css' => 'text/css',
-                'js' => 'text/javascript',
-                'svg' => 'image/svg+xml',
-                'png' => 'image/png',
-                default => throw new NotFoundHttpException(),
-            },
-        ],
+        $ext = pathinfo($filename, PATHINFO_EXTENSION);
+        $mimeTypes = new MimeTypes();
+        $types = $mimeTypes->getMimeTypes($ext);
+        if (empty($types)) {
+            throw new NotFoundHttpException();
+        }
+        $response = new BinaryFileResponse(
+            $filename,
+            headers: [
+                'content-type' => reset($types),
+            ],
             autoEtag: true, autoLastModified: true
         );
 
