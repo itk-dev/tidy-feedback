@@ -131,7 +131,12 @@ In order to make this behave as both a Drupal module and a Synfony bundle, we us
         // minimum to make this module/bundle work.
         "doctrine/dbal": "^3 || ^4",
         "doctrine/orm": "^2.8 || ^3",
+        // These are required by Drupal 9 later
         "symfony/cache": "^6 || ^7",
+        "symfony/http-foundation": "^6 || ^7",
+        "symfony/http-kernel": "^6 || ^7",
+        "symfony/mime": "^6 || ^7",
+        "symfony/routing": "^6 || ^7",
         "twig/twig": "^3"
     },
     "autoload": {
