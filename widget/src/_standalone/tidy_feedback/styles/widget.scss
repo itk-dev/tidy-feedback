@@ -1,6 +1,6 @@
-@import 'bootstrap/scss/bootstrap';
-@import './variables.scss';
-@import './btn.scss';
+@use "@coreui/coreui/dist/css/themes/bootstrap/bootstrap.min.css";
+@use './variables.scss';
+@use './btn.scss';
 
 .tidy-feedback-start {
 	position: fixed;

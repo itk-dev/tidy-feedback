@@ -1,4 +1,4 @@
-@import './variables.scss';
+@use './variables';
 
 button {
 	border-radius: var(--radius-base);

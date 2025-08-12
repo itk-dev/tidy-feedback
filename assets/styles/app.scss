@@ -1,6 +1,6 @@
-@import "~bootstrap/scss/bootstrap";
-@import "./variables.scss";
-@import "./syntax-highlight.scss";
+@use "@coreui/coreui/dist/css/themes/bootstrap/bootstrap";
+@use "./variables";
+@use "./syntax-highlight";
 
 .logo {
     height: 38px;
