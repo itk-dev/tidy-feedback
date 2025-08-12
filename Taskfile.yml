@@ -34,7 +34,7 @@ tasks:
 
             # Build widget and copy result
             - task: widget:build
-            - rsync -azv widget/static/dist/standalone build/
+            - rsync -azv --include=*/ --include='*.css' --include='*.js' --exclude=* widget/static/dist/ build/standalone/
         silent: true
 
     assets:watch:
