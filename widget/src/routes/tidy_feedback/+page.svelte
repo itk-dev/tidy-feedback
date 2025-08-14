@@ -16,7 +16,10 @@
 	});
 </script>
 
-<template id="tidy_feedback_form" data-tidy-feedback-config="{ JSON.stringify({"messageHideDelay": 0}) }">
+<template
+	id="tidy_feedback_form"
+	data-tidy-feedback-config={JSON.stringify({ messageHideDelay: 0 })}
+>
 	<form class="x-tidy-feedback-form" action="/tidy_feedback" method="post">
 		<h1 class="tidy-feedback-form-title">Din feedback</h1>
 		<p class="tidy-feedback-form-lead">
@@ -71,13 +74,11 @@
 	</form>
 </template>
 
-<div id="tidy_feedback"></div>
-
 <h1>This is a Tidy feedback test</h1>
 
 <!-- Test with a really long page -->
-{#each { length: 99 }, i}
-  <section>
-    <header><h2>Section {i}</h2></header>
-  </section>
+{#each { length: 99 } as i}
+	<section>
+		<header><h2>Section {i}</h2></header>
+	</section>
 {/each}
