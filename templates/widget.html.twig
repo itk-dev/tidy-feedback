@@ -49,4 +49,5 @@
             }) }}
     </form>
 </template>
+<style {{ capture_exclude_attributes|raw }}>@import {{ path('tidy_feedback_asset', {asset: 'standalone/assets/tidy_feedback.css'})|json_encode(constant('JSON_UNESCAPED_SLASHES'))|raw }}</style>
 <script {{ capture_exclude_attributes|raw }} src="{{ path('tidy_feedback_asset', {asset: 'standalone/tidy_feedback.min.js'}) }}"></script>
