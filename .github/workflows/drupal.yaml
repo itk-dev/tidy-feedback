@@ -1,0 +1,27 @@
+name: Drupal
+
+on:
+    pull_request:
+    push:
+        branches:
+            - main
+            - develop
+
+jobs:
+    code-analysis:
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                drupal-version:
+                    - 10
+                    - 11
+                php-version:
+                    - 8.3
+                    - 8.4
+                script-name:
+                    - tidy-feedback
+        steps:
+            - uses: actions/checkout@v4
+            - name: Drupal ${{ matrix.drupal-version }}/${{ matrix.script-name }}
+              run: |
+                  DRUPAL_VERSION=${{ matrix.drupal-version }} PHP_VERSION=${{ matrix.php-version }} ./scripts/${{ matrix.script-name }}

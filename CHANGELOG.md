@@ -7,11 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- [PR-30](https://github.com/itk-dev/tidy-feedback/pull/30)
-  29: Replaced Bootstrap with CoreUI
-
 ## [1.0.0] - 2025-07-10
 
+- [PR-30](https://github.com/itk-dev/tidy-feedback/pull/30)
+  29: Replaced Bootstrap with CoreUI
+- [PR-28](https://github.com/itk-dev/tidy-feedback/pull/28)
+  27: Cleaned up code
 - [PR-26](https://github.com/itk-dev/tidy-feedback/pull/26)
   Replaced `@import` with `@use`
 - [PR-24](https://github.com/itk-dev/tidy-feedback/pull/24)

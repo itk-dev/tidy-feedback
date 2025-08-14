@@ -1,0 +1,101 @@
+#!/usr/bin/env bash
+set -o errexit -o errtrace -o noclobber -o nounset -o pipefail
+IFS=$'\n\t'
+
+execute_name=execute
+
+usage() {
+  (cat >&2 <<EOF
+--------------------------------------------------------------------------------
+
+Example usage:
+
+#!/usr/bin/env bash
+set -o errexit -o errtrace -o noclobber -o nounset -o pipefail
+IFS=$'\n\t'
+
+script_dir=\$(cd "\$(dirname "\${BASH_SOURCE[0]}")" && pwd)
+
+# The $execute_name function will be invoked in the root of a Drupal 10 installation.
+$execute_name() {
+  echo "Executing!"
+  echo "module_path: \$module_path"
+}
+
+source "\$script_dir/base"
+
+EOF
+  )
+
+  exit 1
+}
+
+# @see https://stackoverflow.com/a/28776166
+if ! (return 0 2>/dev/null); then
+  (cat >&2 <<EOF
+This script (${BASH_SOURCE[0]}) must be sourced!
+
+EOF
+)
+
+  usage
+fi
+
+if [[ $(type -t "$execute_name") != function ]]; then
+  (cat >&2 <<EOF
+Function $execute_name does not exist!
+EOF
+)
+
+  usage
+fi
+
+compose() {
+  docker compose "$@"
+}
+
+shell() {
+  compose exec drupal "$@"
+}
+
+composer() {
+  shell composer "$@"
+}
+
+drush() {
+  shell vendor/bin/drush "$@"
+}
+
+# Extract the module path from the service.
+# shellcheck disable=SC2016 # (https://github.com/koalaman/shellcheck/wiki/SC2016)
+module_path=$(compose run --rm drupal sh -c 'echo $MODULE_PATH')
+module_name=$(compose run --rm drupal sh -c 'echo $MODULE_NAME')
+if [[ -z "$module_name" ]]; then
+  # shellcheck disable=SC2016
+  module_name=$(compose run --rm drupal sh -c 'basename --suffix=.info.yml $MODULE_PATH/*.info.yml')
+fi
+
+# https://www.man7.org/linux/man-pages/man1/trap.1p.html
+trap teardown EXIT
+
+setup() {
+  compose down --remove-orphans
+  compose pull
+  compose up --detach --remove-orphans --wait --build
+  composer config --no-plugins allow-plugins true
+  composer config extra.merge-plugin.include "$module_path/composer.json"
+  composer require drush/drush wikimedia/composer-merge-plugin
+  drush --yes site:install --db-url='mysql://root:root@mariadb/drupal'
+  drush --yes pm:install "$module_name"
+}
+
+teardown() {
+  # Remove EXIT trap
+  trap - EXIT
+
+  compose down --remove-orphans
+}
+
+setup
+execute
+teardown
