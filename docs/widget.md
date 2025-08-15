@@ -82,6 +82,7 @@ When done with development, run
 task assets:build
 ```
 
-to build the widget for production and copy the resulting Javascript file
-([tidy_feedback.min.js](../widget/static/dist/standalone/tidy_feedback.min.js)) to the [`build`
-folder](../build/standalone) (which is under git control).
+to build the widget for production and copy the resulting files
+([tidy_feedback.min.js](../widget/static/dist/tidy_feedback.min.js) and
+[tidy_feedback.css](../widget/static/dist/assets/tidy_feedback.css)) to the [`build` folder](../build/standalone) (which
+is under git control).

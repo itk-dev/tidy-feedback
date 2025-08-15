@@ -22,7 +22,7 @@ tasks:
       - docker compose run --rm node npx standalone build --all
 
   dev:
-    desc: "Open widget dev site and start Vite dev server"
+    desc: 'Open widget dev site and start Vite dev server'
     deps: [install]
     cmds:
       # https://stackoverflow.com/a/73821896
@@ -30,7 +30,7 @@ tasks:
       - docker compose run --name tidy-feedback-widget --rm --publish '{{.APP_PORT}}:{{.APP_PORT}}' node npm run dev -- --port {{.APP_PORT}} --host
 
   open:
-    desc: "Open widget dev site"
+    desc: 'Open widget dev site'
     cmds:
       - open "{{.WIDGET_URL}}"
 
@@ -40,14 +40,19 @@ tasks:
       - task npm -- install
     internal: true
 
-  lint:
-    desc: "Apply and check widget coding standards"
+  format:
+    desc: 'Apply and check widget coding standards'
     cmds:
       - task npm -- run format
+
+  lint:
+    desc: 'Apply and check widget coding standards'
+    cmds:
+      - task: format
       - task npm -- run lint
 
   npm:
-    desc: "Run npm command. Example: task npm -- install"
+    desc: 'Run npm command. Example: task npm -- install'
     cmds:
       - docker compose run --rm node npm {{.CLI_ARGS}}
 

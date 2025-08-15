@@ -1,2 +1,5 @@
-# Ignore Svelte stuff
-widget/
+build/
+
+# Ignore some Svelte stuff
+widget/.svelte-kit/
+widget/static/

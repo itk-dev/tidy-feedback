@@ -19,6 +19,11 @@
 		return {};
 	})();
 
+	const MESSAGE_TYPE_INFO = 'info';
+	const MESSAGE_TYPE_DANGER = 'danger';
+	const MESSAGE_TYPE_ERROR = 'error';
+	const MESSAGE_TYPE_SUCCESS = 'success';
+
 	let formContainer;
 	let region;
 	let formHidden = $state(true);
@@ -27,12 +32,12 @@
 
 	let messageTimeout = null;
 	let message = $state('');
-	let messageType = $state('info');
+	let messageType = $state(MESSAGE_TYPE_INFO);
 	const messageHideDelay = config.messageHideDelay ?? 0;
 
 	const t = (text) => config.messages?.[text] ?? text + ' (missing translation)';
 
-	const showMessage = (msg, type = 'info') => {
+	const showMessage = (msg, type = MESSAGE_TYPE_INFO) => {
 		if (messageTimeout) {
 			clearTimeout(messageTimeout);
 		}
@@ -75,7 +80,6 @@
 
 	const submitForm = async (target) => {
 		// https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement#instance_methods
-		// @todo This does not actually validate the form elements!
 		const isValid = form.reportValidity();
 		if (isValid) {
 			const data = {};
@@ -97,7 +101,7 @@
 				data.image = image;
 			} catch (error) {
 				console.error(error);
-				showMessage('Error taking screenshot', 'danger');
+				showMessage('Error taking screenshot', MESSAGE_TYPE_DANGER);
 			}
 
 			const formData = new FormData(form);
@@ -136,17 +140,19 @@
 				.then((response) => {
 					if (201 === response.status) {
 						hideForm(true);
-						showMessage(t('Feedback created'), 'success');
+						showMessage(t('Feedback created'), MESSAGE_TYPE_SUCCESS);
 					} else {
 						response
 							.json()
 							.then((data) =>
-								showMessage('Error creating feedback: ' + JSON.stringify(data), 'danger')
+								showMessage('Error creating feedback: ' + JSON.stringify(data), MESSAGE_TYPE_DANGER)
 							)
-							.catch((error) => showMessage('Error creating feedback: ' + error, 'danger'));
+							.catch((error) =>
+								showMessage('Error creating feedback: ' + error, MESSAGE_TYPE_DANGER)
+							);
 					}
 				})
-				.catch((reason) => showMessage(reason, 'error'));
+				.catch((reason) => showMessage(reason, MESSAGE_TYPE_ERROR));
 		}
 	};
 
@@ -192,11 +198,21 @@
 
 <div data-capture="exclude">
 	{#if message}
-		<div class="tidy-feedback-message-wrapper container position-fixed top">
+		<div class="tidy-feedback-message-wrapper container position-fixed top-0">
 			<row class="row">
 				<div class="col-md-6 offset-md-3 mt-3">
 					<div
-						class="tidy-feedback-message alert alert-{messageType} alert-dismissible"
+						class={[
+							'tidy-feedback-message',
+							'alert',
+							'alert-dismissible',
+							{
+								'alert-info': MESSAGE_TYPE_INFO === messageType,
+								'alert-danger': MESSAGE_TYPE_DANGER === messageType,
+								'alert-error': MESSAGE_TYPE_ERROR === messageType,
+								'alert-sucess': MESSAGE_TYPE_SUCCESS === messageType
+							}
+						]}
 						role="alert"
 					>
 						{message}

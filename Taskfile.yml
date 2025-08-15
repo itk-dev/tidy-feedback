@@ -45,6 +45,8 @@ tasks:
         silent: true
 
     translations:extract:
+        deps:
+            - docker:pull
         cmds:
             - task compose -- run --rm symfony /app/task/scripts/translations-extract
             - task: coding-standards:yaml:apply
@@ -55,23 +57,29 @@ tasks:
 
     coding-standards:apply:
         desc: "Apply coding standards"
+        deps:
+            - docker:pull
         cmds:
             - task: coding-standards:assets:apply
             - task: coding-standards:composer:apply
             - task: coding-standards:markdown:apply
             - task: coding-standards:php:apply
             - task: coding-standards:twig:apply
+            - task: coding-standards:widget:apply
             - task: coding-standards:yaml:apply
         silent: true
 
     coding-standards:check:
         desc: "Apply coding standards"
+        deps:
+            - docker:pull
         cmds:
             - task: coding-standards:assets:check
             - task: coding-standards:composer:check
             - task: coding-standards:markdown:check
             - task: coding-standards:php:check
             - task: coding-standards:twig:check
+            - task: coding-standards:widget:check
             - task: coding-standards:yaml:check
         silent: true
 
@@ -85,6 +93,17 @@ tasks:
         cmds:
             - task: coding-standards:assets:apply
             - task compose -- run --rm prettier 'assets/' --check
+
+    coding-standards:widget:apply:
+        desc: "Apply coding standards for widget"
+        cmds:
+            - task compose -- run --rm prettier 'widget/' --write
+
+    coding-standards:widget:check:
+        desc: "Apply and check coding standards for widget"
+        cmds:
+            - task: coding-standards:widget:apply
+            - task compose -- run --rm prettier 'widget/' --check
 
     coding-standards:composer:apply:
         desc: "Apply coding standards for Composer"
@@ -201,6 +220,12 @@ tasks:
     app:compose:
         cmds:
             - "{{.APP_DOCKER_COMPOSE}} {{.CLI_ARGS}}"
+
+    docker:pull:
+        cmds:
+            - COMPOSE_PROFILES='*' task compose -- pull
+            - COMPOSE_PROFILES='*' task compose -- build
+        silent: true
 
     default:
         cmds:
