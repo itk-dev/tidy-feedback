@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.0.0] - 2025-07-10
 
+- [PR-32](https://github.com/itk-dev/tidy-feedback/pull/32)
+  Removed superfluous widget code
 - [PR-33](https://github.com/itk-dev/tidy-feedback/pull/33)
   - Fixed dynamic class in Svelte
   - Cleaned up widget code
