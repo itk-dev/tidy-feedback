@@ -210,7 +210,7 @@
 								'alert-info': MESSAGE_TYPE_INFO === messageType,
 								'alert-danger': MESSAGE_TYPE_DANGER === messageType,
 								'alert-error': MESSAGE_TYPE_ERROR === messageType,
-								'alert-sucess': MESSAGE_TYPE_SUCCESS === messageType
+								'alert-success': MESSAGE_TYPE_SUCCESS === messageType
 							}
 						]}
 						role="alert"
