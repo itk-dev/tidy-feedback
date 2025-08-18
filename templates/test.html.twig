@@ -1,48 +1,48 @@
-{% extends 'base.html.twig' %}
-
-{% block title 'Tidy feedback test'|trans %}
-
-{% block content %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title 'Tidy feedback test'|trans %}</title>
     <style>
-        button {
+        [type="button"] {
             outline: dotted 10px orange;
         }
-    </style>
 
-    <button>x</button>
-
-    <h1>{{ block('title') }}</h1>
-
-    <p>This is a <strong>tset</strong>!</p>
-
-    {% for i in range(1, 99) %}
-        <section>
-            <header><h2>Section {{ i }}</h2></header>
-
-            <p></p>
-        </section>
-    {% endfor %}
-
-    {#
-    <style>
-        .tidy-feedback-region {
-            left: 100px;
-            top: 100px;
-
-            width: 20em;
-            height: 5em;
-
-            padding: 1em;
+        p {
+            color: green;
         }
     </style>
-
-    <div class="tidy-feedback-select-region">
-        <div class="tidy-feedback-region">
-            This is a fake region …
-            {% for s in ['nw', 'ne', 'sw', 'se'] %}
-                <div class="handle handle-{{ s }}"></div>
-            {% endfor %}
-        </div>
-    </div>
-    #}
+</head>
+<body>
+{% block nav %}
 {% endblock %}
+{% block main %}
+    <div class="container-fluid">
+        {% block content %}
+            <h1>{{ block('title') }}</h1>
+
+            <p>
+                This is a <strong>tset</strong>!
+                <button type="button" class="btn" >x</button>
+            </p>
+
+            {% for i in range(1, 9) %}
+                <section>
+                    <header><h2>Section {{ i }}</h2></header>
+
+                    <p>
+                        <a href="https://www.lipsum.com">Lorem ipsum</a> dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                    </p>
+                </section>
+            {% endfor %}
+        {% endblock %}
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+xxx    <script src="{{ path('tidy_feedback_asset', {asset: 'app.js'}) }}"></script>
+{% endblock %}
+
+</body>
+</html>

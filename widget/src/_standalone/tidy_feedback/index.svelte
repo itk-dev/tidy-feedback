@@ -1,11 +1,12 @@
 <script lang="ts">
 	import { snapdom } from '@zumer/snapdom';
 	import { onMount } from 'svelte';
-	import './styles/widget.scss';
-	import './styles/widget-region.scss';
+
+	// https://coreui.io/bootstrap/docs/getting-started/vite/#import-coreui
 
 	import { makeResizableDiv } from './component/region';
 	import { makeDraggable } from './component/draggable';
+	import Alert from '@coreui/coreui/js/src/alert';
 
 	const config = (() => {
 		const el = document.querySelector('[data-tidy-feedback-config]');
@@ -157,12 +158,8 @@
 	};
 
 	$effect(() => {
-		// Notice: It's important not to clone the form element. If it's cloned form validation (via form.reportValidity) breaks.
-		form = document.getElementById('tidy_feedback_form').content?.firstElementChild;
+		form = document.getElementById('the_tidy_feedback_form');
 		if (form) {
-			const placeholder = formContainer.querySelector('.form-placeholder');
-			placeholder.parentNode.replaceChild(form, placeholder);
-
 			makeDraggable(formContainer, '.tidy-feedback-draggable-handle', {
 				constrainToViewport: true
 			});
@@ -179,7 +176,7 @@
 			for (const [key, value] of params.entries()) {
 				const match = regexp.exec(key);
 				if (match) {
-					const el = form.elements[match[1]];
+					const el = form.elements[match[1]] ?? null;
 					if (el) {
 						// @todo Handle non-text elements
 						el.value = value;
@@ -196,7 +193,7 @@
 	});
 </script>
 
-<div data-capture="exclude">
+<div data-capture="exclude" class="tidy-feedback-container">
 	{#if message}
 		<div class="tidy-feedback-message-wrapper container position-fixed top-0">
 			<row class="row">
@@ -236,10 +233,53 @@
 			<span></span>
 		</div>
 
-		<div class="form-placeholder"></div>
+		<form
+			class="x-tidy-feedback-form"
+			action={config.form.action ?? '/tidy_feedback'}
+			method="post"
+			id="the_tidy_feedback_form"
+		>
+			{#if config.form}
+				{#if config.form.title}
+					<h1 class="tidy-feedback-form-title">{config.form.title}</h1>
+				{/if}
+				{#if config.form.lead}
+					<p class="tidy-feedback-form-lead">{config.form.lead}</p>
+				{/if}
+				{#if config.form.fields}
+					{#each config.form.fields as field}
+						{#if field.type == 'textarea'}
+							<div class={['form-row', 'mb-3', { required: field.required }]}>
+								<label for={field.name} class="form-label">{field.label}</label>
+								<textarea
+									name={field.name}
+									id={field.name}
+									class="form-control"
+									required={field.required}
+									placeholder={field.placeholder}>{field.value ?? ''}</textarea
+								>
+							</div>
+						{:else}
+							<div class={['form-row', 'mb-3', { required: field.required }]}>
+								<label for={field.name} class="form-label">{field.label}</label>
+								<input
+									type={field.type ?? 'text'}
+									name={field.name}
+									id={field.name}
+									class="form-control"
+									required={field.required}
+									placeholder={field.placeholder}
+									value={field.value ?? ''}
+								/>
+							</div>
+						{/if}
+					{/each}
+				{/if}
 
-		<button class="btn btn-submit" onclick={submitForm}>{t('Send feedback')}</button>
-		<button class="btn btn-cancel" onclick={cancelForm}>{t('Cancel')}</button>
+				<button class="btn btn-submit" onclick={submitForm}>{t('Send feedback')}</button>
+				<button class="btn btn-cancel" onclick={cancelForm} type="button">{t('Cancel')}</button>
+			{/if}
+		</form>
 	</div>
 
 	<div id="tidy-feedback-region" hidden={regionHidden} bind:this={region}>
@@ -258,3 +298,8 @@
 		</div>
 	</div>
 </div>
+
+<style>
+	@import './styles/widget.scss';
+	@import './styles/widget-region.scss';
+</style>
