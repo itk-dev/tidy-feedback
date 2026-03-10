@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Pinned dev environment to PHP 8.4 / Symfony 7
 - Added Docker image pull step to `assets:build` task
 - Fixed healthcheck race condition causing `app:start` to fail
+- Fixed stale route cache causing 404 on `/tidy-feedback/test` after `app:start`
 
 ## [1.0.0] - 2025-07-10
 
