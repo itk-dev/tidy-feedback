@@ -161,13 +161,8 @@ tasks:
         silent: true
 
     app:start:
-        desc: Start Symfony app with Tity feedback installed
+        desc: Start Symfony app with Tidy feedback installed
         cmds:
-            - |
-                echo ------------------------------------------------------------------------------------------------
-                echo For reasons yet unknown, you may have to run this command 2 or 3 times to make everything work …
-                echo ------------------------------------------------------------------------------------------------
-
             - task app:compose -- pull
             - task app:compose -- up --detach --remove-orphans --wait
 
@@ -176,8 +171,10 @@ tasks:
             - task app:compose -- exec symfony composer require itk-dev/tidy-feedback:dev-main
 
             # https://github.com/itk-dev/tidy-feedback?tab=readme-ov-file#symfony
-            - task app:compose -- exec symfony cp /app/resources/config/routes/tidy_feedback.yaml config/routes/
-            - task app:compose -- exec symfony bin/console cache:clear
+            # Copy route config and rebuild cache in one step. The rm -rf ensures
+            # PHP-FPM OPcache cannot serve stale compiled route files from the
+            # previous cache:clear that ran inside composer require.
+            - task app:compose -- exec symfony bash -c 'cp /app/resources/config/routes/tidy_feedback.yaml config/routes/ && rm -rf var/cache/* && bin/console cache:warmup'
 
             - task app:compose -- exec symfony bin/console tidy-feedback:doctrine:schema-update
             - task app:open
