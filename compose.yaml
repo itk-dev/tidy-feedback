@@ -44,7 +44,7 @@ services:
 
     symfony:
         # https://hub.docker.com/r/shinsenter/symfony
-        image: shinsenter/symfony:latest
+        image: shinsenter/symfony:php8.4
         # For some reason it takes a while before composer.json appear in the project root
         # @todo Investigate why
         healthcheck:
@@ -60,6 +60,7 @@ services:
         ports:
             - "80"
         environment:
+            INITIAL_PROJECT: "symfony/skeleton:^7"
             APP_ENV: dev
             # Needed to run without requiring a cache
             TIDY_FEEDBACK_DEV_MODE: true
