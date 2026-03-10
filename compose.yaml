@@ -45,13 +45,12 @@ services:
     symfony:
         # https://hub.docker.com/r/shinsenter/symfony
         image: shinsenter/symfony:php8.4
-        # For some reason it takes a while before composer.json appear in the project root
-        # @todo Investigate why
+        # Wait for composer create-project to fully complete (Flex recipes applied)
         healthcheck:
-            test: ["CMD", "test", "-f", "composer.json"]
+            test: ["CMD", "test", "-f", "symfony.lock"]
             interval: 2s
             timeout: 60s
-            retries: 20
+            retries: 30
         volumes:
             - ./:/app
         profiles:
