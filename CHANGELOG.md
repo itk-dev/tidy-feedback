@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added Docker image pull step to `assets:build` task
 - Fixed healthcheck race condition causing `app:start` to fail
 - Fixed stale route cache causing 404 on `/tidy-feedback/test` after `app:start`
+- Excluded Drupal 11 + PHP 8.3 from CI matrix (lazy loading proxies require PHP 8.4)
 
 ## [1.0.0] - 2025-07-10
 

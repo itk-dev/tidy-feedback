@@ -20,6 +20,9 @@ jobs:
                     - 8.4
                 script-name:
                     - tidy-feedback
+                exclude:
+                    - drupal-version: 11
+                      php-version: 8.3
         steps:
             - uses: actions/checkout@v4
             - name: Drupal ${{ matrix.drupal-version }}/${{ matrix.script-name }}
