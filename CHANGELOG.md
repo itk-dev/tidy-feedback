@@ -10,7 +10,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [PR-28](https://github.com/itk-dev/tidy-feedback/pull/28)
   27: Cleaned up code
 - Replaced Bootstrap with CoreUI and modernized SCSS imports (`@import` → `@use`)
-- Added Drupal CI workflow and test scripts
 - Pinned dev environment to PHP 8.4 / Symfony 7
 - Added Docker image pull step to `assets:build` task
 - Fixed healthcheck race condition causing `app:start` to fail
