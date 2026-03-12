@@ -48,17 +48,21 @@ let region;
 let form;
 let dragCleanup;
 let feedbackItems = [];
+let selectedSelector = null;
 
-const selectRegion = () => {
+const positionRegion = (rect) => {
     if (region) {
         region.parentNode.hidden = false;
-        // @todo move region into view.
-        region.style.left = "300px";
-        region.style.top = "300px";
-        region.style.width = "300px";
-        region.style.height = "200px";
+        region.style.left = rect.left + "px";
+        region.style.top = rect.top + "px";
+        region.style.width = Math.max(rect.width, 20) + "px";
+        region.style.height = Math.max(rect.height, 20) + "px";
         makeResizableDiv(region);
     }
+};
+
+const selectRegion = () => {
+    positionRegion({ left: 300, top: 300, width: 300, height: 200 });
 };
 
 const hideRegion = () => {
@@ -169,17 +173,120 @@ const refreshFeedbackData = () => {
         });
 };
 
-const showForm = async () => {
+const showFormAfterSelection = () => {
     if (form) {
         form.hidden = false;
-        selectRegion();
     }
+    showMessage("");
+    makeFormDraggable();
+    renderItemsList();
+};
+
+const enterSelectMode = () => {
+    // Inject crosshair cursor style into document head so it applies globally.
+    const style = document.createElement("style");
+    style.dataset.tidyFeedbackSelecting = "";
+    style.textContent =
+        "body.tidy-feedback-selecting, body.tidy-feedback-selecting * { cursor: crosshair !important; }";
+    document.head.appendChild(style);
+    document.body.classList.add("tidy-feedback-selecting");
+    showMessage("Click an element to select");
+
+    // Read the primary color from CSS custom properties for consistent styling.
+    const primaryColor =
+        getComputedStyle(document.documentElement)
+            .getPropertyValue("--color-primary")
+            .trim() || "hsla(252, 55%, 46%, 1)";
+    let hoveredElement = null;
+
+    const cleanup = () => {
+        document.removeEventListener("click", onClick, true);
+        document.removeEventListener("keydown", onKeydown);
+        document.removeEventListener("mousemove", onMousemove);
+        document.body.classList.remove("tidy-feedback-selecting");
+        style.remove();
+        if (hoveredElement) {
+            hoveredElement.style.outline = "";
+            hoveredElement = null;
+        }
+    };
+
+    const onClick = (event) => {
+        const target = event.target;
+
+        // Let clicks on the widget itself pass through.
+        if (
+            target.closest("#tidy-feedback") ||
+            target.closest("#tidy-feedback-region")
+        ) {
+            return;
+        }
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        const rect = target.getBoundingClientRect();
+        try {
+            selectedSelector = unique(target);
+        } catch {
+            selectedSelector = null;
+        }
+
+        cleanup();
+        positionRegion({
+            left: rect.left + window.scrollX,
+            top: rect.top + window.scrollY,
+            width: rect.width,
+            height: rect.height,
+        });
+        showFormAfterSelection();
+    };
+
+    const onKeydown = (event) => {
+        if (event.key === "Escape") {
+            cleanup();
+            showMessage("");
+            if (start) {
+                start.hidden = false;
+            }
+        }
+    };
+
+    const onMousemove = (event) => {
+        const target = event.target;
+
+        if (
+            target.closest("#tidy-feedback") ||
+            target.closest("#tidy-feedback-region")
+        ) {
+            if (hoveredElement) {
+                hoveredElement.style.outline = "";
+                hoveredElement = null;
+            }
+            return;
+        }
+
+        if (hoveredElement && hoveredElement !== target) {
+            hoveredElement.style.outline = "";
+        }
+
+        if (target !== hoveredElement) {
+            target.style.outline = "2px dashed " + primaryColor;
+            hoveredElement = target;
+        }
+    };
+
+    document.addEventListener("click", onClick, true);
+    document.addEventListener("keydown", onKeydown);
+    document.addEventListener("mousemove", onMousemove);
+};
+
+const showForm = () => {
     if (start) {
         start.hidden = true;
     }
-
-    makeFormDraggable();
-    renderItemsList();
+    selectedSelector = null;
+    enterSelectMode();
 };
 
 const hideForm = (reset) => {
@@ -189,6 +296,7 @@ const hideForm = (reset) => {
         form.hidden = true;
         if (reset) {
             form.reset();
+            selectedSelector = null;
         }
     }
     if (start) {
@@ -272,6 +380,7 @@ addEventListener("load", () => {
                     width: region.style.width,
                     height: region.style.height,
                 },
+                selectedElement: selectedSelector,
             };
 
             fetch(form.action, {

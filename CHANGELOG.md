@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Added click-to-select element targeting for feedback region
 - Simplified feedback form to email + description only; subject is now auto-generated from page title
 - Added localStorage caching for email field so it's prefilled on repeat visits
 - Cleaned up test page: removed debug styles, test button, stale commented-out code, and fixed typo
