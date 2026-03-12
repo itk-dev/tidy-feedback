@@ -157,6 +157,10 @@ trait TidyFeedbackControllerTrait
             return new JsonResponse(['data' => ['count' => 0]]);
         }
 
+        // Note: JSON_EXTRACT cannot use a standard index, so this query
+        // performs a full table scan. Acceptable for small-to-medium tables
+        // but may need optimisation (e.g. a dedicated indexed column) if
+        // the item table grows large.
         $connection = $this->entityManager->getConnection();
         $count = (int) $connection->fetchOne(
             "SELECT COUNT(*) FROM item WHERE JSON_EXTRACT(data, '$.context.url') = ?",
