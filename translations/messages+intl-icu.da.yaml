@@ -3,13 +3,13 @@ Category: Kategori
 "Created at": Oprettet
 "Created by": "Oprettet af"
 Data: Data
+"Describe what happened and what you expected": "Beskriv hvad der skete, og hvad du forventede"
 Description: Beskrivelse
 "Error taking screenshot": "Fejl under generering af skærmbillede"
 "Existing feedback": "Eksisterende feedback"
 Feedback: Feedback
 "Feedback created": "Feedback oprettet"
 "Feedback items": "Feedback indsendelser"
-"Highlight the relevant part of the page and fill in the form to send us your feedback": "Fremhæv den relevante del af siden og udfyld formularen for at sende din feedback"
 "Not feedback yet": "Ingen feedback endnu"
 "Sending feedback …": "Sender feedback …"
 "Show image": "Vis billede"
@@ -17,8 +17,8 @@ Status: Status
 Subject: Emne
 "Submit feedback": "Send feedback"
 "Taking screenshot …": "Tager skærmbillede …"
+"Tell us what you noticed on this page": "Fortæl os hvad du bemærkede på denne side"
 "Tidy feedback": "Tidy feedback"
 "Tidy feedback test": "Tidy feedback-test"
-"What did you do?": "Hvad gjorde du?"
 "Your email address": "Din e-mailadresse"
 "Your feedback": "Din feedback"

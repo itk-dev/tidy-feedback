@@ -96,12 +96,12 @@ const hideFormDragHandle = () => {
 };
 
 const renderItemsList = () => {
-    if (
-        feedbackItems.length === 0 ||
-        form.querySelector(".tidy-feedback-items")
-    ) {
+    if (feedbackItems.length === 0) {
         return;
     }
+
+    // Remove existing list so we can re-render with updated data.
+    form.querySelector(".tidy-feedback-items")?.remove();
 
     const container = document.createElement("div");
     container.className = "tidy-feedback-items";
@@ -134,6 +134,39 @@ const renderItemsList = () => {
     container.appendChild(toggle);
     container.appendChild(list);
     form.appendChild(container);
+};
+
+const refreshFeedbackData = () => {
+    if (!config.checkUrl || !start) {
+        return;
+    }
+
+    fetch(
+        config.checkUrl + "?url=" + encodeURIComponent(document.location.href),
+    )
+        .then((response) => response.json())
+        .then((json) => {
+            const count = json?.data?.count;
+            feedbackItems = json?.data?.items ?? [];
+
+            // Update or create the badge on the start button.
+            let badge = start.querySelector(".tidy-feedback-badge");
+            if (count > 0) {
+                if (!badge) {
+                    badge = document.createElement("span");
+                    badge.className = "tidy-feedback-badge";
+                    start.appendChild(badge);
+                }
+                badge.textContent = count;
+            } else if (badge) {
+                badge.remove();
+            }
+
+            renderItemsList();
+        })
+        .catch(() => {
+            // Silently ignore check errors.
+        });
 };
 
 const showForm = async () => {
@@ -179,6 +212,15 @@ addEventListener("load", () => {
     region = getDocumentElement("#tidy-feedback-region > .resizable");
 
     if (form) {
+        // Prefill email from localStorage if not already set.
+        const emailInput = form.querySelector('[name="created_by"]');
+        if (emailInput && !emailInput.value && !emailInput.readOnly) {
+            const cachedEmail = localStorage.getItem("tidy-feedback-email");
+            if (cachedEmail) {
+                emailInput.value = cachedEmail;
+            }
+        }
+
         form.addEventListener("submit", async (event) => {
             event.preventDefault();
 
@@ -210,6 +252,9 @@ addEventListener("load", () => {
             // https://stackoverflow.com/a/46774073
             formData.forEach((value, key) => (data[key] = value));
 
+            // Auto-generate subject from page title or URL path.
+            data.subject = document.title || window.location.pathname;
+
             data.context = {
                 url: document.location.href,
                 referrer: document.referrer,
@@ -238,11 +283,19 @@ addEventListener("load", () => {
             })
                 .then((response) => {
                     if (201 === response.status) {
+                        // Cache email for next visit.
+                        if (data.created_by) {
+                            localStorage.setItem(
+                                "tidy-feedback-email",
+                                data.created_by,
+                            );
+                        }
                         if (region) {
                             region.hidden = true;
                         }
                         hideForm(true);
                         showMessage("Feedback created", "success");
+                        refreshFeedbackData();
                     } else {
                         response
                             .json()
@@ -270,27 +323,7 @@ addEventListener("load", () => {
             showForm();
         });
 
-        if (config.checkUrl) {
-            fetch(
-                config.checkUrl +
-                    "?url=" +
-                    encodeURIComponent(document.location.href),
-            )
-                .then((response) => response.json())
-                .then((json) => {
-                    const count = json?.data?.count;
-                    feedbackItems = json?.data?.items ?? [];
-                    if (count > 0) {
-                        const badge = document.createElement("span");
-                        badge.className = "tidy-feedback-badge";
-                        badge.textContent = count;
-                        start.appendChild(badge);
-                    }
-                })
-                .catch(() => {
-                    // Silently ignore check errors.
-                });
-        }
+        refreshFeedbackData();
     }
 
     if (cancel) {
