@@ -150,6 +150,22 @@ trait TidyFeedbackControllerTrait
         }
     }
 
+    public function check(Request $request): Response
+    {
+        $url = $request->query->get('url');
+        if (empty($url)) {
+            return new JsonResponse(['data' => ['count' => 0]]);
+        }
+
+        $connection = $this->entityManager->getConnection();
+        $count = (int) $connection->fetchOne(
+            "SELECT COUNT(*) FROM item WHERE JSON_EXTRACT(data, '$.context.url') = ?",
+            [$url]
+        );
+
+        return new JsonResponse(['data' => ['count' => $count]]);
+    }
+
     public function asset(string $asset): Response
     {
         return $this->helper->createAssetResponse($asset);

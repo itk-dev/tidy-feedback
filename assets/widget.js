@@ -226,6 +226,27 @@ addEventListener("load", () => {
         start.addEventListener("click", (event) => {
             showForm();
         });
+
+        if (config.checkUrl) {
+            fetch(
+                config.checkUrl +
+                    "?url=" +
+                    encodeURIComponent(document.location.href),
+            )
+                .then((response) => response.json())
+                .then((json) => {
+                    const count = json?.data?.count;
+                    if (count > 0) {
+                        const badge = document.createElement("span");
+                        badge.className = "tidy-feedback-badge";
+                        badge.textContent = count;
+                        start.appendChild(badge);
+                    }
+                })
+                .catch(() => {
+                    // Silently ignore check errors.
+                });
+        }
     }
 
     if (cancel) {

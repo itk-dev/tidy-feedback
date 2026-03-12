@@ -14,6 +14,7 @@
         } %}
         {% set config = {
             messages: messages,
+            checkUrl: path('tidy_feedback_check'),
         } %}
         <style {{ capture_exclude_attributes|raw }}>
             @import {{ path('tidy_feedback_asset', {asset: 'widget.css'})|json_encode(constant('JSON_UNESCAPED_SLASHES'))|raw }};
