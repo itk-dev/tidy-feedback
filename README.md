@@ -1,10 +1,7 @@
 # Tidy feedback
 
 This is a [Drupal module](https://www.drupal.org/docs/user_guide/en/understanding-modules.html) *and* a [Symfony
-bundle](https://symfony.com/doc/current/bundles.html) to collection user feedback.
-
-> [!CAUTION]
-> The documentation is incomplete!
+bundle](https://symfony.com/doc/current/bundles.html) for collecting user feedback.
 
 ## Installation
 
@@ -86,7 +83,68 @@ bin/console tidy-feedback:doctrine:schema-update
 
 After installation and configuration, open `/tidy-feedback/test` on your site and enjoy!
 
-All feedback items can be found on `/tidy-feedback`.
+## How the widget works
+
+The feedback widget is automatically injected into every HTML page via a kernel response listener (`onKernelResponse`).
+No template changes are needed — the widget HTML is appended before the closing `</body>` tag.
+
+The widget runs inside a [Shadow DOM](https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_shadow_DOM),
+which isolates its styles from the host page. The user-facing workflow is:
+
+1. A "Feedback" button appears on the right side of the page
+2. Clicking it opens a form with a draggable region overlay for highlighting a part of the page
+3. The user fills in subject, email, and description fields
+4. On submit, a screenshot is captured automatically using [snapdom](https://github.com/zumerlab/snapdom)
+5. The screenshot, form data, and page context (URL, viewport size, etc.) are sent to the server
+
+## Query string parameters
+
+You can use query string parameters to control the widget:
+
+- `tidy-feedback-show=form` — automatically open the feedback form when the page loads
+- `tidy-feedback[subject]=...` — pre-fill the subject field
+- `tidy-feedback[email]=...` — pre-fill (and lock) the email field
+- `tidy-feedback[description]=...` — pre-fill the description field
+
+Example:
+
+``` plain
+/my-page?tidy-feedback-show=form&tidy-feedback[subject]=Bug%20report&tidy-feedback[email]=user@example.com
+```
+
+## Disabling the widget
+
+The widget can be disabled entirely or on specific pages:
+
+- **`TIDY_FEEDBACK_DISABLE=true`** — disables the widget on all pages
+- **`TIDY_FEEDBACK_DISABLE_PATTERN`** — a regex matched against the request path. Pages matching the pattern will not
+  show the widget. Default: `@^/tidy-feedback$@` (hides the widget on the feedback list page itself)
+
+Examples:
+
+``` dotenv
+# Disable on all admin pages
+TIDY_FEEDBACK_DISABLE_PATTERN=@^/(admin|tidy-feedback)@
+
+# Don't disable on any pages (empty pattern never matches)
+TIDY_FEEDBACK_DISABLE_PATTERN=@^$@
+```
+
+## Viewing feedback
+
+All feedback items are listed at `/tidy-feedback`. Individual items can be viewed at `/tidy-feedback/{id}`, and
+screenshots at `/tidy-feedback/{id}/image`.
+
+To get JSON output, append `?_format=json` to any of these URLs.
+
+### Access control
+
+By default, the feedback list and detail pages are publicly accessible. To restrict access with basic authentication,
+set `TIDY_FEEDBACK_USERS` to a JSON object mapping usernames to passwords:
+
+``` dotenv
+TIDY_FEEDBACK_USERS={"admin": "s3cret", "reviewer": "p4ssw0rd"}
+```
 
 ## All configuration options
 
@@ -165,15 +223,8 @@ task app:start
 
 Run `task app:stop` to stop the app.
 
-> [!TIP]
-> Use `tidy-feedback-show=form` in the query string, e.g. `/tidy-feedback/test?tidy-feedback-show=form`, to
-> automatically show the feedback form when loading a page.
->
-> Add default form values in `tidy-feedback`, e.g.
->
-> ``` plain
-> /tidy-feedback/test?tidy-feedback[subject]=test&tidy-feedback[email]=test@example.com&tidy-feedback[description]=My%20feedback
-> ```
+See [Query string parameters](#query-string-parameters) for how to auto-open the form and pre-fill fields during
+testing.
 
 For easy testing, you can use [Bookmarklet Creator](https://mrcoles.com/bookmarklet/) to convert the code
 
