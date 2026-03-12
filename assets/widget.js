@@ -96,12 +96,12 @@ const hideFormDragHandle = () => {
 };
 
 const renderItemsList = () => {
-    if (
-        feedbackItems.length === 0 ||
-        form.querySelector(".tidy-feedback-items")
-    ) {
+    if (feedbackItems.length === 0) {
         return;
     }
+
+    // Remove existing list so we can re-render with updated data.
+    form.querySelector(".tidy-feedback-items")?.remove();
 
     const container = document.createElement("div");
     container.className = "tidy-feedback-items";
@@ -134,6 +134,39 @@ const renderItemsList = () => {
     container.appendChild(toggle);
     container.appendChild(list);
     form.appendChild(container);
+};
+
+const refreshFeedbackData = () => {
+    if (!config.checkUrl || !start) {
+        return;
+    }
+
+    fetch(
+        config.checkUrl + "?url=" + encodeURIComponent(document.location.href),
+    )
+        .then((response) => response.json())
+        .then((json) => {
+            const count = json?.data?.count;
+            feedbackItems = json?.data?.items ?? [];
+
+            // Update or create the badge on the start button.
+            let badge = start.querySelector(".tidy-feedback-badge");
+            if (count > 0) {
+                if (!badge) {
+                    badge = document.createElement("span");
+                    badge.className = "tidy-feedback-badge";
+                    start.appendChild(badge);
+                }
+                badge.textContent = count;
+            } else if (badge) {
+                badge.remove();
+            }
+
+            renderItemsList();
+        })
+        .catch(() => {
+            // Silently ignore check errors.
+        });
 };
 
 const showForm = async () => {
@@ -262,8 +295,7 @@ addEventListener("load", () => {
                         }
                         hideForm(true);
                         showMessage("Feedback created", "success");
-                        // Reload so the badge and existing-feedback list update.
-                        setTimeout(() => location.reload(), 1500);
+                        refreshFeedbackData();
                     } else {
                         response
                             .json()
@@ -291,27 +323,7 @@ addEventListener("load", () => {
             showForm();
         });
 
-        if (config.checkUrl) {
-            fetch(
-                config.checkUrl +
-                    "?url=" +
-                    encodeURIComponent(document.location.href),
-            )
-                .then((response) => response.json())
-                .then((json) => {
-                    const count = json?.data?.count;
-                    feedbackItems = json?.data?.items ?? [];
-                    if (count > 0) {
-                        const badge = document.createElement("span");
-                        badge.className = "tidy-feedback-badge";
-                        badge.textContent = count;
-                        start.appendChild(badge);
-                    }
-                })
-                .catch(() => {
-                    // Silently ignore check errors.
-                });
-        }
+        refreshFeedbackData();
     }
 
     if (cancel) {
