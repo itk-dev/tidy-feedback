@@ -152,6 +152,7 @@ Only `TIDY_FEEDBACK_DATABASE_URL` is required.
 
 | Name                            | Default value        | Example                                            |
 |---------------------------------|----------------------|----------------------------------------------------|
+| `TIDY_FEEDBACK_CACHE_DIR`       |                      | `/tmp/tidy-feedback`                               |
 | `TIDY_FEEDBACK_DATABASE_URL`    |                      | `pdo-sqlite://localhost//app/tidy-feedback.sqlite` |
 | `TIDY_FEEDBACK_DEBUG`           | `false`              |                                                    |
 | `TIDY_FEEDBACK_DEFAULT_LOCALE`  | `da`                 |                                                    |
