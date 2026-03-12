@@ -262,6 +262,8 @@ addEventListener("load", () => {
                         }
                         hideForm(true);
                         showMessage("Feedback created", "success");
+                        // Reload so the badge and existing-feedback list update.
+                        setTimeout(() => location.reload(), 1500);
                     } else {
                         response
                             .json()
