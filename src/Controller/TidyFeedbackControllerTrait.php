@@ -150,6 +150,36 @@ trait TidyFeedbackControllerTrait
         }
     }
 
+    public function check(Request $request): Response
+    {
+        $url = $request->query->get('url');
+        if (empty($url)) {
+            return new JsonResponse(['data' => ['count' => 0, 'items' => []]]);
+        }
+
+        // Note: JSON_EXTRACT cannot use a standard index, so this query
+        // performs a full table scan. Acceptable for small-to-medium tables
+        // but may need optimisation (e.g. a dedicated indexed column) if
+        // the item table grows large.
+        $connection = $this->entityManager->getConnection();
+        $count = (int) $connection->fetchOne(
+            "SELECT COUNT(*) FROM item WHERE JSON_EXTRACT(data, '$.context.url') = ?",
+            [$url]
+        );
+
+        $rows = $connection->fetchAllAssociative(
+            "SELECT id, JSON_EXTRACT(data, '$.description') as description FROM item WHERE JSON_EXTRACT(data, '$.context.url') = ? ORDER BY createdAt DESC LIMIT 10",
+            [$url]
+        );
+
+        $items = array_map(fn (array $row) => [
+            'description' => json_decode($row['description'], true) ?? $row['description'],
+            'url' => $this->helper->generateUrl('tidy_feedback_show', ['id' => $row['id']]),
+        ], $rows);
+
+        return new JsonResponse(['data' => ['count' => $count, 'items' => $items]]);
+    }
+
     public function asset(string $asset): Response
     {
         return $this->helper->createAssetResponse($asset);

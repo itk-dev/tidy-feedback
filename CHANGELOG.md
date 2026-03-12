@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Added collapsible list of existing feedback items in widget form
+- Added feedback count badge on start button when feedback exists for the current page
+- Added `/check` endpoint returning feedback count for a given URL
 - Documented widget setup, query string parameters, disabling, viewing feedback, and access control
 - Fixed path traversal vulnerability in asset serving
 - Fixed Drupal asset route not matching nested paths (e.g. `icons/favicon.png`)

@@ -47,6 +47,7 @@ let cancel;
 let region;
 let form;
 let dragCleanup;
+let feedbackItems = [];
 
 const selectRegion = () => {
     if (region) {
@@ -94,6 +95,47 @@ const hideFormDragHandle = () => {
     }
 };
 
+const renderItemsList = () => {
+    if (
+        feedbackItems.length === 0 ||
+        form.querySelector(".tidy-feedback-items")
+    ) {
+        return;
+    }
+
+    const container = document.createElement("div");
+    container.className = "tidy-feedback-items";
+
+    const toggle = document.createElement("button");
+    toggle.type = "button";
+    toggle.className = "tidy-feedback-items-toggle";
+    const label = config.messages["Existing feedback"] ?? "Existing feedback";
+    toggle.textContent = `${label} (${feedbackItems.length})`;
+    toggle.addEventListener("click", () => {
+        toggle.classList.toggle("open");
+        list.hidden = !list.hidden;
+    });
+
+    const list = document.createElement("ul");
+    list.className = "tidy-feedback-items-list";
+    list.hidden = true;
+
+    for (const item of feedbackItems) {
+        const li = document.createElement("li");
+        const a = document.createElement("a");
+        a.href = item.url;
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+        a.textContent = item.description ?? "";
+        li.appendChild(a);
+        list.appendChild(li);
+    }
+
+    container.appendChild(toggle);
+    container.appendChild(list);
+    form.appendChild(container);
+};
+
 const showForm = async () => {
     if (form) {
         form.hidden = false;
@@ -104,6 +146,7 @@ const showForm = async () => {
     }
 
     makeFormDraggable();
+    renderItemsList();
 };
 
 const hideForm = (reset) => {
@@ -226,6 +269,28 @@ addEventListener("load", () => {
         start.addEventListener("click", (event) => {
             showForm();
         });
+
+        if (config.checkUrl) {
+            fetch(
+                config.checkUrl +
+                    "?url=" +
+                    encodeURIComponent(document.location.href),
+            )
+                .then((response) => response.json())
+                .then((json) => {
+                    const count = json?.data?.count;
+                    feedbackItems = json?.data?.items ?? [];
+                    if (count > 0) {
+                        const badge = document.createElement("span");
+                        badge.className = "tidy-feedback-badge";
+                        badge.textContent = count;
+                        start.appendChild(badge);
+                    }
+                })
+                .catch(() => {
+                    // Silently ignore check errors.
+                });
+        }
     }
 
     if (cancel) {

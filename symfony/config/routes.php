@@ -18,6 +18,10 @@ return function (RoutingConfigurator $routes): void {
         ->controller([TidyFeedbackController::class, 'asset'])
         ->methods([Request::METHOD_GET]);
 
+    $routes->add('tidy_feedback_check', '/check')
+        ->controller([TidyFeedbackController::class, 'check'])
+        ->methods([Request::METHOD_GET]);
+
     $routes->add('tidy_feedback_show', '/{id}')
         ->controller([TidyFeedbackController::class, 'show'])
         ->methods([Request::METHOD_GET]);

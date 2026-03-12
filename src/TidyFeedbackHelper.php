@@ -45,6 +45,11 @@ final class TidyFeedbackHelper implements EventSubscriberInterface
     ) {
     }
 
+    public function generateUrl(string $name, array $parameters = []): string
+    {
+        return $this->urlGenerator->generate($name, $parameters);
+    }
+
     public function getWidget(Request $request): string
     {
         $app = [

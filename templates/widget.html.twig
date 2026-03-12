@@ -11,9 +11,11 @@
             'Error taking screenshot': 'Error taking screenshot'|trans,
             'Sending feedback …': 'Sending feedback …'|trans,
             'Feedback created': 'Feedback created'|trans,
+            'Existing feedback': 'Existing feedback'|trans,
         } %}
         {% set config = {
             messages: messages,
+            checkUrl: path('tidy_feedback_check'),
         } %}
         <style {{ capture_exclude_attributes|raw }}>
             @import {{ path('tidy_feedback_asset', {asset: 'widget.css'})|json_encode(constant('JSON_UNESCAPED_SLASHES'))|raw }};

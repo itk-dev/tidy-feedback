@@ -27,6 +27,15 @@ tidy_feedback_asset:
         _permission: "access content"
         asset: ".+"
 
+tidy_feedback_check:
+    path: "/tidy-feedback/check"
+    defaults:
+        _title: "Tidy feedback check"
+        _controller: '\Drupal\tidy_feedback\Controller\TidyFeedbackController::check'
+    methods: [GET]
+    requirements:
+        _permission: "access content"
+
 tidy_feedback_show:
     path: "/tidy-feedback/{id}"
     defaults:
