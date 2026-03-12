@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 - Documented widget setup, query string parameters, disabling, viewing feedback, and access control
+- Fixed path traversal vulnerability in asset serving
+- Fixed Drupal asset route not matching nested paths (e.g. `icons/favicon.png`)
+- Fixed basic auth users never being parsed from `TIDY_FEEDBACK_USERS` env var
+- Added inline style fallback on message element for when CSS hasn't loaded yet
 - [PR-28](https://github.com/itk-dev/tidy-feedback/pull/28)
   27: Cleaned up code
 - Replaced Bootstrap with CoreUI and modernized SCSS imports (`@import` → `@use`)

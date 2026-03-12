@@ -148,9 +148,13 @@ final class TidyFeedbackHelper implements EventSubscriberInterface
 
     public function createAssetResponse(string $asset): Response
     {
-        $filename = self::ASSET_PATH.'/'.$asset;
+        $buildDir = realpath(self::ASSET_PATH);
+        if (false === $buildDir) {
+            throw new NotFoundHttpException();
+        }
 
-        if (!is_readable($filename)) {
+        $filename = realpath(self::ASSET_PATH.'/'.$asset);
+        if (false === $filename || !str_starts_with($filename, $buildDir.'/')) {
             throw new NotFoundHttpException();
         }
 
@@ -217,7 +221,7 @@ final class TidyFeedbackHelper implements EventSubscriberInterface
 
             if ($users = $getEnv('TIDY_FEEDBACK_USERS')) {
                 try {
-                    $config[self::CONFIG_USERS] = json_decode($users, true, flags: JSON_THROW_ON_ERROR);
+                    self::$config[self::CONFIG_USERS] = json_decode($users, true, flags: JSON_THROW_ON_ERROR);
                 } catch (\Throwable) {
                 }
             }
