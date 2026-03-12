@@ -109,8 +109,7 @@ const renderItemsList = () => {
     const toggle = document.createElement("button");
     toggle.type = "button";
     toggle.className = "tidy-feedback-items-toggle";
-    const label =
-        config.messages["Existing feedback"] ?? "Existing feedback";
+    const label = config.messages["Existing feedback"] ?? "Existing feedback";
     toggle.textContent = `${label} (${feedbackItems.length})`;
     toggle.addEventListener("click", () => {
         toggle.classList.toggle("open");
