@@ -25,6 +25,7 @@ tidy_feedback_asset:
     methods: [GET]
     requirements:
         _permission: "access content"
+        asset: ".+"
 
 tidy_feedback_show:
     path: "/tidy-feedback/{id}"

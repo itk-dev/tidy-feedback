@@ -21,7 +21,8 @@
         <script {{ capture_exclude_attributes|raw }} src="{{ path('tidy_feedback_asset', {asset: 'widget.js'}) }}"
                                                      data-tidy-feedback-config="{{ config|json_encode }} "></script>
         <div class="tidy-feedback" {{ capture_exclude_attributes|raw }}>
-            <div {{ capture_exclude_attributes|raw }} hidden class="tidy-feedback-message"></div>
+            <div {{ capture_exclude_attributes|raw }} hidden class="tidy-feedback-message"
+                 style="position:fixed;top:0.5em;left:50%;transform:translateX(-50%);z-index:10002"></div>
             <button {{ capture_exclude_attributes|raw }} hidden type="button" class="tidy-feedback-start"
                                                          data-tidy-feedback-action="start">{{ 'Feedback'|trans }}</button>
 
