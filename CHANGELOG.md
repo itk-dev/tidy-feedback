@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Documented widget setup, query string parameters, disabling, viewing feedback, and access control
 - Fixed path traversal vulnerability in asset serving
 - Fixed Drupal asset route not matching nested paths (e.g. `icons/favicon.png`)
 - Fixed basic auth users never being parsed from `TIDY_FEEDBACK_USERS` env var
