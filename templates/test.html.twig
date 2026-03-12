@@ -3,17 +3,9 @@
 {% block title 'Tidy feedback test'|trans %}
 
 {% block content %}
-    <style>
-        button {
-            outline: dotted 10px orange;
-        }
-    </style>
-
-    <button>x</button>
-
     <h1>{{ block('title') }}</h1>
 
-    <p>This is a <strong>tset</strong>!</p>
+    <p>This is a <strong>test</strong>!</p>
 
     {% for i in range(1, 99) %}
         <section>
@@ -22,27 +14,4 @@
             <p></p>
         </section>
     {% endfor %}
-
-    {#
-    <style>
-        .tidy-feedback-region {
-            left: 100px;
-            top: 100px;
-
-            width: 20em;
-            height: 5em;
-
-            padding: 1em;
-        }
-    </style>
-
-    <div class="tidy-feedback-select-region">
-        <div class="tidy-feedback-region">
-            This is a fake region …
-            {% for s in ['nw', 'ne', 'sw', 'se'] %}
-                <div class="handle handle-{{ s }}"></div>
-            {% endfor %}
-        </div>
-    </div>
-    #}
 {% endblock %}
