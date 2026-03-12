@@ -11,6 +11,7 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\ORMSetup;
 use Doctrine\ORM\Tools\SchemaTool;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -22,7 +23,6 @@ use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Mime\MimeTypes;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\Yaml\Yaml;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
@@ -104,6 +104,8 @@ final class TidyFeedbackHelper implements EventSubscriberInterface
             $cacheDir = self::getConfig(self::CONFIG_CACHE_DIR);
 
             if ($cacheDir && !empty($translationFiles)) {
+                // Note: if a translation file is deleted between glob() and filemtime(),
+                // filemtime() will fail. This is unlikely outside of deployment.
                 $maxMtime = max(array_map('filemtime', $translationFiles));
                 $cacheKey = 'translations_'.$maxMtime;
 
