@@ -11,6 +11,7 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\ORMSetup;
 use Doctrine\ORM\Tools\SchemaTool;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -36,6 +37,7 @@ final class TidyFeedbackHelper implements EventSubscriberInterface
     private const string CONFIG_DEFAULT_LOCALE = 'default_locale';
     private const string CONFIG_DISABLE = 'disable';
     private const string CONFIG_DISABLE_PATTERN = 'disable_pattern';
+    private const string CONFIG_CACHE_DIR = 'cache_dir';
     private const string CONFIG_USERS = 'users';
 
     private const string ASSET_PATH = __DIR__.'/../build';
@@ -76,10 +78,13 @@ final class TidyFeedbackHelper implements EventSubscriberInterface
         if (empty(self::$twig)) {
             // https://twig.symfony.com/doc/3.x/api.html#basics
             $loader = new FilesystemLoader(__DIR__.'/../templates');
-            self::$twig = new Environment($loader, [
-                // @todo
-                // 'cache' => '/tmp/twig_compilation_cache',
-            ]);
+            $cacheDir = self::getConfig(self::CONFIG_CACHE_DIR);
+            $options = [];
+            if ($cacheDir) {
+                $options['cache'] = $cacheDir.'/twig';
+                $options['auto_reload'] = self::getConfig(self::CONFIG_DEBUG) || self::getConfig(self::CONFIG_DEV_MODE);
+            }
+            self::$twig = new Environment($loader, $options);
 
             self::$twig->addFilter(new TwigFilter('trans', $this->trans(...)));
             self::$twig->addFunction(new TwigFunction('path', fn (string $name, array $parameters = []) => $this->urlGenerator->generate($name, $parameters)));
@@ -95,19 +100,49 @@ final class TidyFeedbackHelper implements EventSubscriberInterface
     private function getTranslations(): array
     {
         if (!isset(self::$translations)) {
-            self::$translations = [];
-            foreach (glob(__DIR__.'/../translations/*.yaml') as $file) {
-                if (preg_match('/\.(?P<locale>[^.]+)\.yaml$/', $file, $matches)) {
-                    $locale = $matches['locale'];
-                    try {
-                        self::$translations[$locale] = Yaml::parseFile($file);
-                    } catch (\Exception) {
-                    }
+            $translationFiles = glob(__DIR__.'/../translations/*.yaml');
+            $cacheDir = self::getConfig(self::CONFIG_CACHE_DIR);
+
+            if ($cacheDir && !empty($translationFiles)) {
+                // Note: if a translation file is deleted between glob() and filemtime(),
+                // filemtime() will fail. This is unlikely outside of deployment.
+                $maxMtime = max(array_map('filemtime', $translationFiles));
+                $cacheKey = 'translations_'.$maxMtime;
+
+                $cache = new FilesystemAdapter('tidy_feedback', 0, $cacheDir);
+                $item = $cache->getItem($cacheKey);
+
+                if ($item->isHit()) {
+                    self::$translations = $item->get();
+
+                    return self::$translations;
                 }
+
+                self::$translations = $this->parseTranslationFiles($translationFiles);
+                $item->set(self::$translations);
+                $cache->save($item);
+            } else {
+                self::$translations = $this->parseTranslationFiles($translationFiles ?: []);
             }
         }
 
         return self::$translations;
+    }
+
+    private function parseTranslationFiles(array $files): array
+    {
+        $translations = [];
+        foreach ($files as $file) {
+            if (preg_match('/\.(?P<locale>[^.]+)\.yaml$/', $file, $matches)) {
+                $locale = $matches['locale'];
+                try {
+                    $translations[$locale] = Yaml::parseFile($file);
+                } catch (\Exception) {
+                }
+            }
+        }
+
+        return $translations;
     }
 
     private function trans(string $text, array $context = []): string
@@ -214,6 +249,7 @@ final class TidyFeedbackHelper implements EventSubscriberInterface
             $getEnv = static fn (string $name) => getenv($name) ?: ($_ENV[$name] ?? null);
 
             self::$config = [
+                self::CONFIG_CACHE_DIR => $getEnv('TIDY_FEEDBACK_CACHE_DIR') ?: null,
                 // https://www.doctrine-project.org/projects/doctrine-dbal/en/4.2/reference/configuration.html#connecting-using-a-url
                 self::CONFIG_DATABASE_URL => $getEnv('TIDY_FEEDBACK_DATABASE_URL'),
                 self::CONFIG_DEBUG => 'true' === $getEnv('TIDY_FEEDBACK_DEBUG'),
