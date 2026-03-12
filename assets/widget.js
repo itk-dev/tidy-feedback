@@ -179,6 +179,15 @@ addEventListener("load", () => {
     region = getDocumentElement("#tidy-feedback-region > .resizable");
 
     if (form) {
+        // Prefill email from localStorage if not already set.
+        const emailInput = form.querySelector('[name="created_by"]');
+        if (emailInput && !emailInput.value && !emailInput.readOnly) {
+            const cachedEmail = localStorage.getItem("tidy-feedback-email");
+            if (cachedEmail) {
+                emailInput.value = cachedEmail;
+            }
+        }
+
         form.addEventListener("submit", async (event) => {
             event.preventDefault();
 
@@ -210,6 +219,9 @@ addEventListener("load", () => {
             // https://stackoverflow.com/a/46774073
             formData.forEach((value, key) => (data[key] = value));
 
+            // Auto-generate subject from page title or URL path.
+            data.subject = document.title || window.location.pathname;
+
             data.context = {
                 url: document.location.href,
                 referrer: document.referrer,
@@ -238,6 +250,13 @@ addEventListener("load", () => {
             })
                 .then((response) => {
                     if (201 === response.status) {
+                        // Cache email for next visit.
+                        if (data.created_by) {
+                            localStorage.setItem(
+                                "tidy-feedback-email",
+                                data.created_by,
+                            );
+                        }
                         if (region) {
                             region.hidden = true;
                         }

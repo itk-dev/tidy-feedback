@@ -13,7 +13,6 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -118,15 +117,8 @@ trait TidyFeedbackControllerTrait
         try {
             $data = $request->toArray();
 
-            $requiredField = ['subject'];
-            // Check required fields.
-            $missingFields = array_diff($requiredField, array_keys($data));
-            if (!empty($missingFields)) {
-                throw new BadRequestHttpException(sprintf('Missing fields: %s', implode(', ', $missingFields)));
-            }
-
             $item = (new Item())
-                ->setSubject($data['subject'])
+                ->setSubject($data['subject'] ?? 'Feedback on '.($data['context']['url'] ?? 'unknown page'))
                 ->setCreatedBy($data['created_by'] ?? null)
                 ->setStatus(ItemStatus::NEW)
                 ->setData($data);

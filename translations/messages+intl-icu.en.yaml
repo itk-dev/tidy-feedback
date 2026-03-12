@@ -3,13 +3,13 @@ Category: Category
 "Created at": "Created at"
 "Created by": "Created by"
 Data: Data
+"Describe what happened and what you expected": "Describe what happened and what you expected"
 Description: Description
 "Error taking screenshot": "Error taking screenshot"
 "Existing feedback": "Existing feedback"
 Feedback: Feedback
 "Feedback created": "Feedback created"
 "Feedback items": "Feedback items"
-"Highlight the relevant part of the page and fill in the form to send us your feedback": "Highlight the relevant part of the page and fill in the form to send us your feedback"
 "Not feedback yet": "Not feedback yet"
 "Sending feedback …": "Sending feedback …"
 "Show image": "Show image"
@@ -17,8 +17,8 @@ Status: Status
 Subject: Subject
 "Submit feedback": "Submit feedback"
 "Taking screenshot …": "Taking screenshot …"
+"Tell us what you noticed on this page": "Tell us what you noticed on this page"
 "Tidy feedback": "Tidy feedback"
 "Tidy feedback test": "Tidy feedback test"
-"What did you do?": "What did you do?"
 "Your email address": "Your email address"
 "Your feedback": "Your feedback"
