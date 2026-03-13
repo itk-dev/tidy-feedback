@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Fixed cached email not appearing after submitting first feedback item
 - Added cache pruning for stale translation cache entries with 1-week TTL
 - Added rounded corners and border when widget is dragged away from window edge, removed when pushed against edge
 - Removed unused `subject`, `status`, and `category` fields from Item entity, admin templates, and translations
