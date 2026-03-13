@@ -30,20 +30,20 @@ from the host page.
 
 ## Key directories and files
 
-| Path | Description |
-|---|---|
-| `src/` | Shared PHP code (controller trait, entity, helper) |
-| `symfony/src/` | Symfony bundle (controller, bundle class) |
-| `drupal/` | Drupal module (controller, routing, info.yml) |
-| `assets/` | JavaScript and CSS source files |
-| `assets/component/` | Reusable JS components (draggable, region) |
-| `build/` | Compiled assets (committed to repo) |
-| `templates/` | Twig templates (widget, admin list, detail) |
-| `translations/` | Translation YAML files |
-| `resources/config/routes/` | Route config templates for installation |
-| `webpack.config.js` | Webpack Encore configuration |
-| `Taskfile.yml` | Task runner commands |
-| `compose.yaml` | Docker Compose services |
+| Path                       | Description                                      |
+|----------------------------|--------------------------------------------------|
+| `src/`                     | Shared PHP code (controller trait, entity, helper) |
+| `symfony/src/`             | Symfony bundle (controller, bundle class)         |
+| `drupal/`                  | Drupal module (controller, routing, info.yml)     |
+| `assets/`                  | JavaScript and CSS source files                   |
+| `assets/component/`        | Reusable JS components (draggable, region)        |
+| `build/`                   | Compiled assets (committed to repo)               |
+| `templates/`               | Twig templates (widget, admin list, detail)       |
+| `translations/`            | Translation YAML files                            |
+| `resources/config/routes/` | Route config templates for installation           |
+| `webpack.config.js`        | Webpack Encore configuration                      |
+| `Taskfile.yml`             | Task runner commands                              |
+| `compose.yaml`             | Docker Compose services                           |
 
 ## Build commands
 
