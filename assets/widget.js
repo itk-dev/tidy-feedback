@@ -242,6 +242,10 @@ const refreshFeedbackData = () => {
 const showFormAfterSelection = () => {
     if (form) {
         form.hidden = false;
+        const description = form.querySelector('[name="description"]');
+        if (description) {
+            description.focus();
+        }
     }
     showMessage("");
     makeFormDraggable();
@@ -298,11 +302,12 @@ const enterSelectMode = () => {
         }
 
         cleanup();
+        const regionPadding = 20;
         positionRegion({
-            left: rect.left + window.scrollX,
-            top: rect.top + window.scrollY,
-            width: rect.width,
-            height: rect.height,
+            left: rect.left + window.scrollX - regionPadding,
+            top: rect.top + window.scrollY - regionPadding,
+            width: rect.width + regionPadding * 2,
+            height: rect.height + regionPadding * 2,
         });
         showFormAfterSelection();
     };
@@ -604,6 +609,57 @@ addEventListener("load", () => {
             hideForm(true);
         });
     }
+
+    // Keyboard shortcuts (registered on document so they work outside shadow DOM).
+    document.addEventListener("keydown", (event) => {
+        const isFormField =
+            event.target.tagName === "INPUT" ||
+            event.target.tagName === "TEXTAREA" ||
+            event.target.tagName === "SELECT" ||
+            event.target.isContentEditable;
+
+        // Shift+C: start new feedback (only when not typing in a field).
+        if (
+            event.key === "C" &&
+            event.shiftKey &&
+            !event.ctrlKey &&
+            !event.metaKey &&
+            !isFormField
+        ) {
+            if (start && !start.hidden) {
+                event.preventDefault();
+                showForm();
+            }
+            return;
+        }
+
+        // Ctrl/Cmd+Enter: submit feedback form.
+        if (
+            event.key === "Enter" &&
+            (event.ctrlKey || event.metaKey) &&
+            form &&
+            !form.hidden &&
+            !itemsPanelMode
+        ) {
+            event.preventDefault();
+            form.requestSubmit();
+            return;
+        }
+
+        // Escape: cancel feedback or close items panel.
+        if (event.key === "Escape") {
+            if (itemsPanelMode) {
+                event.preventDefault();
+                hideItemsPanel();
+                return;
+            }
+            if (form && !form.hidden) {
+                event.preventDefault();
+                showMessage("");
+                hideForm(true);
+            }
+        }
+    });
 
     const params = new URLSearchParams(document.location.search);
     switch (params.get("tidy-feedback-show")) {
