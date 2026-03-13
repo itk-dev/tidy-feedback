@@ -151,6 +151,22 @@ tasks:
             - task: coding-standards:yaml:apply
             - task compose -- run --rm prettier --parser yaml '**/*.{yml,yaml}' --check
 
+    test:
+        desc: Run all tests
+        cmds:
+            - task: test:php
+            - task: test:js
+
+    test:php:
+        desc: Run PHP tests
+        cmds:
+            - task compose -- run --rm phpfpm vendor/bin/phpunit
+
+    test:js:
+        desc: Run JavaScript tests
+        cmds:
+            - task compose -- run --rm node npx vitest run
+
     code-analysis:
         cmds:
             - task compose -- run --rm phpfpm vendor/bin/phpstan

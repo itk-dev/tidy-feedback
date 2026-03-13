@@ -87,7 +87,19 @@ Individual standard categories can be run separately, e.g. `task coding-standard
 
 ## Testing
 
-There is currently no automated test suite. Testing is manual via the `/tidy-feedback/test` page in the dev app.
+```shell
+# Run all tests (PHP + JavaScript)
+task test
+
+# Run PHP tests only (PHPUnit)
+task test:php
+
+# Run JavaScript tests only (Vitest)
+task test:js
+```
+
+PHP tests are in `tests/` (PHPUnit). JavaScript tests are in `tests/js/` (Vitest).
+Manual testing is done via the `/tidy-feedback/test` page in the dev app.
 
 ## Translation workflow
 

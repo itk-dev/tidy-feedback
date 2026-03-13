@@ -17,6 +17,7 @@
         "drupal/coder": "^8.3",
         "ergebnis/composer-normalize": "^2.47",
         "friendsofphp/php-cs-fixer": "^3.75",
+        "phpunit/phpunit": "^11",
         "rector/rector": "^2.0",
         "vincentlanglet/twig-cs-fixer": "^3.8"
     },
@@ -24,6 +25,11 @@
         "psr-4": {
             "ItkDev\\TidyFeedbackBundle\\": "symfony/src/",
             "ItkDev\\TidyFeedback\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "ItkDev\\TidyFeedback\\Tests\\": "tests/"
         }
     },
     "config": {
