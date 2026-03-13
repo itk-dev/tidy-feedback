@@ -31,7 +31,7 @@
         </div>
         <div class="col-md-6">
             {% set image_url = path('tidy_feedback_image', {id: item.id}) %}
-            <strong>{{ 'Image' }}</strong>
+            <strong>{{ 'Image'|trans }}</strong>
             <a href="{{ image_url }}"><span class="visually-hidden">{{ 'Show image'|trans }}</span>
                 <img src="{{ image_url }}" alt="{{ image_url }}" class="img-thumbnail"/>
             </a>
