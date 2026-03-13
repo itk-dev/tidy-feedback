@@ -9,8 +9,8 @@
         <div class="col-md-6">
             {% set tableData = [
                 {
-                    key: 'Subject'|trans,
-                    value: item.subject,
+                    key: 'Description'|trans,
+                    value: item.data.description|default('–'),
                 },
                 {
                     key: 'Created at'|trans,
@@ -19,14 +19,6 @@
                 {
                     key: 'Created by'|trans,
                     value: item.createdBy|default('–'),
-                },
-                {
-                    key: 'Status'|trans,
-                    value: item.status.value,
-                },
-                {
-                    key: 'Category'|trans,
-                    value: item.category|default('–'),
                 },
             ] %}
 

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Removed unused `subject`, `status`, and `category` fields from Item entity, admin templates, and translations
+- Fixed highlighted region losing its dashed border after submitting feedback
+- Fixed cancel button hover making text invisible by using a darker hover background and aligned transition timings
+- Added "View" action column to admin feedback list replacing the subject link
 - Added animated conic-gradient border on the "Click an element to select" message during select mode
 - Fixed start button remaining visible when form or select-mode message is open
 - Split start button into two-part pill: count badge (opens items list) and "+" button (starts feedback form)

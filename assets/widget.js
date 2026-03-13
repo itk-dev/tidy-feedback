@@ -490,9 +490,6 @@ addEventListener("load", () => {
             // https://stackoverflow.com/a/46774073
             formData.forEach((value, key) => (data[key] = value));
 
-            // Auto-generate subject from page title or URL path.
-            data.subject = document.title || window.location.pathname;
-
             data.context = {
                 url: document.location.href,
                 referrer: document.referrer,
@@ -528,9 +525,6 @@ addEventListener("load", () => {
                                 "tidy-feedback-email",
                                 data.created_by,
                             );
-                        }
-                        if (region) {
-                            region.hidden = true;
                         }
                         hideForm(true);
                         showMessage("Feedback created", "success");
