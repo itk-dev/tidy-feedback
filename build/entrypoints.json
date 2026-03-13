@@ -1,11 +1,11 @@
 {
   "entrypoints": {
-    "app": {
+    "admin": {
       "css": [
-        "/build/app.css"
+        "/build/admin.css"
       ],
       "js": [
-        "/build/app.js"
+        "/build/admin.js"
       ]
     },
     "widget": {

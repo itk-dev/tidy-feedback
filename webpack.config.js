@@ -20,7 +20,7 @@ Encore
      * Each entry will result in one JavaScript file (e.g. app.js)
      * and one CSS file (e.g. app.css) if your JavaScript imports CSS.
      */
-    .addEntry("app", "./assets/app.js")
+    .addEntry("admin", "./assets/admin.js")
     .addEntry("widget", "./assets/widget.js")
     .addEntry("widget-region", "./assets/widget-region.js")
 
@@ -50,9 +50,6 @@ Encore
         config.useBuiltIns = "usage";
         config.corejs = 3;
     })
-
-    // enables Sass/SCSS support
-    .enableSassLoader()
 
     // uncomment if you use TypeScript
     //.enableTypeScriptLoader()

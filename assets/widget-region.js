@@ -1,1 +1,2 @@
-import "./styles/widget-region.scss";
+import "./styles/variables.css";
+import "./styles/widget-region.css";

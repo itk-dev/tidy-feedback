@@ -1,11 +1,24 @@
 // NOTE! THIS FILE IS A MESS AND NEEDS A CLEAN-UP!
 
-import "./styles/widget.scss";
+import "./styles/variables.css";
+import "./styles/btn.css";
+import "./styles/widget.css";
 import { makeResizableDiv } from "./component/region";
 import { makeDraggable } from "./component/draggable.js";
 
 import { snapdom } from "@zumer/snapdom";
 import unique from "@cypress/unique-selector";
+
+try {
+    CSS.registerProperty({
+        name: "--border-angle",
+        syntax: "<angle>",
+        inherits: false,
+        initialValue: "0deg",
+    });
+} catch {
+    // Already registered or not supported
+}
 
 const root = document.querySelector("#tidy-feedback").shadowRoot;
 const widget = root ?? document;
@@ -28,10 +41,10 @@ const config = (() => {
     return {};
 })();
 
-const showMessage = (message, type = "default") => {
+const showMessage = (message, type = null) => {
     const el = root.querySelector(".tidy-feedback-message");
     if (el) {
-        el.classList.remove("success", "warning", "danger", "default");
+        el.classList.remove("success", "warning", "danger", "select");
 
         if (type) {
             el.classList.add(type);
@@ -43,12 +56,15 @@ const showMessage = (message, type = "default") => {
 };
 
 let start;
+let startCount;
+let startAdd;
 let cancel;
 let region;
 let form;
 let dragCleanup;
 let feedbackItems = [];
 let selectedSelector = null;
+let itemsPanelMode = false;
 
 const positionRegion = (rect) => {
     if (region) {
@@ -99,7 +115,7 @@ const hideFormDragHandle = () => {
     }
 };
 
-const renderItemsList = () => {
+const renderItemsList = (listOnly = false) => {
     if (feedbackItems.length === 0) {
         return;
     }
@@ -110,19 +126,23 @@ const renderItemsList = () => {
     const container = document.createElement("div");
     container.className = "tidy-feedback-items";
 
-    const toggle = document.createElement("button");
-    toggle.type = "button";
-    toggle.className = "tidy-feedback-items-toggle";
-    const label = config.messages["Existing feedback"] ?? "Existing feedback";
-    toggle.textContent = `${label} (${feedbackItems.length})`;
-    toggle.addEventListener("click", () => {
-        toggle.classList.toggle("open");
-        list.hidden = !list.hidden;
-    });
-
     const list = document.createElement("ul");
     list.className = "tidy-feedback-items-list";
-    list.hidden = true;
+
+    if (!listOnly) {
+        const toggle = document.createElement("button");
+        toggle.type = "button";
+        toggle.className = "tidy-feedback-items-toggle";
+        const label =
+            config.messages["Existing feedback"] ?? "Existing feedback";
+        toggle.textContent = `${label} (${feedbackItems.length})`;
+        toggle.addEventListener("click", () => {
+            toggle.classList.toggle("open");
+            list.hidden = !list.hidden;
+        });
+        container.appendChild(toggle);
+        list.hidden = true;
+    }
 
     for (const item of feedbackItems) {
         const li = document.createElement("li");
@@ -131,11 +151,38 @@ const renderItemsList = () => {
         a.target = "_blank";
         a.rel = "noopener noreferrer";
         a.textContent = item.description ?? "";
+
+        if (item.selectedElement) {
+            let savedCssText = null;
+            li.addEventListener("mouseenter", () => {
+                try {
+                    const el = document.querySelector(item.selectedElement);
+                    if (el) {
+                        savedCssText = el.style.cssText;
+                        el.style.cssText +=
+                            "outline: 2px solid hsla(252, 55%, 46%, 0.6); outline-offset: 2px; border-radius: 4px;";
+                    }
+                } catch {
+                    // Ignore invalid selectors.
+                }
+            });
+            li.addEventListener("mouseleave", () => {
+                try {
+                    const el = document.querySelector(item.selectedElement);
+                    if (el && savedCssText !== null) {
+                        el.style.cssText = savedCssText;
+                        savedCssText = null;
+                    }
+                } catch {
+                    // Ignore invalid selectors.
+                }
+            });
+        }
+
         li.appendChild(a);
         list.appendChild(li);
     }
 
-    container.appendChild(toggle);
     container.appendChild(list);
     form.appendChild(container);
 };
@@ -153,20 +200,19 @@ const refreshFeedbackData = () => {
             const count = json?.data?.count;
             feedbackItems = json?.data?.items ?? [];
 
-            // Update or create the badge on the start button.
-            let badge = start.querySelector(".tidy-feedback-badge");
-            if (count > 0) {
-                if (!badge) {
-                    badge = document.createElement("span");
-                    badge.className = "tidy-feedback-badge";
-                    start.appendChild(badge);
+            // Update the badge text and toggle count button visibility.
+            if (startCount) {
+                const badge = startCount.querySelector(".tidy-feedback-badge");
+                if (badge) {
+                    badge.textContent = count;
                 }
-                badge.textContent = count;
-            } else if (badge) {
-                badge.remove();
+                startCount.hidden = !(count > 0);
             }
 
-            renderItemsList();
+            // Re-render the items list only when the items panel is open.
+            if (itemsPanelMode) {
+                renderItemsList(true);
+            }
         })
         .catch(() => {
             // Silently ignore check errors.
@@ -179,7 +225,6 @@ const showFormAfterSelection = () => {
     }
     showMessage("");
     makeFormDraggable();
-    renderItemsList();
 };
 
 const enterSelectMode = () => {
@@ -190,7 +235,7 @@ const enterSelectMode = () => {
         "body.tidy-feedback-selecting, body.tidy-feedback-selecting * { cursor: crosshair !important; }";
     document.head.appendChild(style);
     document.body.classList.add("tidy-feedback-selecting");
-    showMessage("Click an element to select");
+    showMessage("Click an element to select", "select");
 
     // Read the primary color from CSS custom properties for consistent styling.
     const primaryColor =
@@ -281,10 +326,90 @@ const enterSelectMode = () => {
     document.addEventListener("mousemove", onMousemove);
 };
 
+const setFormFieldsVisibility = (visible) => {
+    if (!form) {
+        return;
+    }
+
+    const selectors = [
+        ".tidy-feedback-form-title",
+        ".tidy-feedback-form-lead",
+        ".form-row",
+        'button[type="submit"]',
+        ".btn-cancel",
+    ];
+
+    for (const selector of selectors) {
+        for (const el of form.querySelectorAll(selector)) {
+            el.hidden = !visible;
+        }
+    }
+};
+
+const showItemsPanel = () => {
+    if (start) {
+        start.hidden = true;
+    }
+
+    itemsPanelMode = true;
+
+    if (form) {
+        form.hidden = false;
+        setFormFieldsVisibility(false);
+
+        // Remove existing header/items so we can re-render.
+        form.querySelector(".tidy-feedback-items-header")?.remove();
+        form.querySelector(".tidy-feedback-items")?.remove();
+
+        // Add a header with title and close button.
+        const header = document.createElement("div");
+        header.className = "tidy-feedback-items-header";
+
+        const title = document.createElement("span");
+        const label =
+            config.messages["Existing feedback"] ?? "Existing feedback";
+        title.textContent = `${label} (${feedbackItems.length})`;
+
+        const closeBtn = document.createElement("button");
+        closeBtn.type = "button";
+        closeBtn.className = "btn btn-cancel";
+        closeBtn.textContent = "\u00D7";
+        closeBtn.addEventListener("click", () => {
+            hideItemsPanel();
+        });
+
+        header.appendChild(title);
+        header.appendChild(closeBtn);
+        form.appendChild(header);
+
+        renderItemsList(true);
+    }
+
+    makeFormDraggable();
+};
+
+const hideItemsPanel = () => {
+    itemsPanelMode = false;
+
+    if (form) {
+        form.querySelector(".tidy-feedback-items-header")?.remove();
+        form.querySelector(".tidy-feedback-items")?.remove();
+        form.hidden = true;
+        setFormFieldsVisibility(true);
+    }
+
+    hideFormDragHandle();
+
+    if (start) {
+        start.hidden = false;
+    }
+};
+
 const showForm = () => {
     if (start) {
         start.hidden = true;
     }
+    itemsPanelMode = false;
     selectedSelector = null;
     enterSelectMode();
 };
@@ -292,8 +417,11 @@ const showForm = () => {
 const hideForm = (reset) => {
     hideRegion();
     hideFormDragHandle();
+    itemsPanelMode = false;
     if (form) {
+        form.querySelector(".tidy-feedback-items-header")?.remove();
         form.hidden = true;
+        setFormFieldsVisibility(true);
         if (reset) {
             form.reset();
             selectedSelector = null;
@@ -315,7 +443,9 @@ const hideForm = (reset) => {
 
 addEventListener("load", () => {
     form = getElement(".tidy-feedback-form");
-    start = getActionElement("start");
+    start = getElement(".tidy-feedback-start");
+    startCount = getElement(".tidy-feedback-start-count");
+    startAdd = getActionElement("start");
     cancel = getActionElement("cancel");
     region = getDocumentElement("#tidy-feedback-region > .resizable");
 
@@ -428,9 +558,18 @@ addEventListener("load", () => {
 
     if (start) {
         start.hidden = false;
-        start.addEventListener("click", (event) => {
-            showForm();
-        });
+
+        if (startAdd) {
+            startAdd.addEventListener("click", () => {
+                showForm();
+            });
+        }
+
+        if (startCount) {
+            startCount.addEventListener("click", () => {
+                showItemsPanel();
+            });
+        }
 
         refreshFeedbackData();
     }

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Added animated conic-gradient border on the "Click an element to select" message during select mode
+- Fixed start button remaining visible when form or select-mode message is open
+- Split start button into two-part pill: count badge (opens items list) and "+" button (starts feedback form)
+- Replaced SCSS and CoreUI/Bootstrap with plain CSS to reduce build complexity and bundle size
+- Renamed admin entry point from `app` to `admin`
+- Fixed overly-broad button styling that affected all buttons on the page
 - Added click-to-select element targeting for feedback region
 - Simplified feedback form to email + description only; subject is now auto-generated from page title
 - Added localStorage caching for email field so it's prefilled on repeat visits
