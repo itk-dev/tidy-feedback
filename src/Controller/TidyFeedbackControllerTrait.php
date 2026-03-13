@@ -160,13 +160,14 @@ trait TidyFeedbackControllerTrait
         );
 
         $rows = $connection->fetchAllAssociative(
-            "SELECT id, JSON_EXTRACT(data, '$.description') as description FROM item WHERE JSON_EXTRACT(data, '$.context.url') = ? ORDER BY createdAt DESC LIMIT 10",
+            "SELECT id, JSON_EXTRACT(data, '$.description') as description, JSON_EXTRACT(data, '$.context.selectedElement') as selected_element FROM item WHERE JSON_EXTRACT(data, '$.context.url') = ? ORDER BY createdAt DESC LIMIT 10",
             [$url]
         );
 
         $items = array_map(fn (array $row) => [
             'description' => json_decode($row['description'], true) ?? $row['description'],
             'url' => $this->helper->generateUrl('tidy_feedback_show', ['id' => $row['id']]),
+            'selectedElement' => json_decode($row['selected_element'] ?? 'null', true) ?? $row['selected_element'] ?? null,
         ], $rows);
 
         return new JsonResponse(['data' => ['count' => $count, 'items' => $items]]);
