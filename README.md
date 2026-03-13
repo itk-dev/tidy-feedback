@@ -165,14 +165,14 @@ TIDY_FEEDBACK_USERS={"admin": "s3cret", "reviewer": "p4ssw0rd"}
 
 All paths are relative to the Tidy feedback prefix (default `/tidy-feedback`).
 
-| Method | Path             | Description                  | Auth required            | Response     |
-|--------|------------------|------------------------------|--------------------------|--------------|
+| Method | Path             | Description                  | Auth required             | Response     |
+|--------|------------------|------------------------------|---------------------------|--------------|
 | `GET`  | `/`              | List all feedback items      | Yes (if users configured) | HTML or JSON |
-| `POST` | `/`              | Create a new feedback item   | No                       | JSON (201)   |
-| `GET`  | `/check`         | Get feedback count for a URL | No                       | JSON         |
+| `POST` | `/`              | Create a new feedback item   | No                        | JSON (201)   |
+| `GET`  | `/check`         | Get feedback count for a URL | No                        | JSON         |
 | `GET`  | `/{id}`          | Show a single feedback item  | Yes (if users configured) | HTML or JSON |
 | `GET`  | `/{id}/image`    | Get the screenshot image     | Yes (if users configured) | Binary image |
-| `GET`  | `/asset/{asset}` | Serve a compiled asset       | No                       | Binary file  |
+| `GET`  | `/asset/{asset}` | Serve a compiled asset       | No                        | Binary file  |
 
 Append `?_format=json` to `GET /` or `GET /{id}` to force JSON output.
 
@@ -180,12 +180,12 @@ Append `?_format=json` to `GET /` or `GET /{id}` to force JSON output.
 
 Create a new feedback item by sending a JSON body:
 
-| Field         | Type                | Description                                         |
-|---------------|---------------------|-----------------------------------------------------|
-| `created_by`  | `string` (optional) | Email address of the submitter                      |
-| `email`       | `string` (optional) | Email address (stored in data)                      |
-| `description` | `string`            | Feedback description                                |
-| `image`       | `string`            | Screenshot as a data URI                            |
+| Field         | Type                | Description                                          |
+|---------------|---------------------|------------------------------------------------------|
+| `created_by`  | `string` (optional) | Email address of the submitter                       |
+| `email`       | `string` (optional) | Email address (stored in data)                       |
+| `description` | `string`            | Feedback description                                 |
+| `image`       | `string`            | Screenshot as a data URI                             |
 | `context`     | `object`            | Page context (URL, viewport, selected element, etc.) |
 
 Example 201 response:
@@ -205,8 +205,8 @@ Example 201 response:
 
 Returns the feedback count and a summary of items for a given URL.
 
-| Parameter | Type             | Description          |
-|-----------|------------------|----------------------|
+| Parameter | Type             | Description           |
+|-----------|------------------|-----------------------|
 | `url`     | `string` (query) | The page URL to check |
 
 Example response:
