@@ -8,10 +8,10 @@ Data: Data
 Description: Beskrivelse
 "Error taking screenshot": "Fejl under generering af skærmbillede"
 "Existing feedback": "Eksisterende feedback"
-Image: Billede
 Feedback: Feedback
 "Feedback created": "Feedback oprettet"
 "Feedback items": "Feedback indsendelser"
+Image: Billede
 "Not feedback yet": "Ingen feedback endnu"
 "Sending feedback …": "Sender feedback …"
 "Show image": "Vis billede"

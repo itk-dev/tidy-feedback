@@ -8,10 +8,10 @@ Data: Data
 Description: Description
 "Error taking screenshot": "Error taking screenshot"
 "Existing feedback": "Existing feedback"
-Image: Image
 Feedback: Feedback
 "Feedback created": "Feedback created"
 "Feedback items": "Feedback items"
+Image: Image
 "Not feedback yet": "Not feedback yet"
 "Sending feedback …": "Sending feedback …"
 "Show image": "Show image"
