@@ -31,7 +31,8 @@
                     <span class="tidy-feedback-badge">0</span>
                 </button>
                 <button {{ capture_exclude_attributes|raw }} type="button" class="tidy-feedback-start-add"
-                                                             data-tidy-feedback-action="start">+ {{ 'Add feedback'|trans }}</button>
+                                                             data-tidy-feedback-action="start"
+                                                             title="Shift+C">+ {{ 'Add feedback'|trans }}</button>
             </div>
 
             <form {{ capture_exclude_attributes|raw }} hidden class="tidy-feedback-form"
@@ -58,9 +59,9 @@
                     value: default_values['description']|default(''),
                 }) }}
 
-                <button type="submit" class="btn btn-primary">{{ 'Submit feedback'|trans }}</button>
+                <button type="submit" class="btn btn-primary" title="Ctrl+Enter">{{ 'Submit feedback'|trans }}</button>
 
-                <button type="button" class="btn btn-cancel" data-tidy-feedback-action="cancel">{{ 'Cancel'|trans }}</button>
+                <button type="button" class="btn btn-cancel" data-tidy-feedback-action="cancel" title="Escape">{{ 'Cancel'|trans }}</button>
             </form>
         </div>
     </template>

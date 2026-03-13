@@ -242,6 +242,10 @@ const refreshFeedbackData = () => {
 const showFormAfterSelection = () => {
     if (form) {
         form.hidden = false;
+        const description = form.querySelector('[name="description"]');
+        if (description) {
+            description.focus();
+        }
     }
     showMessage("");
     makeFormDraggable();
@@ -298,11 +302,12 @@ const enterSelectMode = () => {
         }
 
         cleanup();
+        const regionPadding = 20;
         positionRegion({
-            left: rect.left + window.scrollX,
-            top: rect.top + window.scrollY,
-            width: rect.width,
-            height: rect.height,
+            left: rect.left + window.scrollX - regionPadding,
+            top: rect.top + window.scrollY - regionPadding,
+            width: rect.width + regionPadding * 2,
+            height: rect.height + regionPadding * 2,
         });
         showFormAfterSelection();
     };
