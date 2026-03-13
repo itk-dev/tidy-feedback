@@ -1,13 +1,25 @@
-// NOTE! THIS FILE IS A MESS AND NEEDS A CLEAN-UP!
-
 import "./styles/variables.css";
 import "./styles/btn.css";
 import "./styles/widget.css";
 import { makeResizableDiv } from "./component/region";
-import { makeDraggable } from "./component/draggable.js";
-
-import { snapdom } from "@zumer/snapdom";
-import unique from "@cypress/unique-selector";
+import { showMessage } from "./component/messages";
+import { enterSelectMode } from "./component/select-mode";
+import {
+    renderItemsList,
+    refreshFeedbackData,
+    showItemsPanel,
+    hideItemsPanel,
+} from "./component/items-panel";
+import {
+    makeFormDraggable,
+    hideFormDragHandle,
+    prefillEmail,
+    showFormAfterSelection,
+    showForm,
+    hideForm,
+    initFormSubmit,
+} from "./component/form";
+import { initKeyboardShortcuts } from "./component/keyboard";
 
 try {
     CSS.registerProperty({
@@ -26,7 +38,6 @@ const widget = root ?? document;
 const getElement = (selector) => widget.querySelector(selector);
 const getActionElement = (action) =>
     getElement(`[data-tidy-feedback-action="${action}"]`);
-
 const getDocumentElement = (selector) => document.querySelector(selector);
 
 const config = (() => {
@@ -41,630 +52,106 @@ const config = (() => {
     return {};
 })();
 
-const showMessage = (message, type = null) => {
-    const el = root.querySelector(".tidy-feedback-message");
-    if (el) {
-        el.classList.remove("success", "warning", "danger", "select");
+// Shared context object passed to all component modules.
+const ctx = {
+    config,
+    form: null,
+    start: null,
+    startCount: null,
+    region: null,
+    dragCleanup: null,
+    feedbackItems: [],
+    selectedSelector: null,
+    itemsPanelMode: false,
 
-        if (type) {
-            el.classList.add(type);
+    getElement,
+    getDocumentElement,
+
+    showMessage: (message, type) => showMessage(root, config, message, type),
+    enterSelectMode: () => enterSelectMode(ctx),
+    positionRegion: (rect) => {
+        if (ctx.region) {
+            ctx.region.parentNode.hidden = false;
+            ctx.region.style.left = rect.left + "px";
+            ctx.region.style.top = rect.top + "px";
+            ctx.region.style.width = Math.max(rect.width, 20) + "px";
+            ctx.region.style.height = Math.max(rect.height, 20) + "px";
+            makeResizableDiv(ctx.region);
         }
-
-        el.innerHTML = config.messages[message] ?? message;
-        el.hidden = !message;
-    }
-};
-
-let start;
-let startCount;
-let startAdd;
-let cancel;
-let region;
-let form;
-let dragCleanup;
-let feedbackItems = [];
-let selectedSelector = null;
-let itemsPanelMode = false;
-
-const positionRegion = (rect) => {
-    if (region) {
-        region.parentNode.hidden = false;
-        region.style.left = rect.left + "px";
-        region.style.top = rect.top + "px";
-        region.style.width = Math.max(rect.width, 20) + "px";
-        region.style.height = Math.max(rect.height, 20) + "px";
-        makeResizableDiv(region);
-    }
-};
-
-const selectRegion = () => {
-    positionRegion({ left: 300, top: 300, width: 300, height: 200 });
-};
-
-const hideRegion = () => {
-    if (region) {
-        region.parentNode.hidden = true;
-    }
-};
-
-const updateEdgeClasses = (element) => {
-    const rect = element.getBoundingClientRect();
-    const threshold = 1;
-
-    element.classList.toggle("at-edge-left", rect.left <= threshold);
-    element.classList.toggle(
-        "at-edge-right",
-        rect.right >= window.innerWidth - threshold,
-    );
-    element.classList.toggle("at-edge-top", rect.top <= threshold);
-    element.classList.toggle(
-        "at-edge-bottom",
-        rect.bottom >= window.innerHeight - threshold,
-    );
-};
-
-const makeFormDraggable = () => {
-    if (dragCleanup) {
-        return;
-    }
-
-    const tidyFeedbackDiv = getElement(".tidy-feedback-form");
-    const dragHandle = getElement(".tidy-feedback-draggable-handle");
-
-    if (tidyFeedbackDiv && dragHandle) {
-        dragHandle.hidden = false;
-
-        updateEdgeClasses(tidyFeedbackDiv);
-
-        dragCleanup = makeDraggable(tidyFeedbackDiv, dragHandle, {
-            constrainToViewport: true,
-            onDrag: (_e, el) => updateEdgeClasses(el),
-            onDragEnd: (_e, el) => updateEdgeClasses(el),
-        });
-    }
-};
-
-const hideFormDragHandle = () => {
-    const tidyFeedbackDiv = getDocumentElement("#tidy-feedback");
-    const dragHandle = tidyFeedbackDiv?.querySelector(
-        ".tidy-feedback-draggable-handle",
-    );
-
-    if (dragHandle) {
-        dragHandle.hidden = true;
-    }
-};
-
-const renderItemsList = (listOnly = false) => {
-    if (feedbackItems.length === 0) {
-        return;
-    }
-
-    // Remove existing list so we can re-render with updated data.
-    form.querySelector(".tidy-feedback-items")?.remove();
-
-    const container = document.createElement("div");
-    container.className = "tidy-feedback-items";
-
-    const list = document.createElement("ul");
-    list.className = "tidy-feedback-items-list";
-
-    if (!listOnly) {
-        const toggle = document.createElement("button");
-        toggle.type = "button";
-        toggle.className = "tidy-feedback-items-toggle";
-        const label =
-            config.messages["Existing feedback"] ?? "Existing feedback";
-        toggle.textContent = `${label} (${feedbackItems.length})`;
-        toggle.addEventListener("click", () => {
-            toggle.classList.toggle("open");
-            list.hidden = !list.hidden;
-        });
-        container.appendChild(toggle);
-        list.hidden = true;
-    }
-
-    for (const item of feedbackItems) {
-        const li = document.createElement("li");
-        const a = document.createElement("a");
-        a.href = item.url;
-        a.target = "_blank";
-        a.rel = "noopener noreferrer";
-        a.textContent = item.description ?? "";
-
-        if (item.selectedElement) {
-            let savedCssText = null;
-            li.addEventListener("mouseenter", () => {
-                try {
-                    const el = document.querySelector(item.selectedElement);
-                    if (el) {
-                        savedCssText = el.style.cssText;
-                        el.style.cssText +=
-                            "outline: 2px solid hsla(252, 55%, 46%, 0.6); outline-offset: 2px; border-radius: 4px;";
-                    }
-                } catch {
-                    // Ignore invalid selectors.
-                }
-            });
-            li.addEventListener("mouseleave", () => {
-                try {
-                    const el = document.querySelector(item.selectedElement);
-                    if (el && savedCssText !== null) {
-                        el.style.cssText = savedCssText;
-                        savedCssText = null;
-                    }
-                } catch {
-                    // Ignore invalid selectors.
-                }
-            });
+    },
+    hideRegion: () => {
+        if (ctx.region) {
+            ctx.region.parentNode.hidden = true;
         }
-
-        li.appendChild(a);
-        list.appendChild(li);
-    }
-
-    container.appendChild(list);
-    form.appendChild(container);
-};
-
-const refreshFeedbackData = () => {
-    if (!config.checkUrl || !start) {
-        return;
-    }
-
-    fetch(
-        config.checkUrl + "?url=" + encodeURIComponent(document.location.href),
-    )
-        .then((response) => response.json())
-        .then((json) => {
-            const count = json?.data?.count;
-            feedbackItems = json?.data?.items ?? [];
-
-            // Update the badge text and toggle count button visibility.
-            if (startCount) {
-                const badge = startCount.querySelector(".tidy-feedback-badge");
-                if (badge) {
-                    badge.textContent = count;
-                }
-                startCount.hidden = !(count > 0);
-            }
-
-            // Re-render the items list only when the items panel is open.
-            if (itemsPanelMode) {
-                renderItemsList(true);
-            }
-        })
-        .catch(() => {
-            // Silently ignore check errors.
-        });
-};
-
-const showFormAfterSelection = () => {
-    if (form) {
-        form.hidden = false;
-        const description = form.querySelector('[name="description"]');
-        if (description) {
-            description.focus();
-        }
-    }
-    showMessage("");
-    makeFormDraggable();
-};
-
-const enterSelectMode = () => {
-    // Inject crosshair cursor style into document head so it applies globally.
-    const style = document.createElement("style");
-    style.dataset.tidyFeedbackSelecting = "";
-    style.textContent =
-        "body.tidy-feedback-selecting, body.tidy-feedback-selecting * { cursor: crosshair !important; }";
-    document.head.appendChild(style);
-    document.body.classList.add("tidy-feedback-selecting");
-    showMessage("Click an element to select", "select");
-
-    // Read the primary color from CSS custom properties for consistent styling.
-    const primaryColor =
-        getComputedStyle(document.documentElement)
-            .getPropertyValue("--color-primary")
-            .trim() || "hsla(252, 55%, 46%, 1)";
-    let hoveredElement = null;
-
-    const cleanup = () => {
-        document.removeEventListener("click", onClick, true);
-        document.removeEventListener("keydown", onKeydown);
-        document.removeEventListener("mousemove", onMousemove);
-        document.body.classList.remove("tidy-feedback-selecting");
-        style.remove();
-        if (hoveredElement) {
-            hoveredElement.style.outline = "";
-            hoveredElement = null;
-        }
-    };
-
-    const onClick = (event) => {
-        const target = event.target;
-
-        // Let clicks on the widget itself pass through.
-        if (
-            target.closest("#tidy-feedback") ||
-            target.closest("#tidy-feedback-region")
-        ) {
-            return;
-        }
-
-        event.preventDefault();
-        event.stopPropagation();
-
-        const rect = target.getBoundingClientRect();
-        try {
-            selectedSelector = unique(target);
-        } catch {
-            selectedSelector = null;
-        }
-
-        cleanup();
-        const regionPadding = 20;
-        positionRegion({
-            left: rect.left + window.scrollX - regionPadding,
-            top: rect.top + window.scrollY - regionPadding,
-            width: rect.width + regionPadding * 2,
-            height: rect.height + regionPadding * 2,
-        });
-        showFormAfterSelection();
-    };
-
-    const onKeydown = (event) => {
-        if (event.key === "Escape") {
-            cleanup();
-            showMessage("");
-            if (start) {
-                start.hidden = false;
-            }
-        }
-    };
-
-    const onMousemove = (event) => {
-        const target = event.target;
-
-        if (
-            target.closest("#tidy-feedback") ||
-            target.closest("#tidy-feedback-region")
-        ) {
-            if (hoveredElement) {
-                hoveredElement.style.outline = "";
-                hoveredElement = null;
-            }
-            return;
-        }
-
-        if (hoveredElement && hoveredElement !== target) {
-            hoveredElement.style.outline = "";
-        }
-
-        if (target !== hoveredElement) {
-            target.style.outline = "2px dashed " + primaryColor;
-            hoveredElement = target;
-        }
-    };
-
-    document.addEventListener("click", onClick, true);
-    document.addEventListener("keydown", onKeydown);
-    document.addEventListener("mousemove", onMousemove);
-};
-
-const setFormFieldsVisibility = (visible) => {
-    if (!form) {
-        return;
-    }
-
-    const selectors = [
-        ".tidy-feedback-form-title",
-        ".tidy-feedback-form-lead",
-        ".form-row",
-        'button[type="submit"]',
-        ".btn-cancel",
-    ];
-
-    for (const selector of selectors) {
-        for (const el of form.querySelectorAll(selector)) {
-            el.hidden = !visible;
-        }
-    }
-};
-
-const showItemsPanel = () => {
-    if (start) {
-        start.hidden = true;
-    }
-
-    itemsPanelMode = true;
-
-    if (form) {
-        form.hidden = false;
-        setFormFieldsVisibility(false);
-
-        // Remove existing header/items so we can re-render.
-        form.querySelector(".tidy-feedback-items-header")?.remove();
-        form.querySelector(".tidy-feedback-items")?.remove();
-
-        // Add a header with title and close button.
-        const header = document.createElement("div");
-        header.className = "tidy-feedback-items-header";
-
-        const title = document.createElement("span");
-        const label =
-            config.messages["Existing feedback"] ?? "Existing feedback";
-        title.textContent = `${label} (${feedbackItems.length})`;
-
-        const closeBtn = document.createElement("button");
-        closeBtn.type = "button";
-        closeBtn.className = "btn btn-cancel";
-        closeBtn.textContent = "\u00D7";
-        closeBtn.addEventListener("click", () => {
-            hideItemsPanel();
-        });
-
-        header.appendChild(title);
-        header.appendChild(closeBtn);
-        form.appendChild(header);
-
-        renderItemsList(true);
-    }
-
-    makeFormDraggable();
-};
-
-const hideItemsPanel = () => {
-    itemsPanelMode = false;
-
-    if (form) {
-        form.querySelector(".tidy-feedback-items-header")?.remove();
-        form.querySelector(".tidy-feedback-items")?.remove();
-        form.hidden = true;
-        setFormFieldsVisibility(true);
-    }
-
-    hideFormDragHandle();
-
-    if (start) {
-        start.hidden = false;
-    }
-};
-
-const showForm = () => {
-    if (start) {
-        start.hidden = true;
-    }
-    itemsPanelMode = false;
-    selectedSelector = null;
-    enterSelectMode();
-};
-
-const hideForm = (reset) => {
-    hideRegion();
-    hideFormDragHandle();
-    itemsPanelMode = false;
-    if (form) {
-        form.querySelector(".tidy-feedback-items-header")?.remove();
-        form.hidden = true;
-        setFormFieldsVisibility(true);
-        if (reset) {
-            form.reset();
-            selectedSelector = null;
-
-            // Re-apply cached email after reset so the next form open has it prefilled.
-            const emailInput = form.querySelector('[name="created_by"]');
-            if (emailInput && !emailInput.readOnly) {
-                const cachedEmail = localStorage.getItem("tidy-feedback-email");
-                if (cachedEmail) {
-                    emailInput.value = cachedEmail;
-                }
-            }
-        }
-    }
-    if (start) {
-        start.hidden = false;
-    }
-
-    // Hide the drag handle when form is hidden
-    const tidyFeedbackDiv = document.getElementById("tidy-feedback");
-    const dragHandle = tidyFeedbackDiv?.querySelector(
-        ".tidy-feedback-draggable-handle",
-    );
-    if (dragHandle) {
-        dragHandle.hidden = true;
-    }
+    },
+    makeFormDraggable: () => makeFormDraggable(ctx),
+    hideFormDragHandle: () => hideFormDragHandle(ctx),
+    showFormAfterSelection: () => showFormAfterSelection(ctx),
+    showForm: () => showForm(ctx),
+    hideForm: (reset) => hideForm(ctx, reset),
+    showItemsPanel: () => showItemsPanel(ctx),
+    hideItemsPanel: () => hideItemsPanel(ctx),
+    refreshFeedbackData: () => refreshFeedbackData(ctx),
+    renderItemsList: (listOnly) => renderItemsList(ctx, listOnly),
 };
 
 addEventListener("load", () => {
-    form = getElement(".tidy-feedback-form");
-    start = getElement(".tidy-feedback-start");
-    startCount = getElement(".tidy-feedback-start-count");
-    startAdd = getActionElement("start");
-    cancel = getActionElement("cancel");
-    region = getDocumentElement("#tidy-feedback-region > .resizable");
+    ctx.form = getElement(".tidy-feedback-form");
+    ctx.start = getElement(".tidy-feedback-start");
+    ctx.startCount = getElement(".tidy-feedback-start-count");
+    ctx.region = getDocumentElement("#tidy-feedback-region > .resizable");
 
-    if (form) {
-        // Prefill email from localStorage if not already set.
-        const emailInput = form.querySelector('[name="created_by"]');
-        if (emailInput && !emailInput.value && !emailInput.readOnly) {
-            const cachedEmail = localStorage.getItem("tidy-feedback-email");
-            if (cachedEmail) {
-                emailInput.value = cachedEmail;
-            }
-        }
+    const startAdd = getActionElement("start");
+    const cancel = getActionElement("cancel");
 
-        form.addEventListener("submit", async (event) => {
-            event.preventDefault();
-
-            const data = {};
-
-            showMessage("Taking screenshot …");
-
-            try {
-                const el = document.body;
-                const result = await snapdom(el, { scale: 1 });
-
-                let image = result.toRaw();
-                // Check if some other image formats generate smaller payload
-                for (const method of ["toWebp", "toPng", "toJpg"]) {
-                    const img = await result[method]();
-                    if (img.src.length < image.length) {
-                        image = img.src;
-                    }
-                }
-
-                data.image = image;
-            } catch (error) {
-                showMessage("Error taking screenshot", "danger");
-            }
-
-            showMessage("Sending feedback …");
-
-            const formData = new FormData(form);
-            // https://stackoverflow.com/a/46774073
-            formData.forEach((value, key) => (data[key] = value));
-
-            data.context = {
-                url: document.location.href,
-                referrer: document.referrer,
-                document: document.documentElement.outerHTML,
-                navigator: {
-                    userAgent: navigator.userAgent,
-                },
-                window: {
-                    innerWidth: window.innerWidth,
-                    innerHeight: window.innerHeight,
-                },
-                region: {
-                    left: region.style.left,
-                    top: region.style.top,
-                    width: region.style.width,
-                    height: region.style.height,
-                },
-                selectedElement: selectedSelector,
-            };
-
-            fetch(form.action, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(data),
-            })
-                .then((response) => {
-                    if (201 === response.status) {
-                        // Cache email for next visit.
-                        if (data.created_by) {
-                            localStorage.setItem(
-                                "tidy-feedback-email",
-                                data.created_by,
-                            );
-                        }
-                        hideForm(true);
-                        showMessage("Feedback created", "success");
-                        refreshFeedbackData();
-                    } else {
-                        response
-                            .json()
-                            .then((data) =>
-                                showMessage(
-                                    "Error creating feedback: " +
-                                        JSON.stringify(data),
-                                    "danger",
-                                ),
-                            );
-                    }
-                })
-                .catch((reason) => alert(reason));
-        });
+    if (ctx.form) {
+        prefillEmail(ctx.form);
+        initFormSubmit(ctx);
     }
 
     const s = getElement("[data-tidy-feedback-action='select-region']");
     if (s) {
-        s.addEventListener("click", selectRegion);
-    }
-
-    if (start) {
-        start.hidden = false;
-
-        if (startAdd) {
-            startAdd.addEventListener("click", () => {
-                showForm();
+        s.addEventListener("click", () => {
+            ctx.positionRegion({
+                left: 300,
+                top: 300,
+                width: 300,
+                height: 200,
             });
-        }
-
-        if (startCount) {
-            startCount.addEventListener("click", () => {
-                showItemsPanel();
-            });
-        }
-
-        refreshFeedbackData();
-    }
-
-    if (cancel) {
-        cancel.addEventListener("click", (event) => {
-            showMessage("");
-            // TODO Confirm if form not empty.
-            hideForm(true);
         });
     }
 
-    // Keyboard shortcuts (registered on document so they work outside shadow DOM).
-    document.addEventListener("keydown", (event) => {
-        const isFormField =
-            event.target.tagName === "INPUT" ||
-            event.target.tagName === "TEXTAREA" ||
-            event.target.tagName === "SELECT" ||
-            event.target.isContentEditable;
+    if (ctx.start) {
+        ctx.start.hidden = false;
 
-        // Shift+C: start new feedback (only when not typing in a field).
-        if (
-            event.key === "C" &&
-            event.shiftKey &&
-            !event.ctrlKey &&
-            !event.metaKey &&
-            !isFormField
-        ) {
-            if (start && !start.hidden) {
-                event.preventDefault();
-                showForm();
-            }
-            return;
+        if (startAdd) {
+            startAdd.addEventListener("click", () => {
+                ctx.showForm();
+            });
         }
 
-        // Ctrl/Cmd+Enter: submit feedback form.
-        if (
-            event.key === "Enter" &&
-            (event.ctrlKey || event.metaKey) &&
-            form &&
-            !form.hidden &&
-            !itemsPanelMode
-        ) {
-            event.preventDefault();
-            form.requestSubmit();
-            return;
+        if (ctx.startCount) {
+            ctx.startCount.addEventListener("click", () => {
+                ctx.showItemsPanel();
+            });
         }
 
-        // Escape: cancel feedback or close items panel.
-        if (event.key === "Escape") {
-            if (itemsPanelMode) {
-                event.preventDefault();
-                hideItemsPanel();
-                return;
-            }
-            if (form && !form.hidden) {
-                event.preventDefault();
-                showMessage("");
-                hideForm(true);
-            }
-        }
-    });
+        ctx.refreshFeedbackData();
+    }
+
+    if (cancel) {
+        cancel.addEventListener("click", () => {
+            ctx.showMessage("");
+            ctx.hideForm(true);
+        });
+    }
+
+    initKeyboardShortcuts(ctx);
 
     const params = new URLSearchParams(document.location.search);
     switch (params.get("tidy-feedback-show")) {
         case "form":
-            showForm();
+            ctx.showForm();
             break;
     }
 });

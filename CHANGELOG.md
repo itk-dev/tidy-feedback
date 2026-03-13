@@ -30,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Split `widget.js` into focused component modules: form, select-mode, items-panel, messages, keyboard
 - Simplified feedback form to email + description only; subject is now auto-generated from page title
 - Replaced SCSS and CoreUI/Bootstrap with plain CSS to reduce build complexity and bundle size
 - Renamed admin entry point from `app` to `admin`
