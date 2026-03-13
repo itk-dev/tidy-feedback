@@ -7,7 +7,6 @@ namespace ItkDev\TidyFeedback\Controller;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use ItkDev\TidyFeedback\Model\Item;
-use ItkDev\TidyFeedback\Model\ItemStatus;
 use ItkDev\TidyFeedback\TidyFeedbackHelper;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -118,9 +117,7 @@ trait TidyFeedbackControllerTrait
             $data = $request->toArray();
 
             $item = (new Item())
-                ->setSubject($data['subject'] ?? 'Feedback on '.($data['context']['url'] ?? 'unknown page'))
                 ->setCreatedBy($data['created_by'] ?? null)
-                ->setStatus(ItemStatus::NEW)
                 ->setData($data);
             $this->entityManager->persist($item);
             $this->entityManager->flush();

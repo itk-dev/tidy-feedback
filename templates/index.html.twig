@@ -9,25 +9,23 @@
         <table class="table">
             <thead>
             <tr>
-                <th>{{ 'Subject'|trans }}</th>
+                <th>{{ 'Description'|trans }}</th>
                 <th>{{ 'Created at'|trans }}</th>
                 <th>{{ 'Created by'|trans }}</th>
-                <th>{{ 'Status'|trans }}</th>
-                <th>{{ 'Category'|trans }}</th>
+                <th></th>
             </tr>
             </thead>
             <tbody>
             {% for item in items %}
                 <tr>
-                    <td>
-                        <a href="{{ path('tidy_feedback_show', {id: item.id}) }}">
-                            {{ item.subject }}
-                        </a>
-                    </td>
+                    <td>{{ item.data.description|default('–') }}</td>
                     <td>{{ item.createdAt|date(constant('\\DateTimeImmutable::ATOM')) }}</td>
                     <td>{{ item.createdBy|default('–') }}</td>
-                    <td>{{ item.status.value|default('–') }}</td>
-                    <td>{{ item.category.value|default('–') }}</td>
+                    <td>
+                        <a href="{{ path('tidy_feedback_show', {id: item.id}) }}">
+                            {{ 'View'|trans }}
+                        </a>
+                    </td>
                 </tr>
             {% endfor %}
             </tbody>
