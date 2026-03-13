@@ -87,6 +87,22 @@ const hideRegion = () => {
     }
 };
 
+const updateEdgeClasses = (element) => {
+    const rect = element.getBoundingClientRect();
+    const threshold = 1;
+
+    element.classList.toggle("at-edge-left", rect.left <= threshold);
+    element.classList.toggle(
+        "at-edge-right",
+        rect.right >= window.innerWidth - threshold,
+    );
+    element.classList.toggle("at-edge-top", rect.top <= threshold);
+    element.classList.toggle(
+        "at-edge-bottom",
+        rect.bottom >= window.innerHeight - threshold,
+    );
+};
+
 const makeFormDraggable = () => {
     if (dragCleanup) {
         return;
@@ -98,8 +114,12 @@ const makeFormDraggable = () => {
     if (tidyFeedbackDiv && dragHandle) {
         dragHandle.hidden = false;
 
+        updateEdgeClasses(tidyFeedbackDiv);
+
         dragCleanup = makeDraggable(tidyFeedbackDiv, dragHandle, {
             constrainToViewport: true,
+            onDrag: (_e, el) => updateEdgeClasses(el),
+            onDragEnd: (_e, el) => updateEdgeClasses(el),
         });
     }
 };

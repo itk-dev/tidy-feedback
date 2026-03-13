@@ -149,11 +149,36 @@ textarea.form-control {
     background-color: white;
     box-shadow: var(--shadow-lg);
     border: 1px solid var(--color-gray-200);
-    border-right: 0;
-    border-top-left-radius: var(--radius-lg);
-    border-bottom-left-radius: var(--radius-lg);
+    border-radius: var(--radius-lg);
     color: var(--color-text-dark);
     overflow: hidden;
+    transition:
+        border-radius 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.tidy-feedback-form.at-edge-right {
+    border-right: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.tidy-feedback-form.at-edge-left {
+    border-left: 0;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.tidy-feedback-form.at-edge-top {
+    border-top: 0;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+
+.tidy-feedback-form.at-edge-bottom {
+    border-bottom: 0;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
 }
 
 .tidy-feedback-draggable-handle {

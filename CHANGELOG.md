@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Added rounded corners and border when widget is dragged away from window edge, removed when pushed against edge
 - Removed unused `subject`, `status`, and `category` fields from Item entity, admin templates, and translations
 - Fixed highlighted region losing its dashed border after submitting feedback
 - Fixed cancel button hover making text invisible by using a darker hover background and aligned transition timings
