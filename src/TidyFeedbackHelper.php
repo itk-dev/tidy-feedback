@@ -109,7 +109,7 @@ final class TidyFeedbackHelper implements EventSubscriberInterface
                 $maxMtime = max(array_map('filemtime', $translationFiles));
                 $cacheKey = 'translations_'.$maxMtime;
 
-                $cache = new FilesystemAdapter('tidy_feedback', 0, $cacheDir);
+                $cache = new FilesystemAdapter('tidy_feedback', 604800, $cacheDir);
                 $item = $cache->getItem($cacheKey);
 
                 if ($item->isHit()) {
@@ -121,6 +121,7 @@ final class TidyFeedbackHelper implements EventSubscriberInterface
                 self::$translations = $this->parseTranslationFiles($translationFiles);
                 $item->set(self::$translations);
                 $cache->save($item);
+                $cache->prune();
             } else {
                 self::$translations = $this->parseTranslationFiles($translationFiles ?: []);
             }
