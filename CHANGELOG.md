@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Keyboard shortcuts: Shift+C to start feedback, Ctrl/Cmd+Enter to submit, Escape to cancel
 - Rounded corners and border when widget is dragged away from window edge, removed when pushed against edge
 - Cache pruning for stale translation cache entries with 1-week TTL
 - "View" action column to admin feedback list replacing the subject link
