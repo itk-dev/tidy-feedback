@@ -7,40 +7,51 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Fixed cached email not appearing after submitting first feedback item
-- Added cache pruning for stale translation cache entries with 1-week TTL
-- Added rounded corners and border when widget is dragged away from window edge, removed when pushed against edge
-- Removed unused `subject`, `status`, and `category` fields from Item entity, admin templates, and translations
-- Fixed highlighted region losing its dashed border after submitting feedback
-- Fixed cancel button hover making text invisible by using a darker hover background and aligned transition timings
-- Added "View" action column to admin feedback list replacing the subject link
-- Added animated conic-gradient border on the "Click an element to select" message during select mode
-- Fixed start button remaining visible when form or select-mode message is open
+### Added
+
+- Rounded corners and border when widget is dragged away from window edge, removed when pushed against edge
+- Cache pruning for stale translation cache entries with 1-week TTL
+- "View" action column to admin feedback list replacing the subject link
+- Animated conic-gradient border on the "Click an element to select" message during select mode
 - Split start button into two-part pill: count badge (opens items list) and "+" button (starts feedback form)
+- Click-to-select element targeting for feedback region
+- localStorage caching for email field so it's prefilled on repeat visits
+- Optional caching for translations and Twig compilation via `TIDY_FEEDBACK_CACHE_DIR`
+- Collapsible list of existing feedback items in widget form
+- Feedback count badge on start button when feedback exists for the current page
+- `/check` endpoint returning feedback count for a given URL
+- Inline style fallback on message element for when CSS hasn't loaded yet
+- Docker image pull step to `assets:build` task
+
+### Changed
+
+- Simplified feedback form to email + description only; subject is now auto-generated from page title
 - Replaced SCSS and CoreUI/Bootstrap with plain CSS to reduce build complexity and bundle size
 - Renamed admin entry point from `app` to `admin`
-- Fixed overly-broad button styling that affected all buttons on the page
-- Added click-to-select element targeting for feedback region
-- Simplified feedback form to email + description only; subject is now auto-generated from page title
-- Added localStorage caching for email field so it's prefilled on repeat visits
-- Cleaned up test page: removed debug styles, test button, stale commented-out code, and fixed typo
-- Added optional caching for translations and Twig compilation via `TIDY_FEEDBACK_CACHE_DIR`
-- Added collapsible list of existing feedback items in widget form
-- Added feedback count badge on start button when feedback exists for the current page
-- Added `/check` endpoint returning feedback count for a given URL
-- Documented widget setup, query string parameters, disabling, viewing feedback, and access control
-- Fixed path traversal vulnerability in asset serving
-- Fixed Drupal asset route not matching nested paths (e.g. `icons/favicon.png`)
-- Fixed basic auth users never being parsed from `TIDY_FEEDBACK_USERS` env var
-- Added inline style fallback on message element for when CSS hasn't loaded yet
-- [PR-28](https://github.com/itk-dev/tidy-feedback/pull/28)
-  27: Cleaned up code
 - Replaced Bootstrap with CoreUI and modernized SCSS imports (`@import` → `@use`)
 - Pinned dev environment to PHP 8.4 / Symfony 7
-- Added Docker image pull step to `assets:build` task
-- Fixed healthcheck race condition causing `app:start` to fail
-- Fixed stale route cache causing 404 on `/tidy-feedback/test` after `app:start`
 - Excluded Drupal 11 + PHP 8.3 from CI matrix (lazy loading proxies require PHP 8.4)
+- Documented widget setup, query string parameters, disabling, viewing feedback, and access control
+- [PR-28](https://github.com/itk-dev/tidy-feedback/pull/28)
+  27: Cleaned up code
+- Cleaned up test page: removed debug styles, test button, stale commented-out code, and fixed typo
+
+### Fixed
+
+- Cached email not appearing after submitting first feedback item
+- Highlighted region losing its dashed border after submitting feedback
+- Cancel button hover making text invisible by using a darker hover background and aligned transition timings
+- Start button remaining visible when form or select-mode message is open
+- Overly-broad button styling that affected all buttons on the page
+- Path traversal vulnerability in asset serving
+- Drupal asset route not matching nested paths (e.g. `icons/favicon.png`)
+- Basic auth users never being parsed from `TIDY_FEEDBACK_USERS` env var
+- Healthcheck race condition causing `app:start` to fail
+- Stale route cache causing 404 on `/tidy-feedback/test` after `app:start`
+
+### Removed
+
+- Unused `subject`, `status`, and `category` fields from Item entity, admin templates, and translations
 
 ## [1.0.0] - 2025-07-10
 
