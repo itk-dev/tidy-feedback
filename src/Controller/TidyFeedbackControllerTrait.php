@@ -160,7 +160,16 @@ trait TidyFeedbackControllerTrait
         );
 
         $rows = $connection->fetchAllAssociative(
-            "SELECT id, JSON_EXTRACT(data, '$.description') as description, JSON_EXTRACT(data, '$.context.selectedElement') as selected_element FROM item WHERE JSON_EXTRACT(data, '$.context.url') = ? ORDER BY createdAt DESC LIMIT 10",
+            <<<'SQL'
+                SELECT
+                    id,
+                    JSON_EXTRACT(data, '$.description') AS description,
+                    JSON_EXTRACT(data, '$.context.selectedElement') AS selected_element
+                FROM item
+                WHERE JSON_EXTRACT(data, '$.context.url') = ?
+                ORDER BY createdAt DESC
+                LIMIT 10
+                SQL,
             [$url]
         );
 

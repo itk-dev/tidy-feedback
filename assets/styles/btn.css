@@ -7,11 +7,6 @@
     transition: var(--transform-colors-in);
 }
 
-.btn:hover,
-.btn:active {
-    transition: var(--transform-colors-in);
-}
-
 .btn-primary {
     color: var(--color-text-light);
     background-color: var(--color-primary);

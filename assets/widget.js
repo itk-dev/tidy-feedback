@@ -153,13 +153,14 @@ const renderItemsList = (listOnly = false) => {
         a.textContent = item.description ?? "";
 
         if (item.selectedElement) {
-            const highlightStyle =
-                "outline: 2px solid hsla(252, 55%, 46%, 0.6); outline-offset: 2px; border-radius: 4px;";
+            let savedCssText = null;
             li.addEventListener("mouseenter", () => {
                 try {
                     const el = document.querySelector(item.selectedElement);
                     if (el) {
-                        el.style.cssText += highlightStyle;
+                        savedCssText = el.style.cssText;
+                        el.style.cssText +=
+                            "outline: 2px solid hsla(252, 55%, 46%, 0.6); outline-offset: 2px; border-radius: 4px;";
                     }
                 } catch {
                     // Ignore invalid selectors.
@@ -168,10 +169,9 @@ const renderItemsList = (listOnly = false) => {
             li.addEventListener("mouseleave", () => {
                 try {
                     const el = document.querySelector(item.selectedElement);
-                    if (el) {
-                        el.style.outline = "";
-                        el.style.outlineOffset = "";
-                        el.style.borderRadius = "";
+                    if (el && savedCssText !== null) {
+                        el.style.cssText = savedCssText;
+                        savedCssText = null;
                     }
                 } catch {
                     // Ignore invalid selectors.
@@ -334,7 +334,6 @@ const setFormFieldsVisibility = (visible) => {
     const selectors = [
         ".tidy-feedback-form-title",
         ".tidy-feedback-form-lead",
-        ".mb-3",
         ".form-row",
         'button[type="submit"]',
         ".btn-cancel",
