@@ -449,8 +449,7 @@ const hideForm = (reset) => {
             // Re-apply cached email after reset so the next form open has it prefilled.
             const emailInput = form.querySelector('[name="created_by"]');
             if (emailInput && !emailInput.readOnly) {
-                const cachedEmail =
-                    localStorage.getItem("tidy-feedback-email");
+                const cachedEmail = localStorage.getItem("tidy-feedback-email");
                 if (cachedEmail) {
                     emailInput.value = cachedEmail;
                 }
