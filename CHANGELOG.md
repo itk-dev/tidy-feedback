@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- PHPUnit test suite for Item entity and TidyFeedbackHelper (authorize, config, events)
+- Vitest test suite for JavaScript component modules (messages, keyboard shortcuts, items panel)
+- CI workflow for running PHP and JavaScript tests on pull requests
+- `task test`, `task test:php`, and `task test:js` commands
 - Workflow diagram, API documentation, data schema, and architecture overview in README
 - Project-level CLAUDE.md with development guide and conventions
 - Auto-focus on description textarea after selecting an element

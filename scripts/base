@@ -84,6 +84,7 @@ setup() {
   compose up --detach --remove-orphans --wait --build
   composer config --no-plugins allow-plugins true
   composer config extra.merge-plugin.include "$module_path/composer.json"
+  composer config extra.merge-plugin.merge-dev false --json
   composer require drush/drush wikimedia/composer-merge-plugin
   drush --yes site:install --db-url='mysql://root:root@mariadb/drupal'
   drush --yes pm:install "$module_name"

@@ -1,0 +1,33 @@
+name: Tests
+
+on:
+    pull_request:
+    push:
+        branches:
+            - main
+            - develop
+
+jobs:
+    php-tests:
+        name: PHP tests
+        runs-on: ubuntu-latest
+        env:
+            COMPOSE_USER: root
+        steps:
+            - uses: actions/checkout@v4
+            - run: |
+                  docker network create frontend
+                  docker compose run --rm phpfpm composer install
+                  docker compose run --rm phpfpm vendor/bin/phpunit
+
+    js-tests:
+        name: JavaScript tests
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 24
+                  cache: npm
+            - run: npm ci
+            - run: npx vitest run
