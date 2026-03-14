@@ -1,8 +1,9 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { initKeyboardShortcuts } from "../../assets/component/keyboard.js";
 
 describe("initKeyboardShortcuts", () => {
     let ctx;
+    const elementsToCleanup = [];
 
     beforeEach(() => {
         ctx = {
@@ -16,6 +17,11 @@ describe("initKeyboardShortcuts", () => {
         };
         ctx.start.hidden = false;
         ctx.form.hidden = false;
+    });
+
+    afterEach(() => {
+        elementsToCleanup.forEach((el) => el.remove());
+        elementsToCleanup.length = 0;
     });
 
     it("calls showForm on Shift+C when start button is visible", () => {
@@ -52,6 +58,7 @@ describe("initKeyboardShortcuts", () => {
 
         const input = document.createElement("input");
         document.body.appendChild(input);
+        elementsToCleanup.push(input);
         input.focus();
 
         input.dispatchEvent(
@@ -63,7 +70,6 @@ describe("initKeyboardShortcuts", () => {
         );
 
         expect(ctx.showForm).not.toHaveBeenCalled();
-        input.remove();
     });
 
     it("submits form on Ctrl+Enter when form is visible", () => {
