@@ -1,4 +1,5 @@
 {
+    "name": "tidy-feedback",
     "devDependencies": {
         "@cypress/unique-selector": "^2.1.1",
         "@symfony/webpack-encore": "^5.1.0",

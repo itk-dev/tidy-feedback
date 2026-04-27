@@ -17,6 +17,42 @@ const updateEdgeClasses = (element) => {
     );
 };
 
+/**
+ * Strip HTML comments from an SVG data-URL and render it to PNG.
+ *
+ * Drupal's theme-debug mode injects HTML comments that contain "--"
+ * (e.g. "page--front.html.twig").  "--" is illegal inside XML comments,
+ * so snapdom's SVG foreignObject output becomes malformed XML.
+ * Stripping all comments fixes this without affecting the visual result.
+ */
+async function repairSvgToRaster(dataUrl) {
+    const prefix = dataUrl.indexOf(",") + 1;
+    const svg = decodeURIComponent(dataUrl.substring(prefix)).replace(
+        /<!--[\s\S]*?-->/g,
+        "",
+    );
+
+    const blob = new Blob([svg], { type: "image/svg+xml" });
+    const url = URL.createObjectURL(blob);
+    try {
+        const img = new Image();
+        img.src = url;
+        await img.decode();
+
+        const canvas = document.createElement("canvas");
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const canvasCtx = canvas.getContext("2d");
+        canvasCtx.fillStyle = "#fff";
+        canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
+        canvasCtx.drawImage(img, 0, 0);
+
+        return canvas.toDataURL("image/png");
+    } finally {
+        URL.revokeObjectURL(url);
+    }
+}
+
 export function makeFormDraggable(ctx) {
     if (ctx.dragCleanup) {
         return;
@@ -149,10 +185,20 @@ export function initFormSubmit(ctx) {
 
             let image = result.toRaw();
             for (const method of ["toWebp", "toPng", "toJpg"]) {
-                const img = await result[method]();
-                if (img.src.length < image.length) {
-                    image = img.src;
+                try {
+                    const img = await result[method]();
+                    if (img.src.length < image.length) {
+                        image = img.src;
+                    }
+                } catch {
+                    // Raster conversion fails when the SVG contains
+                    // malformed XML (e.g. Drupal theme-debug comments).
                 }
+            }
+
+            // If no raster format succeeded, repair the SVG and retry.
+            if (image === result.toRaw()) {
+                image = await repairSvgToRaster(image);
             }
 
             data.image = image;
