@@ -29,6 +29,14 @@ use Twig\Loader\FilesystemLoader;
 use Twig\TwigFilter;
 use Twig\TwigFunction;
 
+/**
+ * Central helper for the Tidy Feedback library.
+ *
+ * Handles widget rendering, asset serving, Twig templating,
+ * translation, Doctrine entity management, and kernel response
+ * injection. Also acts as a Symfony event subscriber in the
+ * Symfony bundle (in Drupal the event subscriber is separate).
+ */
 final class TidyFeedbackHelper implements EventSubscriberInterface
 {
     private const string CONFIG_DATABASE_URL = 'database_url';
@@ -47,11 +55,17 @@ final class TidyFeedbackHelper implements EventSubscriberInterface
     ) {
     }
 
+    /**
+     * Generate a URL for a named route.
+     */
     public function generateUrl(string $name, array $parameters = []): string
     {
         return $this->urlGenerator->generate($name, $parameters);
     }
 
+    /**
+     * Render the feedback widget HTML for injection into the page.
+     */
     public function getWidget(Request $request): string
     {
         $app = [
@@ -68,11 +82,20 @@ final class TidyFeedbackHelper implements EventSubscriberInterface
 
     private static Environment $twig;
 
+    /**
+     * Render a Twig template and return it as a Response.
+     */
     public function renderResponse(string $path, array $context = []): Response
     {
         return new Response($this->renderTemplate($path, $context));
     }
 
+    /**
+     * Render a Twig template to a string.
+     *
+     * Lazily initialises a standalone Twig environment with translation
+     * and routing helpers on first call.
+     */
     public function renderTemplate(string $path, array $context = []): string
     {
         if (empty(self::$twig)) {
@@ -92,11 +115,16 @@ final class TidyFeedbackHelper implements EventSubscriberInterface
 
         $template = self::$twig->load($path);
 
-        return $template->render($context);
+        return $template->render($context); 
     }
 
     private static array $translations;
 
+    /**
+     * Load and cache all translation files.
+     *
+     * @return array<string, array<string, string>> Keyed by locale.
+     */
     private function getTranslations(): array
     {
         if (!isset(self::$translations)) {
@@ -130,6 +158,13 @@ final class TidyFeedbackHelper implements EventSubscriberInterface
         return self::$translations;
     }
 
+    /**
+     * Parse YAML translation files into an associative array keyed by locale.
+     *
+     * @param string[] $files
+     *
+     * @return array<string, array<string, string>>
+     */
     private function parseTranslationFiles(array $files): array
     {
         $translations = [];
@@ -146,6 +181,9 @@ final class TidyFeedbackHelper implements EventSubscriberInterface
         return $translations;
     }
 
+    /**
+     * Translate a string using the loaded YAML translations.
+     */
     private function trans(string $text, array $context = []): string
     {
         $translations = $this->getTranslations();
@@ -187,6 +225,11 @@ final class TidyFeedbackHelper implements EventSubscriberInterface
         return self::$entityManager;
     }
 
+    /**
+     * Serve a compiled asset (JS, CSS, etc.) from the build directory.
+     *
+     * Validates the path to prevent directory traversal.
+     */
     public function createAssetResponse(string $asset): Response
     {
         $buildDir = realpath(self::ASSET_PATH);
@@ -221,6 +264,9 @@ final class TidyFeedbackHelper implements EventSubscriberInterface
         return $response;
     }
 
+    /**
+     * Update the Doctrine database schema for Tidy Feedback entities.
+     */
     public static function updateSchema(OutputInterface $output): bool
     {
         try {
@@ -244,6 +290,11 @@ final class TidyFeedbackHelper implements EventSubscriberInterface
 
     private static array $config;
 
+    /**
+     * Read a configuration value from TIDY_FEEDBACK_* environment variables.
+     *
+     * Returns the full config array when $name is null.
+     */
     private static function getConfig(?string $name): mixed
     {
         if (!isset(self::$config)) {
@@ -272,6 +323,9 @@ final class TidyFeedbackHelper implements EventSubscriberInterface
         return $name ? (self::$config[$name] ?? null) : self::$config;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public static function getSubscribedEvents(): array
     {
         return [
@@ -323,6 +377,11 @@ final class TidyFeedbackHelper implements EventSubscriberInterface
         }
     }
 
+    /**
+     * Enforce HTTP Basic authentication when TIDY_FEEDBACK_USERS is configured.
+     *
+     * @throws UnauthorizedHttpException when credentials are missing or invalid
+     */
     public function authorize(Request $request): void
     {
         $users = self::getConfig(self::CONFIG_USERS);

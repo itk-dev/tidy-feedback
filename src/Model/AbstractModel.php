@@ -10,6 +10,11 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\MappedSuperclass;
 use Doctrine\ORM\Mapping\PrePersist;
 
+/**
+ * Base Doctrine entity with common fields for all feedback models.
+ *
+ * Provides id, createdAt, createdBy and JSON:API-style serialisation.
+ */
 #[MappedSuperclass]
 #[HasLifecycleCallbacks]
 abstract class AbstractModel implements \JsonSerializable
@@ -46,7 +51,11 @@ abstract class AbstractModel implements \JsonSerializable
         return $this;
     }
 
-    // https://jsonapi.org/
+    /**
+     * Serialise into a JSON:API resource object.
+     *
+     * @see https://jsonapi.org/
+     */
     public function jsonSerialize(): array
     {
         return [
@@ -59,8 +68,14 @@ abstract class AbstractModel implements \JsonSerializable
         ];
     }
 
+    /**
+     * Return model-specific attributes for JSON serialisation.
+     */
     abstract protected function getAttributes(): array;
 
+    /**
+     * Set createdAt timestamp before persisting.
+     */
     #[PrePersist]
     public function prePersist(): void
     {

@@ -16,7 +16,10 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
- * Returns responses for Tidy feedback routes.
+ * Shared controller logic for Tidy Feedback routes.
+ *
+ * Consumed by both the Drupal and Symfony controllers to avoid
+ * duplicating business logic across frameworks.
  */
 trait TidyFeedbackControllerTrait
 {
@@ -33,6 +36,9 @@ trait TidyFeedbackControllerTrait
         $this->itemRepository = $this->entityManager->getRepository(Item::class);
     }
 
+    /**
+     * List all feedback items, ordered by newest first.
+     */
     public function index(Request $request): Response
     {
         $this->helper->authorize($request);
@@ -49,6 +55,9 @@ trait TidyFeedbackControllerTrait
         );
     }
 
+    /**
+     * Show a single feedback item or the test page.
+     */
     public function show(Request $request, string $id): Response
     {
         $this->helper->authorize($request);
@@ -73,6 +82,12 @@ trait TidyFeedbackControllerTrait
         );
     }
 
+    /**
+     * Return the screenshot image for a feedback item.
+     *
+     * Decodes the base64/URL-encoded data URI stored in the item payload
+     * and serves it as a binary response with the correct content type.
+     */
     public function image(Request $request, int $id): Response
     {
         $this->helper->authorize($request);
@@ -111,6 +126,11 @@ trait TidyFeedbackControllerTrait
         );
     }
 
+    /**
+     * Handle feedback submission (POST).
+     *
+     * Persists a new Item entity from the JSON request body.
+     */
     public function post(Request $request): Response
     {
         try {
@@ -139,6 +159,11 @@ trait TidyFeedbackControllerTrait
         }
     }
 
+    /**
+     * Check for existing feedback items matching a given URL.
+     *
+     * Returns a JSON response with the count and up to 10 recent items.
+     */
     public function check(Request $request): Response
     {
         $url = $request->query->get('url');
@@ -179,11 +204,20 @@ trait TidyFeedbackControllerTrait
         return new JsonResponse(['data' => ['count' => $count, 'items' => $items]]);
     }
 
+    /**
+     * Serve a compiled asset file (JS, CSS, etc.) from the build directory.
+     */
     public function asset(string $asset): Response
     {
         return $this->helper->createAssetResponse($asset);
     }
 
+    /**
+     * Determine the response format from the request.
+     *
+     * Checks the `_format` query parameter first, then falls back
+     * to the Accept header.
+     */
     private function getFormat(Request $request): string
     {
         // Allow overriding format with query string paramenter.
@@ -200,6 +234,9 @@ trait TidyFeedbackControllerTrait
         };
     }
 
+    /**
+     * Create a content-negotiated response (HTML or JSON).
+     */
     private function createResponse(Request $request, string $template, array $context, string $dataKey = 'data'): Response
     {
         $format = $this->getFormat($request);
@@ -210,6 +247,9 @@ trait TidyFeedbackControllerTrait
         };
     }
 
+    /**
+     * Create an error response, re-throwing for HTML or returning JSON.
+     */
     private function createExceptionResponse(Request $request, HttpException $exception): Response
     {
         $format = $this->getFormat($request);
