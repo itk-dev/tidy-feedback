@@ -5,7 +5,9 @@ tidy_feedback_index:
         _controller: '\Drupal\tidy_feedback\Controller\TidyFeedbackController::index'
     methods: [GET]
     requirements:
-        _permission: "access content"
+        _permission: "view tidy feedback"
+    options:
+        _admin_route: TRUE
 
 tidy_feedback_create:
     path: "/tidy-feedback"
@@ -14,7 +16,7 @@ tidy_feedback_create:
         _controller: '\Drupal\tidy_feedback\Controller\TidyFeedbackController::post'
     methods: [POST]
     requirements:
-        _permission: "access content"
+        _permission: "use tidy feedback widget"
 
 tidy_feedback_asset:
     path: "/tidy-feedback/asset/{asset}"
@@ -24,7 +26,7 @@ tidy_feedback_asset:
         resource: null
     methods: [GET]
     requirements:
-        _permission: "access content"
+        _permission: "use tidy feedback widget"
         asset: ".+"
 
 tidy_feedback_check:
@@ -34,7 +36,7 @@ tidy_feedback_check:
         _controller: '\Drupal\tidy_feedback\Controller\TidyFeedbackController::check'
     methods: [GET]
     requirements:
-        _permission: "access content"
+        _permission: "use tidy feedback widget"
 
 tidy_feedback_show:
     path: "/tidy-feedback/{id}"
@@ -43,7 +45,9 @@ tidy_feedback_show:
         _controller: '\Drupal\tidy_feedback\Controller\TidyFeedbackController::show'
     methods: [GET]
     requirements:
-        _permission: "access content"
+        _permission: "view tidy feedback"
+    options:
+        _admin_route: TRUE
 
 tidy_feedback_image:
     path: "/tidy-feedback/{id}/image"
@@ -52,4 +56,4 @@ tidy_feedback_image:
         _controller: '\Drupal\tidy_feedback\Controller\TidyFeedbackController::image'
     methods: [GET]
     requirements:
-        _permission: "access content"
+        _permission: "view tidy feedback"

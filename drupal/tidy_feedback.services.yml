@@ -2,6 +2,11 @@ services:
     _defaults:
         autowire: true
 
-    ItkDev\TidyFeedback\TidyFeedbackHelper:
+    ItkDev\TidyFeedback\TidyFeedbackHelper: ~
+
+    Drupal\tidy_feedback\EventSubscriber\TidyFeedbackEventSubscriber:
+        arguments:
+            - '@ItkDev\TidyFeedback\TidyFeedbackHelper'
+            - '@current_user'
         tags:
             - { name: event_subscriber }

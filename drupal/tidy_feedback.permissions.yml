@@ -1,0 +1,7 @@
+use tidy feedback widget:
+    title: 'Use Tidy Feedback widget'
+    description: 'Allow user to see and use the Tidy Feedback widget on pages.'
+
+view tidy feedback:
+    title: 'View Tidy Feedback submissions'
+    description: 'View the list and detail pages of submitted feedback.'
